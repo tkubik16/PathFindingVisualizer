@@ -95,6 +95,25 @@ public:
 	// object functions TBD
 	// calcualting overall width and height for rendering
 	void PrintInfo();
+	// content setter functions
+	void SetContent(int width, int height);
+	void SetContent(int width, int height, Mode mode);
+	// padding setter functions
+	void SetPadding(int top, int bottom, int left, int right);
+	void SetPaddingAll(int val);
+	void SetPaddingTopBot(int val);
+	void SetPaddingLeftRight(int val);
+	// border setter functions
+	void SetBorder(int top, int bottom, int left, int right);
+	void SetBorderAll(int val);
+	void SetBorderTopBot(int val);
+	void SetBorderLeftRight(int val);
+	// margin setter functions
+	void SetMargin(int top, int bottom, int left, int right);
+	void SetMarginAll(int val);
+	void SetMarginTopBot(int val);
+	void SetMarginLeftRight(int val);
+
 };
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include "resource_manager.h"
 #include "box_model.h"
 #include "document.h"
 #include "program.h"
@@ -86,12 +87,13 @@ int main(int argc, char* argv[])
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        PathFindingVisualizer.Render();
 
 
         glfwSwapBuffers(window);
     }
 
-  
+    ResourceManager::Clear();
     
     glfwTerminate();
     return 0;
@@ -111,13 +113,21 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     SCREEN_WIDTH = width;
     SCREEN_HEIGHT = height;
-    std::cout << width << ", " << height << std::endl;
+    //std::cout << width << ", " << height << std::endl;
 
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    PathFindingVisualizer.Width = width;
+    PathFindingVisualizer.Height = height;
+
+    
 
     // you want to rerender so that as you drag it you see it updating
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    PathFindingVisualizer.Render();
+
+
     glfwSwapBuffers(window);
 
 }

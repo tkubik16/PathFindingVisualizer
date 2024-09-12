@@ -7,6 +7,7 @@
 #include <map>
 
 #include "element.h"
+#include "box_renderer.h"
 
 class Document
 {
@@ -14,14 +15,18 @@ public:
 	// map of color Ids to element pointers to know what element the mouse pointer is interacting with based on color of pixel in special frame buffer
 	std::map<std::string, Element*> colorIdMap;
 	Element* root;
+	int screenWidth;
+	int screenHeight;
 
 	// constructor/destructor
 	Document();
 	Document(int width, int height);
 	~Document();
 
-	Element* CreateElement(std::string name);
+	void Init();
+	Element* AddElement(std::string name);
 	bool ColorIdExists(glm::vec3 colorId);
+	void RenderDocument(BoxRenderer* boxRenderer);
 
 };
 

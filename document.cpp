@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <queue>
 
 #include "document.h"
 
@@ -11,9 +12,10 @@ Document::Document()
 
 Document::Document(int width, int height)
 {
-	this->root = Document::CreateElement("root");
-	this->root->boxModel.content.width = width;
-	this->root->boxModel.content.height = height;
+	this->root = Document::AddElement("root");
+	this->root->parentWidth = width;
+	this->root->parentHeight = height;
+	
 }
 
 Document::~Document()
@@ -21,10 +23,17 @@ Document::~Document()
 	delete this->root;
 }
 
-Element* Document::CreateElement(std::string name) {
+void Document::Init() {
+	this->root->boxModel.content.width = this->root->parentWidth;
+	this->root->boxModel.content.height = this->root->parentWidth;
+	this->root->CalculateSize();
+}
+
+Element* Document::AddElement(std::string name) {
 	// Generate vec4 colorId that does not already exist
 	int n = 100;
 	Element *newElement = new Element();
+	newElement->name = name;
 	newElement->idColor.x = (float)(rand() % n) / 100.0f;
 	newElement->idColor.y = (float)(rand() % n) / 100.0f;
 	newElement->idColor.z = (float)(rand() % n) / 100.0f;
@@ -60,4 +69,24 @@ bool Document::ColorIdExists(glm::vec3 colorId)
 	}
 
 	return false;
+}
+
+void Document::RenderDocument(BoxRenderer* boxRenderer) {
+	
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		curr->RenderBox(boxRenderer);
+		elQueue.pop();
+		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
+			elQueue.push(*it);
+		}
+	}
+
+}
+
+void LevelOrderTraversal(BoxRenderer* boxRenderer, Element* curr) {
+	
 }

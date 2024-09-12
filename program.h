@@ -13,6 +13,9 @@ public:
 	bool Keys[1024];
 	bool KeysProcessed[1024];
 	int Width, Height;
+	glm::mat4 projection;
+	glm::mat4 view;
+	float scrollDist;
 	// constructor/destructor
 	Program(int width, int height);
 	~Program();
