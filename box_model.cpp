@@ -4,7 +4,7 @@
 #include "box_model.h"
 
 
-BoxModel::BoxModel() : content(50, 50, PIXELS), padding(0, 0, 0, 0, PIXELS), border(0, 0, 0, 0, PIXELS), margin(0, 0, 0, 0, PIXELS)
+BoxModel::BoxModel() : padding(0, 0, 0, 0, PIXELS), border(0, 0, 0, 0, PIXELS), margin(0, 0, 0, 0, PIXELS)
 {
 
 }
@@ -14,13 +14,24 @@ BoxModel::~BoxModel() {
 }
 
 void BoxModel::PrintInfo() {
-	std::cout << "content: ";
-	this->content.Print();
+	//std::cout << "content: ";
+	//this->content.Print();
+	//std::cout << std::endl;
+	std::cout << "width: " << this->width << std::endl;
+	std::cout << "height: " << this->height << std::endl;
+	std::cout << "padding: ";
+	this->padding.Print();
+	std::cout << std::endl;
+	std::cout << "margin: ";
+	this->margin.Print();
+	std::cout << std::endl;
+	std::cout << "border: ";
+	this->border.Print();
 	std::cout << std::endl;
 }
 
 // Content setter functions
-
+/*
 void BoxModel::SetContent(int width, int height) {
 	this->content.width = width;
 	this->content.height = height;
@@ -30,6 +41,12 @@ void BoxModel::SetContent(int width, int height, Mode mode) {
 	this->content.width = width;
 	this->content.height = height;
 	this->content.mode = mode;
+}
+*/
+
+void BoxModel::SetSize(int width, int height) {
+	this->width = width;
+	this->height = height;
 }
 
 // Padding setter functions

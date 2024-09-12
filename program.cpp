@@ -7,7 +7,7 @@
 
 BoxRenderer* boxRenderer;
 
-Program::Program(int width, int height) : Doc(width, height), Width(width), Height(height), Keys(), KeysProcessed(), scrollDist(0.0f)
+Program::Program(int width, int height) : Doc(width, height), screenWidth(width), screenHeight(height), Keys(), KeysProcessed(), scrollDist(0.0f)
 {
 
 }
@@ -20,9 +20,8 @@ Program::~Program()
 void Program::Init()
 {
 	//configure projection and view
-	this->projection = glm::ortho(0.0f, static_cast<float>(this->Width), static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
+	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
 	glm::vec2 midOffset = glm::vec2(this->Doc.screenWidth * 0.5f, this->Doc.screenHeight * 0.5f);
-	this->scrollDist = 300.0f;
 	view = glm::translate(view, glm::vec3(0.0f, scrollDist, 0.0f));
 
 	// load shaders
@@ -45,33 +44,57 @@ void Program::Init()
 	// below here create doc tree maybe
 	this->Doc.Init();
 	this->Doc.root->PrintInfo();
+	
 
-	firstEl->boxModel.SetContent(100, 100);
+	firstEl->boxModel.SetSize(100, 100);
 	firstEl->boxModel.SetMarginAll(50);
-	firstEl->CalculateSize();
-	firstEl->CalculatePosition();
-	firstEl->PrintInfo();
+	//this->Doc.root->CalculatePositions();
+	//this->Doc.root->CalculateSize();
+
+	//firstEl->CalculateSize();
+	//firstEl->CalculatePositions();
+	
 
 	this->Doc.root->AddChild(firstEl);
-	this->Doc.root->CalculatePosition();
 
+	this->Doc.root->boxModel.SetPaddingAll(1);
+	
+	this->Doc.SetAllElementsSizes();
+	this->Doc.SetAllElementsPositions();
+
+	this->Doc.root->PrintInfo();
+	
 }
 
 void Program::ProcessInput(float dt)
 {
 
 }
+void Program::Update()
+{
+	// need to make sure projection matrix is updated in code and in shader
+	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
+	ResourceManager::GetShader("boxshader").Use().SetMatrix4("projection", this->projection);
+	//this->Doc.screenWidth = this->screenWidth;
+	//this->Doc.screenHeight = this->screenHeight;
+	this->Doc.UpdateRootToScreenSize(screenWidth, screenHeight);
+	this->Doc.SetAllElementsSizes();
+	this->Doc.SetAllElementsPositions();
+	
+	this->Doc.root->PrintInfo();
+}
+
 
 void Program::Update(float dt)
 {
-
+	// need to make sure projection matrix is updated in code and in shader
+	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
+	ResourceManager::GetShader("boxshader").Use().SetMatrix4("projection", this->projection);
 }
 
 void Program::Render()
 {
-	// need to make sure projection matrix is updated in code and in shader
-	this->projection = glm::ortho(0.0f, static_cast<float>(this->Width), static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
-	ResourceManager::GetShader("boxshader").Use().SetMatrix4("projection", this->projection);
+	
 	
 	//boxRenderer->DrawBox(ResourceManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
 	//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->Doc.root->position, this->Doc.root->size, this->Doc.root->rotation, this->Doc.root->idColor);

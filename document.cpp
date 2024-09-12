@@ -12,10 +12,12 @@ Document::Document()
 
 Document::Document(int width, int height)
 {
+	
 	this->root = Document::AddElement("root");
 	this->root->parentWidth = width;
 	this->root->parentHeight = height;
-	
+	this->root->boxModel.SetSize(width, height);
+
 }
 
 Document::~Document()
@@ -24,12 +26,15 @@ Document::~Document()
 }
 
 void Document::Init() {
-	this->root->boxModel.content.width = this->root->parentWidth;
-	this->root->boxModel.content.height = this->root->parentWidth;
+	this->root->boxModel.width = this->root->parentWidth;
+	this->root->boxModel.height = this->root->parentHeight;
 	this->root->CalculateSize();
 }
 
 Element* Document::AddElement(std::string name) {
+	// initialize random seed:
+	srand(time(NULL)); // kinda unnecessary but fun
+
 	// Generate vec4 colorId that does not already exist
 	int n = 100;
 	Element *newElement = new Element();
@@ -87,6 +92,44 @@ void Document::RenderDocument(BoxRenderer* boxRenderer) {
 
 }
 
-void LevelOrderTraversal(BoxRenderer* boxRenderer, Element* curr) {
-	
+void Document::Update() {
+	// reset roots dimensions based on screen size
+	this->root->boxModel.SetSize(this->screenWidth, this->screenHeight);
 }
+
+void Document::UpdateRootToScreenSize(int screenWidth, int screenHeight) {
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
+
+	this->root->boxModel.width = this->screenWidth;
+	this->root->boxModel.height = this->screenHeight;
+}
+
+void Document::SetAllElementsSizes() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		curr->CalculateSize();
+		elQueue.pop();
+		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
+			elQueue.push(*it);
+		}
+	}
+}
+
+void Document::SetAllElementsPositions() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		curr->CalculatePositions();
+		elQueue.pop();
+		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
+			elQueue.push(*it);
+		}
+	}
+}
+

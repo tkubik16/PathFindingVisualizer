@@ -13,6 +13,7 @@ enum Mode {
 	PIXELS
 };
 
+/*
 struct Content {
 	Content(int width, int height, Mode mode) : width(width), height(height), mode(mode)
 	{
@@ -23,14 +24,14 @@ struct Content {
 	}
 
 	void Print() {
-		std::cout << this->width << " " << this->height << " " << this->mode;
+		std::cout << this->width << " " << this->height << " " << this->mode << std::endl;
 	}
 
 	int width;
 	int height;
 	Mode mode;
 };
-
+*/
 struct Padding {
 	Padding(int top, int bottom, int left, int right, Mode mode) : top(top), bottom(bottom), left(left), right(right), mode(mode)
 	{
@@ -39,6 +40,10 @@ struct Padding {
 
 	~Padding() {
 
+	}
+
+	void Print() {
+		std::cout << this->top << " " << this->bottom << " " << this->left << " " << this->right << " " << this->mode << std::endl;
 	}
 
 	int top;
@@ -57,6 +62,12 @@ struct Border {
 	~Border() {
 
 	}
+
+	void Print() {
+		std::cout << this->top << " " << this->bottom << " " << this->left << " " << this->right << " " << this->mode << std::endl;
+	}
+
+
 	int top;
 	int bottom;
 	int left;
@@ -73,6 +84,12 @@ struct Margin {
 	~Margin() {
 
 	}
+
+	void Print() {
+		std::cout << this->top << " " << this->bottom << " " << this->left << " " << this->right << " " << this->mode << std::endl;
+	}
+
+
 	int top;
 	int bottom;
 	int left;
@@ -84,7 +101,9 @@ class BoxModel
 {
 public:
 	// object data
-	Content content;
+	//Content content;
+	int width;
+	int height;
 	Padding padding;
 	Border border;
 	Margin margin;
@@ -96,8 +115,9 @@ public:
 	// calcualting overall width and height for rendering
 	void PrintInfo();
 	// content setter functions
-	void SetContent(int width, int height);
-	void SetContent(int width, int height, Mode mode);
+	//void SetContent(int width, int height);
+	//void SetContent(int width, int height, Mode mode);
+	void SetSize(int width, int height);
 	// padding setter functions
 	void SetPadding(int top, int bottom, int left, int right);
 	void SetPaddingAll(int val);

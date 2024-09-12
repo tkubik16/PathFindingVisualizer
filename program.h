@@ -12,7 +12,7 @@ public:
 	Document Doc;
 	bool Keys[1024];
 	bool KeysProcessed[1024];
-	int Width, Height;
+	int screenWidth, screenHeight;
 	glm::mat4 projection;
 	glm::mat4 view;
 	float scrollDist;
@@ -24,6 +24,7 @@ public:
 	// program loop
 	void ProcessInput(float dt);
 	void Update(float dt);
+	void Update();
 	void Render();
 	
 

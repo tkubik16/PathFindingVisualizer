@@ -13,9 +13,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 // The Width of the screen
-unsigned int SCREEN_WIDTH = 800;
+unsigned int SCREEN_WIDTH = 1000;
 // The height of the screen
-unsigned int SCREEN_HEIGHT = 600;
+unsigned int SCREEN_HEIGHT = 800;
 
 Program PathFindingVisualizer(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
         // -----------------
 
 
-        // update game state
+        // update program state
         // -----------------
 
 
@@ -87,6 +87,7 @@ int main(int argc, char* argv[])
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        PathFindingVisualizer.Update(deltaTime);
         PathFindingVisualizer.Render();
 
 
@@ -116,15 +117,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     //std::cout << width << ", " << height << std::endl;
 
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    PathFindingVisualizer.Width = width;
-    PathFindingVisualizer.Height = height;
+    PathFindingVisualizer.screenWidth = width;
+    PathFindingVisualizer.screenHeight = height;
 
     
 
     // you want to rerender so that as you drag it you see it updating
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
+    PathFindingVisualizer.Update();
     PathFindingVisualizer.Render();
 
 
