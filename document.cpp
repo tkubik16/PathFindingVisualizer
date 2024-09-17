@@ -28,12 +28,12 @@ Document::~Document()
 void Document::Init() {
 	this->root->boxModel.width = this->root->parentWidth;
 	this->root->boxModel.height = this->root->parentHeight;
-	this->root->CalculateSize();
+	this->root->CalculateBoxSize();
 }
 
 Element* Document::AddElement(std::string name) {
 	// initialize random seed:
-	srand(time(NULL)); // kinda unnecessary but fun
+	//srand(time(NULL)); // kinda unnecessary but fun
 
 	// Generate vec4 colorId that does not already exist
 	int n = 100;
@@ -76,6 +76,41 @@ bool Document::ColorIdExists(glm::vec3 colorId)
 	return false;
 }
 
+void Document::RenderDocumentNew(Renderers* renderers) {
+	//std::cout << "RenderDocument: " << std::endl;
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		//std::cout << curr->name << std::endl;
+		curr->RenderBox(renderers->boxRenderer);
+		curr->RenderContentBox(renderers->contentBoxRenderer);
+		elQueue.pop();
+
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+
+	}
+}
+
+void Document::RenderDocumentFromVectors(Renderers* renderers) {
+	//std::cout << "RenderDocument: " << std::endl;
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		curr->RenderBox(renderers->boxRenderer);
+		curr->RenderContentBox(renderers->contentBoxRenderer);
+		elQueue.pop();
+		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
+			elQueue.push(*it);
+		}
+	}
+}
+
 void Document::RenderDocument(BoxRenderer* boxRenderer) {
 	
 	std::queue<Element*> elQueue;
@@ -84,6 +119,22 @@ void Document::RenderDocument(BoxRenderer* boxRenderer) {
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
 		curr->RenderBox(boxRenderer);
+		elQueue.pop();
+		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
+			elQueue.push(*it);
+		}
+	}
+
+}
+
+void Document::RenderDocument(ContentBoxRenderer* contentBoxRenderer) {
+
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		curr->RenderContentBox(contentBoxRenderer);
 		elQueue.pop();
 		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
 			elQueue.push(*it);
@@ -104,6 +155,22 @@ void Document::UpdateRootToScreenSize(int screenWidth, int screenHeight) {
 	this->root->boxModel.width = this->screenWidth;
 	this->root->boxModel.height = this->screenHeight;
 }
+/*
+void Document::SetAllElementsSizes() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		curr->CalculateBoxSize();
+		curr->CalculateContentSize();
+		elQueue.pop();
+		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
+			elQueue.push(*it);
+		}
+	}
+}
+*/
 
 void Document::SetAllElementsSizes() {
 	std::queue<Element*> elQueue;
@@ -111,13 +178,34 @@ void Document::SetAllElementsSizes() {
 
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
-		curr->CalculateSize();
+		curr->CalculateBoxSize();
+		curr->CalculateContentSize();
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}
+
+/*
+void Document::SetAllElementsPositions() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		//curr->CalculatePositions();
+		curr->CalculateBoxPosition();
+		curr->CalculateContentPosition();
 		elQueue.pop();
 		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
 			elQueue.push(*it);
 		}
 	}
 }
+*/
 
 void Document::SetAllElementsPositions() {
 	std::queue<Element*> elQueue;
@@ -125,11 +213,14 @@ void Document::SetAllElementsPositions() {
 
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
-		curr->CalculatePositions();
+		//curr->CalculatePositions();
+		curr->CalculateBoxPosition();
+		curr->CalculateContentPosition();
 		elQueue.pop();
-		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
-			elQueue.push(*it);
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
 		}
 	}
 }
-

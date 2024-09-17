@@ -48,6 +48,12 @@
     <ClCompile Include="program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="content_box_renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="box_model.h">
@@ -77,12 +83,24 @@
     <ClInclude Include="program.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="content_box_renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="box.vert">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="box.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="content.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="content.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "document.h"
+#include "renderers.h"
 
 class Program
 {
@@ -16,6 +17,7 @@ public:
 	glm::mat4 projection;
 	glm::mat4 view;
 	float scrollDist;
+	Renderers* renderers;
 	// constructor/destructor
 	Program(int width, int height);
 	~Program();

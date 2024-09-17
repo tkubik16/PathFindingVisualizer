@@ -7,7 +7,9 @@
 #include <map>
 
 #include "element.h"
+#include "renderers.h"
 #include "box_renderer.h"
+#include "content_box_renderer.h"
 
 class Document
 {
@@ -28,7 +30,10 @@ public:
 	bool ColorIdExists(glm::vec3 colorId);
 	void SetAllElementsSizes();
 	void SetAllElementsPositions();
+	void RenderDocumentFromVectors(Renderers* renderers);
+	void RenderDocumentNew(Renderers* renderers);
 	void RenderDocument(BoxRenderer* boxRenderer);
+	void RenderDocument(ContentBoxRenderer* contentBoxRenderer);
 	void UpdateRootToScreenSize(int screenWidth, int screenHeight);
 	void Update();
 

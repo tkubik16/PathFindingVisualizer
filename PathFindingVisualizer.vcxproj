@@ -149,10 +149,12 @@
   <ItemGroup>
     <ClCompile Include="box_model.cpp" />
     <ClCompile Include="box_renderer.cpp" />
+    <ClCompile Include="content_box_renderer.cpp" />
     <ClCompile Include="document.cpp" />
     <ClCompile Include="element.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="program.cpp" />
+    <ClCompile Include="renderers.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
@@ -162,9 +164,11 @@
   <ItemGroup>
     <ClInclude Include="box_model.h" />
     <ClInclude Include="box_renderer.h" />
+    <ClInclude Include="content_box_renderer.h" />
     <ClInclude Include="document.h" />
     <ClInclude Include="element.h" />
     <ClInclude Include="program.h" />
+    <ClInclude Include="renderers.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
@@ -173,6 +177,8 @@
   <ItemGroup>
     <None Include="box.frag" />
     <None Include="box.vert" />
+    <None Include="content.frag" />
+    <None Include="content.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
