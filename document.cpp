@@ -76,7 +76,7 @@ bool Document::ColorIdExists(glm::vec3 colorId)
 	return false;
 }
 
-void Document::RenderDocumentNew(Renderers* renderers) {
+void Document::RenderDocument(Renderers* renderers) {
 	//std::cout << "RenderDocument: " << std::endl;
 	std::queue<Element*> elQueue;
 	elQueue.push(this->root);
@@ -84,7 +84,7 @@ void Document::RenderDocumentNew(Renderers* renderers) {
 		Element* curr = elQueue.front();
 		//std::cout << curr->name << std::endl;
 		curr->RenderBox(renderers->boxRenderer);
-		curr->RenderContentBox(renderers->contentBoxRenderer);
+		curr->RenderContentBox(renderers->contentBoxRenderer, true);
 		elQueue.pop();
 
 		Element* currChild = curr->headChild;

@@ -60,6 +60,7 @@ public:
 	void AddChildToVector(Element* child);
 	void RenderBox(BoxRenderer* boxRenderer);
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer);
+	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe);
 	void PrintChildren();
 
 

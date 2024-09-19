@@ -6,6 +6,7 @@
 
 #include "document.h"
 #include "renderers.h"
+#include "framebuffer.h"
 
 class Program
 {
@@ -28,6 +29,7 @@ public:
 	void Update(float dt);
 	void Update();
 	void Render();
+	void UpdateScreenSize(int width, int height);
 	
 
 };

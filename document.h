@@ -31,7 +31,7 @@ public:
 	void SetAllElementsSizes();
 	void SetAllElementsPositions();
 	void RenderDocumentFromVectors(Renderers* renderers);
-	void RenderDocumentNew(Renderers* renderers);
+	void RenderDocument(Renderers* renderers);
 	void RenderDocument(BoxRenderer* boxRenderer);
 	void RenderDocument(ContentBoxRenderer* contentBoxRenderer);
 	void UpdateRootToScreenSize(int screenWidth, int screenHeight);

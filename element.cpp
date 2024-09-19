@@ -203,6 +203,10 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 }
 
 void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer) {
-	contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->rotation, glm::vec3(0.0f, 0.0f, 0.0f));
+	contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->rotation, glm::vec3(1.0f, 1.0f, 1.0f));
+}
+
+void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe) {
+	contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
 }
 

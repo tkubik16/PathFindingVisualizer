@@ -75,6 +75,9 @@ int main(int argc, char* argv[])
         lastFrame = currentFrame;
         glfwPollEvents();
 
+        float frames = 60.0 / deltaTime;
+        std::cout << frames << std::endl;
+
         // manage user input
         // -----------------
 
@@ -117,15 +120,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     //std::cout << width << ", " << height << std::endl;
 
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    PathFindingVisualizer.screenWidth = width;
-    PathFindingVisualizer.screenHeight = height;
+    //PathFindingVisualizer.screenWidth = width;
+    //PathFindingVisualizer.screenHeight = height;
 
     
 
     // you want to rerender so that as you drag it you see it updating
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    PathFindingVisualizer.Update();
+    //PathFindingVisualizer.Update();
+    PathFindingVisualizer.UpdateScreenSize(width, height);
     PathFindingVisualizer.Render();
 
 

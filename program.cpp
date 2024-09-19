@@ -3,11 +3,15 @@
 #include "program.h"
 #include "box_renderer.h"
 #include "content_box_renderer.h"
+#include "texture_renderer.h"
 #include "resource_manager.h"
 #include "element.h"
 
 BoxRenderer* boxRenderer;
 ContentBoxRenderer* contentBoxRenderer;
+//TextureRenderer* textureRenderer;
+
+Framebuffer* boxBuffer;
 
 Program::Program(int width, int height) : Doc(width, height), screenWidth(width), screenHeight(height), Keys(), KeysProcessed(), scrollDist(0.0f), renderers()
 {
@@ -47,6 +51,11 @@ void Program::Init()
 	this->renderers = new Renderers();
 	this->renderers->boxRenderer = new BoxRenderer(ResourceManager::GetShader("boxshader"));
 	this->renderers->contentBoxRenderer = new ContentBoxRenderer(ResourceManager::GetShader("contentshader"));
+	this->renderers->textureRenderer = new TextureRenderer(ResourceManager::GetShader("contentshader"));
+
+	// Initialize buffers
+	boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
+	boxBuffer->Init();
 
 	Element* firstEl = this->Doc.AddElement("firstEl");
 	firstEl->parent = this->Doc.root;
@@ -91,28 +100,34 @@ void Program::ProcessInput(float dt)
 {
 
 }
+
 void Program::Update()
 {
-	// need to make sure projection matrix is updated in code and in shader
-	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
-	ResourceManager::GetShader("boxshader").Use().SetMatrix4("projection", this->projection);
-	ResourceManager::GetShader("contentshader").Use().SetMatrix4("projection", this->projection);
-	//this->Doc.screenWidth = this->screenWidth;
-	//this->Doc.screenHeight = this->screenHeight;
-	this->Doc.UpdateRootToScreenSize(screenWidth, screenHeight);
-	this->Doc.SetAllElementsSizes();
-	this->Doc.SetAllElementsPositions();
 	
-	this->Doc.root->PrintInfo();
 }
 
 
 void Program::Update(float dt)
 {
+	
+}
+
+void Program::UpdateScreenSize(int width, int height) {
+	this->screenWidth = width;
+	this->screenHeight = height;
+
 	// need to make sure projection matrix is updated in code and in shader
 	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
 	ResourceManager::GetShader("boxshader").Use().SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("contentshader").Use().SetMatrix4("projection", this->projection);
+
+	// update elements based on screen size change
+	this->Doc.UpdateRootToScreenSize(screenWidth, screenHeight);
+	this->Doc.SetAllElementsSizes();
+	this->Doc.SetAllElementsPositions();
+
+	// update framebuffers based on screen size change
+	boxBuffer->UpdateScreenSize(width, height);
 }
 
 void Program::Render()
@@ -125,6 +140,10 @@ void Program::Render()
 	//this->Doc.RenderDocument(boxRenderer);
 	//this->Doc.RenderDocument(contentBoxRenderer);
 	//this->Doc.RenderDocumentFromVectors(this->renderers);
-	this->Doc.RenderDocumentNew(this->renderers);
+	boxBuffer->Bind();
+	this->Doc.RenderDocument(this->renderers);
+	boxBuffer->Unbind();
+	this->renderers->textureRenderer->Draw(boxBuffer->texture, glm::vec2(0.0, 0.0), glm::vec2(this->screenWidth, this->screenHeight));
+	//this->Doc.RenderDocument(this->renderers);
 }
 

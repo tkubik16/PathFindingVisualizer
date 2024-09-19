@@ -6,12 +6,14 @@
 
 #include "box_renderer.h"
 #include "content_box_renderer.h"
+#include "texture_renderer.h"
 
 class Renderers 
 {
 public:
 	BoxRenderer* boxRenderer;
 	ContentBoxRenderer* contentBoxRenderer;
+	TextureRenderer* textureRenderer;
 	// constructor and destructor
 	Renderers();
 	~Renderers();

@@ -152,6 +152,7 @@
     <ClCompile Include="content_box_renderer.cpp" />
     <ClCompile Include="document.cpp" />
     <ClCompile Include="element.cpp" />
+    <ClCompile Include="framebuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="program.cpp" />
     <ClCompile Include="renderers.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="T:\downloads\glad (1)\src\glad.c" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="texture_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="box_model.h" />
@@ -167,8 +169,10 @@
     <ClInclude Include="content_box_renderer.h" />
     <ClInclude Include="document.h" />
     <ClInclude Include="element.h" />
+    <ClInclude Include="framebuffer.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="renderers.h" />
+    <ClInclude Include="texture_renderer.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
