@@ -18,6 +18,11 @@ enum Alignment {
 	HORIZONTAL 
 };
 
+enum Overflow {
+	HIDDEN,
+	VISIBLE
+};
+
 class Element
 {
 public:
@@ -42,6 +47,8 @@ public:
 	float rotation;
 	// Children alignment
 	Alignment alignment;
+	// children overflow hidden or not 
+	Overflow overflow;
 
 	Element();
 	Element(std::string name);
@@ -72,14 +79,17 @@ public:
 	void SetPaddingMode(Mode mode);
 	void SetMarginMode(Mode mode);
 	void SetBorderMode(Mode mode);
-	
-	// methods for Getting pixel equivalents when Mode is PERCENTAGE 
-	int GetBoxWidth();
-	int GetBoxHeight();
 
 	int GetContentWidth();
 	int GetContentHeight();
 
+	// methods for Getting pixel equivalents when Mode is PERCENTAGE 
+	int GetBoxWidth();
+	int GetBoxHeight();
+
+	// methods for Getting pixel equivalents when Mode is PERCENTAGE 
+
+	// These use the percentage of the elements box not the parent or screen
 	int GetPaddingTop();
 	int GetPaddingBottom();
 	int GetPaddingLeft();

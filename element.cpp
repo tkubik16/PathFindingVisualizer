@@ -11,7 +11,7 @@ Element::Element() : alignment(VERTICAL)
 
 }
 
-Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL)
+Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL), overflow(HIDDEN)
 {
 
 }
@@ -67,6 +67,7 @@ void Element::SetBorderMode(Mode mode) {
 }
 
 // Get methods for padding to hide the PERCENTAGE vs PIXELS 
+// These use the percentage of the elements box not the parent or screen
 int Element::GetPaddingTop() {
 	int boxModelTopPadding = this->boxModel.padding.top;
 	if (this->boxModel.padding.mode == PERCENTAGE) {
@@ -94,6 +95,37 @@ int Element::GetPaddingRight() {
 		return this->GetBoxWidth() * (boxModelRightPadding / 100.0);
 	}
 	return boxModelRightPadding;
+}
+
+// Get methods for margin to hide the PERCENTAGE vs PIXELS 
+// These use the percentage of the elements box not the parent or screen
+int Element::GetMarginTop() {
+	int boxModelTopMargin = this->boxModel.margin.top;
+	if (this->boxModel.margin.mode == PERCENTAGE) {
+		return this->GetBoxHeight() * (boxModelTopMargin / 100.0);
+	}
+	return boxModelTopMargin;
+}
+int Element::GetMarginBottom() {
+	int boxModelMarginPadding = this->boxModel.margin.bottom;
+	if (this->boxModel.margin.mode == PERCENTAGE) {
+		return this->GetBoxHeight() * (boxModelMarginPadding / 100.0);
+	}
+	return boxModelMarginPadding;
+}
+int Element::GetMarginLeft() {
+	int boxModelLeftMargin = this->boxModel.margin.left;
+	if (this->boxModel.margin.mode == PERCENTAGE) {
+		return this->GetBoxWidth() * (boxModelLeftMargin / 100.0);
+	}
+	return boxModelLeftMargin;
+}
+int Element::GetMarginRight() {
+	int boxModelRightMargin = this->boxModel.margin.right;
+	if (this->boxModel.margin.mode == PERCENTAGE) {
+		return this->GetBoxWidth() * (boxModelRightMargin / 100.0);
+	}
+	return boxModelRightMargin;
 }
 
 
@@ -249,7 +281,7 @@ void Element::CalculateBoxPositionHorizontal() {
 		Element* childBefore = this->childBefore;
 		if (childBefore != nullptr)
 		{
-			int margin = (childBefore->boxModel.margin.right > this->boxModel.margin.left) ? childBefore->boxModel.margin.right : this->boxModel.margin.left;
+			int margin = (childBefore->GetMarginRight() > this->GetMarginLeft()) ? childBefore->GetMarginRight() : this->GetMarginLeft();
 			int posX = childBefore->boxPosition.x + childBefore->boxSize.x + margin;
 
 			this->boxPosition.x = posX;
@@ -285,7 +317,7 @@ void Element::CalculateBoxPositionVertical() {
 		Element* childBefore = this->childBefore;
 		if (childBefore != nullptr)
 		{
-			int margin = (childBefore->boxModel.margin.bottom > this->boxModel.margin.top) ? childBefore->boxModel.margin.bottom : this->boxModel.margin.top;
+			int margin = (childBefore->GetMarginBottom() > this->GetMarginTop()) ? childBefore->GetMarginBottom() : this->GetMarginTop();
 			int posY = childBefore->boxPosition.y + childBefore->boxSize.y + margin;
 
 			this->boxPosition.y = posY;

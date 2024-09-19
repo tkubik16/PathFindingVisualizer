@@ -73,6 +73,11 @@ void Program::Init()
 	Element* fourthEl = this->Doc.AddElement("fourthEl");
 	//fourthEl->parent = this->Doc.root;
 
+	Element* fifthEl = this->Doc.AddElement("fifthEl");
+
+	Element* sixthEl = this->Doc.AddElement("sixthEl");
+
+
 	firstEl->boxModel.SetSize(100, 25);
 	firstEl->boxModel.SetPaddingAll(5);
 	firstEl->boxModel.SetMarginAll(0);
@@ -85,10 +90,18 @@ void Program::Init()
 
 	secondEl->boxModel.SetSize(100, 25);
 	secondEl->boxModel.SetPaddingAll(5);
-	secondEl->boxModel.SetMarginAll(0);
+	secondEl->boxModel.SetMarginAll(50);
 	secondEl->boxModel.boxWidthMode = PERCENTAGE;
 	secondEl->boxModel.boxHeightMode = PERCENTAGE;
 	secondEl->alignment = HORIZONTAL;
+	secondEl->SetMarginMode(PIXELS);
+
+	fifthEl->boxModel.SetSize(100, 25);
+	fifthEl->boxModel.SetPaddingAll(5);
+	fifthEl->boxModel.SetMarginAll(0);
+	fifthEl->boxModel.boxWidthMode = PERCENTAGE;
+	fifthEl->boxModel.boxHeightMode = PERCENTAGE;
+	fifthEl->alignment = HORIZONTAL;
 
 	thirdEl->boxModel.SetSize(25, 25);
 	thirdEl->boxModel.SetPaddingAll(5);
@@ -97,19 +110,28 @@ void Program::Init()
 
 	fourthEl->boxModel.SetSize(100, 100);
 	fourthEl->boxModel.SetPaddingAll(5);
-	fourthEl->boxModel.SetMarginAll(20);
+	fourthEl->boxModel.SetMarginAll(100);
 	fourthEl->boxModel.boxHeightMode = PERCENTAGE;
+	fourthEl->SetMarginMode(PERCENTAGE);
+	
 	//this->Doc.root->CalculatePositions();
 	//this->Doc.root->CalculateSize();
 
 	//firstEl->CalculateSize();
 	//firstEl->CalculatePositions();
+
+	sixthEl->boxModel.SetSize(100, 100);
+	sixthEl->boxModel.SetPaddingAll(5);
+	sixthEl->boxModel.SetMarginAll(20);
+	sixthEl->boxModel.boxHeightMode = PERCENTAGE;
 	
 
 	this->Doc.root->AddChild(firstEl);
 	this->Doc.root->AddChild(secondEl);
+	this->Doc.root->AddChild(fifthEl);
 	firstEl->AddChild(thirdEl);
 	firstEl->AddChild(fourthEl);
+	firstEl->AddChild(sixthEl);
 
 	//this->Doc.root->AddChildToVector(firstEl);
 	//this->Doc.root->AddChildToVector(secondEl);
