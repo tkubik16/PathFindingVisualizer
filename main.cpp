@@ -19,6 +19,7 @@ unsigned int SCREEN_HEIGHT = 800;
 
 Program PathFindingVisualizer(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+
 int main(int argc, char* argv[])
 {
     glfwInit();
@@ -75,8 +76,10 @@ int main(int argc, char* argv[])
         lastFrame = currentFrame;
         glfwPollEvents();
 
-        float frames = 60.0 / deltaTime;
-        std::cout << frames << std::endl;
+        /*
+        float fps = 60.0 / deltaTime;
+        std::cout << "fps: " << fps << std::endl;
+        */
 
         // manage user input
         // -----------------

@@ -4,7 +4,7 @@
 #include "box_model.h"
 
 
-BoxModel::BoxModel() : padding(0, 0, 0, 0, PIXELS), border(0, 0, 0, 0, PIXELS), margin(0, 0, 0, 0, PIXELS)
+BoxModel::BoxModel() : padding(0, 0, 0, 0, PIXELS), border(0, 0, 0, 0, PIXELS), margin(0, 0, 0, 0, PIXELS), boxWidthMode(PIXELS), boxHeightMode(PIXELS)
 {
 
 }

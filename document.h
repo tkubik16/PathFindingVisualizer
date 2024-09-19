@@ -19,6 +19,7 @@ public:
 	Element* root;
 	int screenWidth;
 	int screenHeight;
+	bool randomColors;
 
 	// constructor/destructor
 	Document();

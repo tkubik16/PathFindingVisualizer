@@ -57,22 +57,48 @@ void Program::Init()
 	boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
 	boxBuffer->Init();
 
-	Element* firstEl = this->Doc.AddElement("firstEl");
-	firstEl->parent = this->Doc.root;
-
-	Element* secondEl = this->Doc.AddElement("secondEl");
-	secondEl->parent = this->Doc.root;
-
+	
 	// below here create doc tree maybe
 	this->Doc.Init();
 	//this->Doc.root->PrintInfo();
-	
+	Element* firstEl = this->Doc.AddElement("firstEl");
+	//firstEl->parent = this->Doc.root;
 
-	firstEl->boxModel.SetSize(100, 100);
-	firstEl->boxModel.SetPaddingAll(10);
+	Element* secondEl = this->Doc.AddElement("secondEl");
+	//secondEl->parent = this->Doc.root;
 
-	secondEl->boxModel.SetSize(50, 50);
-	secondEl->boxModel.SetPaddingAll(10);
+	Element* thirdEl = this->Doc.AddElement("thirdEl");
+	//thirdEl->parent = this->Doc.root;
+
+	Element* fourthEl = this->Doc.AddElement("fourthEl");
+	//fourthEl->parent = this->Doc.root;
+
+	firstEl->boxModel.SetSize(100, 25);
+	firstEl->boxModel.SetPaddingAll(5);
+	firstEl->boxModel.SetMarginAll(0);
+	firstEl->boxModel.boxWidthMode = PERCENTAGE;
+	firstEl->boxModel.boxHeightMode = PERCENTAGE;
+	firstEl->alignment = HORIZONTAL;
+	firstEl->boxModel.padding.mode = PERCENTAGE;
+	firstEl->boxModel.SetPaddingTopBot(25);
+
+
+	secondEl->boxModel.SetSize(100, 25);
+	secondEl->boxModel.SetPaddingAll(5);
+	secondEl->boxModel.SetMarginAll(0);
+	secondEl->boxModel.boxWidthMode = PERCENTAGE;
+	secondEl->boxModel.boxHeightMode = PERCENTAGE;
+	secondEl->alignment = HORIZONTAL;
+
+	thirdEl->boxModel.SetSize(25, 25);
+	thirdEl->boxModel.SetPaddingAll(5);
+	thirdEl->boxModel.SetMarginAll(20);
+	//thirdEl->boxModel.boxHeightMode = PERCENTAGE;
+
+	fourthEl->boxModel.SetSize(100, 100);
+	fourthEl->boxModel.SetPaddingAll(5);
+	fourthEl->boxModel.SetMarginAll(20);
+	fourthEl->boxModel.boxHeightMode = PERCENTAGE;
 	//this->Doc.root->CalculatePositions();
 	//this->Doc.root->CalculateSize();
 
@@ -82,6 +108,8 @@ void Program::Init()
 
 	this->Doc.root->AddChild(firstEl);
 	this->Doc.root->AddChild(secondEl);
+	firstEl->AddChild(thirdEl);
+	firstEl->AddChild(fourthEl);
 
 	//this->Doc.root->AddChildToVector(firstEl);
 	//this->Doc.root->AddChildToVector(secondEl);
@@ -92,7 +120,7 @@ void Program::Init()
 	this->Doc.SetAllElementsPositions();
 
 	//this->Doc.root->PrintInfo();
-	this->Doc.root->PrintChildren();
+	//this->Doc.root->PrintChildren();
 	
 }
 

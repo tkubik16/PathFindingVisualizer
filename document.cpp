@@ -10,7 +10,7 @@ Document::Document()
 	this->root = new Element("root");
 }
 
-Document::Document(int width, int height)
+Document::Document(int width, int height) : randomColors(true)
 {
 	
 	this->root = Document::AddElement("root");
@@ -33,7 +33,11 @@ void Document::Init() {
 
 Element* Document::AddElement(std::string name) {
 	// initialize random seed:
-	//srand(time(NULL)); // kinda unnecessary but fun
+	if (this->randomColors) {
+		srand(time(NULL)); // kinda unnecessary but fun
+		//std::cout << "randomColors = true" << std::endl;
+	}
+	//std::cout << "randomColors = false" << std::endl;
 
 	// Generate vec4 colorId that does not already exist
 	int n = 100;
@@ -208,11 +212,14 @@ void Document::SetAllElementsPositions() {
 */
 
 void Document::SetAllElementsPositions() {
+	std::cout << "Document::SetAllElementsPositions():" << std::endl;
 	std::queue<Element*> elQueue;
 	elQueue.push(this->root);
 
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
+		
+		std::cout << curr->name << std::endl;
 		//curr->CalculatePositions();
 		curr->CalculateBoxPosition();
 		curr->CalculateContentPosition();

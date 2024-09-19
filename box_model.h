@@ -104,6 +104,8 @@ public:
 	//Content content;
 	int width;
 	int height;
+	Mode boxWidthMode;
+	Mode boxHeightMode;
 	Padding padding;
 	Border border;
 	Margin margin;
@@ -118,16 +120,20 @@ public:
 	//void SetContent(int width, int height);
 	//void SetContent(int width, int height, Mode mode);
 	void SetSize(int width, int height);
+
 	// padding setter functions
 	void SetPadding(int top, int bottom, int left, int right);
+	// test
 	void SetPaddingAll(int val);
 	void SetPaddingTopBot(int val);
 	void SetPaddingLeftRight(int val);
+
 	// border setter functions
 	void SetBorder(int top, int bottom, int left, int right);
 	void SetBorderAll(int val);
 	void SetBorderTopBot(int val);
 	void SetBorderLeftRight(int val);
+
 	// margin setter functions
 	void SetMargin(int top, int bottom, int left, int right);
 	void SetMarginAll(int val);

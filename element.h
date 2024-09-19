@@ -51,6 +51,9 @@ public:
 	void SetParentDimensions(int width, int height);
 	void CalculatePositions();
 	void CalculateBoxPosition();
+	void CalculateBoxPositionRoot();
+	void CalculateBoxPositionHorizontal();
+	void CalculateBoxPositionVertical();
 	void CalculateContentPosition();
 	void CalculateContentSize();
 	void CalculateBoxSize();
@@ -62,6 +65,34 @@ public:
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer);
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe);
 	void PrintChildren();
+
+	// methods for Setting Mode
+	void SetBoxWidthMode(Mode mode);
+	void SetBoxHeightMode(Mode mode);
+	void SetPaddingMode(Mode mode);
+	void SetMarginMode(Mode mode);
+	void SetBorderMode(Mode mode);
+	
+	// methods for Getting pixel equivalents when Mode is PERCENTAGE 
+	int GetBoxWidth();
+	int GetBoxHeight();
+
+	int GetContentWidth();
+	int GetContentHeight();
+
+	int GetPaddingTop();
+	int GetPaddingBottom();
+	int GetPaddingLeft();
+	int GetPaddingRight();
+
+	int GetMarginTop();
+	int GetMarginBottom();
+	int GetMarginLeft();
+	int GetMarginRight();
+
+
+private:
+	
 
 
 };
