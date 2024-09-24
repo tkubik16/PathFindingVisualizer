@@ -11,6 +11,9 @@ BoxRenderer* boxRenderer;
 ContentBoxRenderer* contentBoxRenderer;
 //TextureRenderer* textureRenderer;
 
+Element* firstBox;
+Element* container;
+
 Framebuffer* boxBuffer;
 
 Program::Program(int width, int height) : Doc(width, height), screenWidth(width), screenHeight(height), Keys(), KeysProcessed(), scrollDist(0.0f), renderers()
@@ -76,9 +79,9 @@ void Program::Init()
 	boxBuffer->Init();
 
 	// Elements
-	Element* firstBox = this->Doc.AddElement("firstBox");
+	firstBox = this->Doc.AddElement("firstBox");
 	Element* secondBox = this->Doc.AddElement("secondBox");
-	Element* container = this->Doc.AddElement("container");
+	container = this->Doc.AddElement("container");
 
 	firstBox->boxModel.SetSize(500, 100);
 	//firstBox->SetBoxWidthMode(PERCENTAGE);
@@ -90,22 +93,26 @@ void Program::Init()
 	secondBox->boxModel.SetPaddingAll(25);
 	secondBox->boxModel.SetMarginAll(25);
 
-	container->boxModel.SetSize(80, 100);
-	container->SetBoxWidthMode(PERCENTAGE);
-	container->SetBoxHeightMode(PERCENTAGE);
+	container->boxModel.SetSize(600, 600);
+	//container->SetBoxWidthMode(PERCENTAGE);
+	//container->SetBoxHeightMode(PERCENTAGE);
 	
 	
 	// below here create doc tree maybe
 	this->Doc.Init();
 
 	this->Doc.root->boxModel.SetPaddingAll(50);
-
-	this->Doc.root->AddChild(firstBox);
-	this->Doc.root->AddChild(secondBox);
-	this->Doc.root->alignment = HORIZONTAL;
+	this->Doc.root->AddChild(container);
+	//this->Doc.root->AddChild(firstBox);
+	//this->Doc.root->AddChild(secondBox);
+	this->Doc.root->alignment = VERTICAL;
 	this->Doc.root->alignContent = END;
 	//this->Doc.root->alignItems = END_ITEMS;
 	//this->Doc.root->overflow = VISIBLE;
+
+	container->AddChild(firstBox);
+	container->AddChild(secondBox);
+	
 	
 	std::cout << this->Doc.screenWidth << " " << this->Doc.screenHeight << std::endl;
 	this->Doc.SetAllElementsScreenSizes(this->screenWidth, this->screenHeight);
@@ -113,8 +120,11 @@ void Program::Init()
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
 	this->Doc.SetAllElementsPositions();
 	this->Doc.SetAllElementsParentsContentBorders();
+	this->Doc.SetAllElementsRealContentBorders();
 
-	this->Doc.root->PrintInfo();
+	//container->PrintInfo();
+	firstBox->FindRealContentBorders();
+	//this->Doc.root->PrintInfo();
 	//firstBox->PrintInfo();
 }
 
@@ -161,6 +171,10 @@ void Program::UpdateScreenSize(int width, int height) {
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
 	this->Doc.SetAllElementsPositions();
 	this->Doc.SetAllElementsParentsContentBorders();
+	this->Doc.SetAllElementsRealContentBorders();
+
+	//firstBox->PrintRealBorders();
+	//container->PrintRealBorders();
 
 	// update framebuffers based on screen size change
 	boxBuffer->UpdateScreenSize(width, height);

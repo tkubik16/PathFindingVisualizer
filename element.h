@@ -50,6 +50,7 @@ public:
 	int screenWidth;
 	int screenHeight;
 	glm::vec4 parentContentBorders;
+	glm::vec4 theRealContentBorders;
 	std::vector<Element*> children;
 	Element* headChild;
 	Element* tailChild;
@@ -75,6 +76,8 @@ public:
 	Element(std::string name);
 	~Element();
 	void PrintInfo();
+	void PrintBorders();
+	void PrintRealBorders();
 	void SetChildrensParentDimensions();
 	void SetParentDimensions(int width, int height);
 	void CalculatePositions();
@@ -96,6 +99,7 @@ public:
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe);
 	void PrintChildren();
 	glm::vec4 CalculateBorders();
+	void FindRealContentBorders();
 	void SetChildrensParentContentBorders(glm::vec4 borders);
 
 	void SetScreenSize(int width, int height);

@@ -11,7 +11,7 @@ Element::Element() : alignment(VERTICAL)
 
 }
 
-Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL), overflow(HIDDEN), alignContent(START), alignItems(START_ITEMS), childAfter(nullptr), childBefore(nullptr)
+Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL), overflow(HIDDEN), alignContent(START), alignItems(START_ITEMS), childAfter(nullptr), childBefore(nullptr), parentContentBorders(glm::vec4(1, -1, -1, 1)), theRealContentBorders(glm::vec4(1, -1, -1, 1))
 {
 
 }
@@ -191,6 +191,16 @@ void Element::PrintInfo() {
 	std::cout << "BoxModel Info:" << std::endl;
 	this->boxModel.PrintInfo();
 	std::cout << std::endl;
+}
+
+void Element::PrintBorders() {
+	std::cout << "Borders(topY, bottomY, leftX, rightX):" << std::endl;
+	std::cout << this->parentContentBorders.x << " " << this->parentContentBorders.y << " " << this->parentContentBorders.z << " " << this->parentContentBorders.w << std::endl;
+}
+
+void Element::PrintRealBorders() {
+	std::cout << "theRealBorders(topY, bottomY, leftX, rightX):" << std::endl;
+	std::cout << this->theRealContentBorders.x << " " << this->theRealContentBorders.y << " " << this->theRealContentBorders.z << " " << this->theRealContentBorders.w << std::endl;
 }
 
 void Element::PrintChildren() {
@@ -570,7 +580,7 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
-		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, this->parentContentBorders, this->rotation, this->idColor);
+		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, this->theRealContentBorders, this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -601,7 +611,7 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wire
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
-		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, this->parentContentBorders, wireframe, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, this->theRealContentBorders, wireframe, this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -685,6 +695,7 @@ void Element::SetChildrensParentContentBorders(glm::vec4 borders) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
 			curr->parentContentBorders = borders;
+			//curr->theRealContentBorders = borders;
 			curr = curr->childAfter;
 		}
 	}
@@ -693,4 +704,29 @@ void Element::SetChildrensParentContentBorders(glm::vec4 borders) {
 void Element::SetScreenSize(int width, int height) {
 	this->screenWidth = width;
 	this->screenHeight = height;
+}
+
+void Element::FindRealContentBorders() {
+	Element* curr = this;
+	this->theRealContentBorders = this->parentContentBorders;
+	//borders(topY, bottomY, leftX, rightX);
+	while (curr != nullptr) {
+		if (curr->parentContentBorders.x < this->theRealContentBorders.x) {
+			this->theRealContentBorders.x = curr->parentContentBorders.x;
+		}
+		if (curr->parentContentBorders.y > this->theRealContentBorders.y) {
+			this->theRealContentBorders.y = curr->parentContentBorders.y;
+		}
+		if (curr->parentContentBorders.z > this->theRealContentBorders.z) {
+			this->theRealContentBorders.z = curr->parentContentBorders.z;
+		}
+		if (curr->parentContentBorders.w < this->theRealContentBorders.w) {
+			this->theRealContentBorders.w = curr->parentContentBorders.w;
+		}
+		
+		//std::cout << curr->name << std::endl;
+		//curr->PrintRealBorders();
+		curr = curr->parent;
+	}
+	//std::cout << std::endl;
 }

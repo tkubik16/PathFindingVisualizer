@@ -74,7 +74,7 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
     float leftX = ((parentContentPosition.x / screenSize.x) * 2.0) - 1.0;
     float rightX = (((parentContentPosition.x + parentContentSize.x) / screenSize.x) * 2.0) - 1.0;
     */
-    
+    /*
     std::cout << "topY: " << borders.x << std::endl;
     std::cout << "bottomY: " << borders.y << std::endl;
     std::cout << "leftX: " << borders.z << std::endl;
@@ -82,7 +82,7 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
 
     std::cout << parentContentPosition.x << " " << parentContentPosition.y << std::endl;
     std::cout << parentContentSize.x << " " << parentContentSize.y << std::endl;
-    
+    */
     //glm::vec4 boundaries(topY, bottomY, leftX, rightX);
     this->boxOverflowHiddenShader.SetVector4f("boundaries", borders);
 

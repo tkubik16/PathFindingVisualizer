@@ -283,3 +283,20 @@ void Document::SetAllElementsParentsContentBorders() {
 		}
 	}
 }
+
+void Document::SetAllElementsRealContentBorders() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		
+		curr->FindRealContentBorders();
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}
