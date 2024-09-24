@@ -27,7 +27,7 @@ void Framebuffer::Init() {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "FRAMEBUFFER::SUCCESS framebuffer complete" << std::endl;
+		//std::cout << "FRAMEBUFFER::SUCCESS framebuffer complete" << std::endl;
 	}
 	else {
 		std::cout << "FRAMEBUFFER::ERROR framebuffer incomplete" << std::endl;

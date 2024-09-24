@@ -11,12 +11,19 @@
 class ContentBoxRenderer
 {
 public:
-	ContentBoxRenderer(Shader& shader);
+	ContentBoxRenderer(Shader& contentBoxShader, Shader& contentBoxOverflowHiddenShader);
 	~ContentBoxRenderer();
 	void DrawContentBox(Texture2D& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
 	void DrawContentBox(Texture2D& texture, glm::vec2 position, bool wireframe, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
+	void DrawContentBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
+	void DrawContentBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, bool wireframe, float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
+	void SetScreenWidth(int width);
+	void SetScreenHeight(int height);
 private:
-	Shader shader;
+	Shader contentBoxShader;
+	Shader contentBoxOverflowHiddenShader;
+	int screenWidth;
+	int screenHeight;
 	unsigned int quadVAO;
 	void initRenderData();
 };

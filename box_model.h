@@ -13,6 +13,11 @@ enum Mode {
 	PIXELS
 };
 
+enum PercentageOf {
+	SELF,
+	PARENT
+};
+
 /*
 struct Content {
 	Content(int width, int height, Mode mode) : width(width), height(height), mode(mode)
@@ -95,6 +100,7 @@ struct Margin {
 	int left;
 	int right;
 	Mode mode;
+	PercentageOf percentageOf;
 };
 
 class BoxModel

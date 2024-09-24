@@ -17,6 +17,13 @@ public:
 	// constructor and destructor
 	Renderers();
 	~Renderers();
+	// methods
+	void SetScreenSize(int width, int height);
+	void SetScreenWidth(int width);
+	void SetScreenHeight(int height);
+private:
+	int screenWidth;
+	int screenHeight;
 };
 
 #endif

@@ -32,15 +32,32 @@ void Program::Init()
 
 	// load shaders
 	ResourceManager::LoadShader("box.vert", "box.frag", nullptr, "boxshader");
+	ResourceManager::LoadShader("boxOverflowHidden.vert", "boxOverflowHidden.frag", nullptr, "boxOverflowHidden");
 	ResourceManager::LoadShader("content.vert", "content.frag", nullptr, "contentshader");
+	ResourceManager::LoadShader("contentBoxOverflowHidden.vert", "contentBoxOverflowHidden.frag", nullptr, "contentBoxOverflowHidden");
 	// configure shaders
 	ResourceManager::GetShader("boxshader").Use().SetInteger("image", 0);
 	ResourceManager::GetShader("boxshader").SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("boxshader").SetMatrix4("view", this->view);
 
+	ResourceManager::GetShader("boxOverflowHidden").Use().SetInteger("image", 0);
+	ResourceManager::GetShader("boxOverflowHidden").SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("boxOverflowHidden").SetMatrix4("view", this->view);
+
 	ResourceManager::GetShader("contentshader").Use().SetInteger("image", 0);
 	ResourceManager::GetShader("contentshader").SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("contentshader").SetMatrix4("view", this->view);
+
+	ResourceManager::GetShader("contentBoxOverflowHidden").Use().SetInteger("image", 0);
+	ResourceManager::GetShader("contentBoxOverflowHidden").SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("contentBoxOverflowHidden").SetMatrix4("view", this->view);
+
+	/*
+	glm::vec2 screenSize(this->screenWidth, this->screenHeight);
+	ResourceManager::GetShader("boxshader").Use().SetVector2f("screenSize", screenSize);
+	ResourceManager::GetShader("boxOverflowHidden").Use().SetVector2f("screenSize", screenSize);
+	ResourceManager::GetShader("contentshader").Use().SetVector2f("screenSize", screenSize);
+	*/
 
 	// load textures
 	ResourceManager::LoadTexture("textures/block.png", false, "block");
@@ -49,101 +66,59 @@ void Program::Init()
 
 	// initialize renderers
 	this->renderers = new Renderers();
-	this->renderers->boxRenderer = new BoxRenderer(ResourceManager::GetShader("boxshader"));
-	this->renderers->contentBoxRenderer = new ContentBoxRenderer(ResourceManager::GetShader("contentshader"));
+	this->renderers->boxRenderer = new BoxRenderer(ResourceManager::GetShader("boxshader"), ResourceManager::GetShader("boxOverflowHidden"));
+	this->renderers->contentBoxRenderer = new ContentBoxRenderer(ResourceManager::GetShader("contentshader"), ResourceManager::GetShader("contentBoxOverflowHidden"));
 	this->renderers->textureRenderer = new TextureRenderer(ResourceManager::GetShader("contentshader"));
+	this->renderers->SetScreenSize(this->screenWidth, this->screenHeight);
 
 	// Initialize buffers
 	boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
 	boxBuffer->Init();
 
+	// Elements
+	Element* firstBox = this->Doc.AddElement("firstBox");
+	Element* secondBox = this->Doc.AddElement("secondBox");
+	Element* container = this->Doc.AddElement("container");
+
+	firstBox->boxModel.SetSize(100, 100);
+	//firstBox->SetBoxWidthMode(PERCENTAGE);
+	firstBox->boxModel.SetPaddingAll(25);
+	firstBox->boxModel.SetMarginAll(25);
+
+	secondBox->boxModel.SetSize(100, 100);
+	//secondBox->SetBoxWidthMode(PERCENTAGE);
+	secondBox->boxModel.SetPaddingAll(25);
+	secondBox->boxModel.SetMarginAll(25);
+
+	container->boxModel.SetSize(80, 100);
+	container->SetBoxWidthMode(PERCENTAGE);
+	container->SetBoxHeightMode(PERCENTAGE);
+	
 	
 	// below here create doc tree maybe
 	this->Doc.Init();
-	//this->Doc.root->PrintInfo();
-	Element* firstEl = this->Doc.AddElement("firstEl");
-	//firstEl->parent = this->Doc.root;
-
-	Element* secondEl = this->Doc.AddElement("secondEl");
-	//secondEl->parent = this->Doc.root;
-
-	Element* thirdEl = this->Doc.AddElement("thirdEl");
-	//thirdEl->parent = this->Doc.root;
-
-	Element* fourthEl = this->Doc.AddElement("fourthEl");
-	//fourthEl->parent = this->Doc.root;
-
-	Element* fifthEl = this->Doc.AddElement("fifthEl");
-
-	Element* sixthEl = this->Doc.AddElement("sixthEl");
-
-
-	firstEl->boxModel.SetSize(100, 25);
-	firstEl->boxModel.SetPaddingAll(5);
-	firstEl->boxModel.SetMarginAll(0);
-	firstEl->boxModel.boxWidthMode = PERCENTAGE;
-	firstEl->boxModel.boxHeightMode = PERCENTAGE;
-	firstEl->alignment = HORIZONTAL;
-	firstEl->boxModel.padding.mode = PERCENTAGE;
-	firstEl->boxModel.SetPaddingTopBot(25);
-
-
-	secondEl->boxModel.SetSize(100, 25);
-	secondEl->boxModel.SetPaddingAll(5);
-	secondEl->boxModel.SetMarginAll(50);
-	secondEl->boxModel.boxWidthMode = PERCENTAGE;
-	secondEl->boxModel.boxHeightMode = PERCENTAGE;
-	secondEl->alignment = HORIZONTAL;
-	secondEl->SetMarginMode(PIXELS);
-
-	fifthEl->boxModel.SetSize(100, 25);
-	fifthEl->boxModel.SetPaddingAll(5);
-	fifthEl->boxModel.SetMarginAll(0);
-	fifthEl->boxModel.boxWidthMode = PERCENTAGE;
-	fifthEl->boxModel.boxHeightMode = PERCENTAGE;
-	fifthEl->alignment = HORIZONTAL;
-
-	thirdEl->boxModel.SetSize(25, 25);
-	thirdEl->boxModel.SetPaddingAll(5);
-	thirdEl->boxModel.SetMarginAll(20);
-	//thirdEl->boxModel.boxHeightMode = PERCENTAGE;
-
-	fourthEl->boxModel.SetSize(100, 100);
-	fourthEl->boxModel.SetPaddingAll(5);
-	fourthEl->boxModel.SetMarginAll(100);
-	fourthEl->boxModel.boxHeightMode = PERCENTAGE;
-	fourthEl->SetMarginMode(PERCENTAGE);
-	
-	//this->Doc.root->CalculatePositions();
-	//this->Doc.root->CalculateSize();
-
-	//firstEl->CalculateSize();
-	//firstEl->CalculatePositions();
-
-	sixthEl->boxModel.SetSize(100, 100);
-	sixthEl->boxModel.SetPaddingAll(5);
-	sixthEl->boxModel.SetMarginAll(20);
-	sixthEl->boxModel.boxHeightMode = PERCENTAGE;
-	
-
-	this->Doc.root->AddChild(firstEl);
-	this->Doc.root->AddChild(secondEl);
-	this->Doc.root->AddChild(fifthEl);
-	firstEl->AddChild(thirdEl);
-	firstEl->AddChild(fourthEl);
-	firstEl->AddChild(sixthEl);
-
-	//this->Doc.root->AddChildToVector(firstEl);
-	//this->Doc.root->AddChildToVector(secondEl);
 
 	this->Doc.root->boxModel.SetPaddingAll(50);
+	this->Doc.root->AddChild(container);
+	container->PrintInfo();
+	container->AddChild(firstBox);
+	container->AddChild(secondBox);
+	//this->Doc.root->AddChild(firstBox);
+	//this->Doc.root->AddChild(secondBox);
+	this->Doc.root->alignment = HORIZONTAL;
+	this->Doc.root->alignContent = END;
+	//this->Doc.root->alignItems = END_ITEMS;
+	//this->Doc.root->overflow = VISIBLE;
+	
 	
 	this->Doc.SetAllElementsSizes();
+	
+	this->Doc.SetAllElementsChildrenWidthAndHeight();
+
 	this->Doc.SetAllElementsPositions();
 
-	//this->Doc.root->PrintInfo();
-	//this->Doc.root->PrintChildren();
-	
+	this->Doc.root->PrintInfo();
+	//firstBox->PrintInfo();
 }
 
 void Program::ProcessInput(float dt)
@@ -169,11 +144,23 @@ void Program::UpdateScreenSize(int width, int height) {
 	// need to make sure projection matrix is updated in code and in shader
 	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
 	ResourceManager::GetShader("boxshader").Use().SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("boxOverflowHidden").Use().SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("contentshader").Use().SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("contentBoxOverflowHidden").Use().SetMatrix4("projection", this->projection);
+
+	/*
+	glm::vec2 screenSize(width, height);
+	ResourceManager::GetShader("boxshader").Use().SetVector2f("screenSize", screenSize);
+	ResourceManager::GetShader("boxOverflowHidden").Use().SetVector2f("screenSize", screenSize);
+	ResourceManager::GetShader("contentshader").Use().SetVector2f("screenSize", screenSize);
+	*/
+
+	this->renderers->SetScreenSize(width, height);
 
 	// update elements based on screen size change
 	this->Doc.UpdateRootToScreenSize(screenWidth, screenHeight);
 	this->Doc.SetAllElementsSizes();
+	this->Doc.SetAllElementsChildrenWidthAndHeight();
 	this->Doc.SetAllElementsPositions();
 
 	// update framebuffers based on screen size change

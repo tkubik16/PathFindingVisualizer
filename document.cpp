@@ -41,7 +41,7 @@ Element* Document::AddElement(std::string name) {
 
 	// Generate vec4 colorId that does not already exist
 	int n = 100;
-	Element *newElement = new Element();
+	Element *newElement = new Element(name);
 	newElement->name = name;
 	newElement->idColor.x = (float)(rand() % n) / 100.0f;
 	newElement->idColor.y = (float)(rand() % n) / 100.0f;
@@ -212,17 +212,36 @@ void Document::SetAllElementsPositions() {
 */
 
 void Document::SetAllElementsPositions() {
-	std::cout << "Document::SetAllElementsPositions():" << std::endl;
+	//std::cout << "Document::SetAllElementsPositions():" << std::endl;
 	std::queue<Element*> elQueue;
 	elQueue.push(this->root);
 
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
 		
-		std::cout << curr->name << std::endl;
+		//std::cout << curr->name << std::endl;
 		//curr->CalculatePositions();
 		curr->CalculateBoxPosition();
 		curr->CalculateContentPosition();
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}
+
+void Document::SetAllElementsChildrenWidthAndHeight() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+
+		
+		curr->CalculateChildrenWidth();
+		curr->CalculateChildrenHeight();
 		elQueue.pop();
 		Element* currChild = curr->headChild;
 		while (currChild != nullptr) {

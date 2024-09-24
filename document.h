@@ -31,6 +31,7 @@ public:
 	bool ColorIdExists(glm::vec3 colorId);
 	void SetAllElementsSizes();
 	void SetAllElementsPositions();
+	void SetAllElementsChildrenWidthAndHeight();
 	void RenderDocumentFromVectors(Renderers* renderers);
 	void RenderDocument(Renderers* renderers);
 	void RenderDocument(BoxRenderer* boxRenderer);

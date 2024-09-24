@@ -115,5 +115,17 @@
     <None Include="content.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="boxOverflowHidden.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="boxOverflowHidden.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="contentBoxOverflowHidden.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="contentBoxOverflowHidden.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

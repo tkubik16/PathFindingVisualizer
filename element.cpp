@@ -11,7 +11,7 @@ Element::Element() : alignment(VERTICAL)
 
 }
 
-Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL), overflow(HIDDEN)
+Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL), overflow(HIDDEN), alignContent(START), alignItems(START_ITEMS), childAfter(nullptr), childBefore(nullptr)
 {
 
 }
@@ -99,6 +99,7 @@ int Element::GetPaddingRight() {
 
 // Get methods for margin to hide the PERCENTAGE vs PIXELS 
 // These use the percentage of the elements box not the parent or screen
+// TODO: within the percentage if statement add two branches for percentage of self or parent (margin only thing, doesn't make tons of sense for padding)
 int Element::GetMarginTop() {
 	int boxModelTopMargin = this->boxModel.margin.top;
 	if (this->boxModel.margin.mode == PERCENTAGE) {
@@ -162,6 +163,29 @@ void Element::PrintInfo() {
 		std::cout << " no parent" << std::endl;
 	else
 		std::cout << " " << this->parent->name << std::endl;
+
+	std::cout << "childBefore:" << std::endl;
+	if (this->childBefore == nullptr)
+		std::cout << " no childBefore" << std::endl;
+	else
+		std::cout << " " << this->childBefore->name << std::endl;
+
+	std::cout << "childAfter:" << std::endl;
+	if (this->childAfter == nullptr)
+		std::cout << " no childAfter" << std::endl;
+	else
+		std::cout << " " << this->childAfter->name << std::endl;
+
+
+	std::cout << "childrenWidth: " << this->childrenWidth << " childrenHeight: " << this->childrenHeight << std::endl;
+	std::cout << "AlignContent: ";
+	if (this->alignContent == CENTER_CONTENT)
+		std::cout << "CENTER";
+	else if (this->alignContent == START)
+		std::cout << "START";
+	else if (this->alignContent == END)
+		std::cout << "END";
+	std::cout << std::endl;
 
 	std::cout << std::endl;
 	std::cout << "BoxModel Info:" << std::endl;
@@ -262,15 +286,67 @@ void Element::CalculateBoxPositionHorizontal() {
 	// if the element is not root. thus having a parent
 
 	//std::cout << this->name << ": Element has parent" << std::endl;
-		
+	int maxHeight = this->parent->childrenHeight;
+	int parentContentX = this->parent->contentPosition.x;
+	int parentContentY = this->parent->contentPosition.y;
 	// if the element is the first child it lines up with start of content not taking its left margin into account
 	if (FirstChildToParent(this)) {
-		int parentContentX = this->parent->contentPosition.x;
-		int parentContentY = this->parent->contentPosition.y;
+		
 
-		// set box position
-		this->boxPosition.x = parentContentX;
-		this->boxPosition.y = parentContentY;
+		// set box position x value
+		if (this->parent->alignContent == START) {
+			this->boxPosition.x = parentContentX;
+			//this->boxPosition.y = parentContentY;
+		}
+		else if (this->parent->alignContent == CENTER_CONTENT) {
+			int childrenWidth = this->parent->childrenWidth;
+			int parentWidth = this->parent->GetContentWidth();
+
+			int childrenCenter = childrenWidth / 2;
+			int parentCenter = parentWidth / 2;
+
+			int childrenStartX = parentContentX + parentCenter - childrenCenter;
+
+			this->boxPosition.x = childrenStartX;
+			//this->boxPosition.y = parentContentY;
+
+		}
+		else if (this->parent->alignContent == END) {
+			int childrenWidth = this->parent->childrenWidth;
+			int parentWidth = this->parent->GetContentWidth();
+
+
+			int childrenStartX = parentContentX + parentWidth - childrenWidth;
+
+			this->boxPosition.x = childrenStartX;
+			//this->boxPosition.y = parentContentY;
+
+		}
+		else {
+			this->boxPosition.x = parentContentX;
+			//this->boxPosition.y = parentContentY;
+		}
+
+		// set box position y value
+		if (this->parent->alignItems == START_ITEMS) {
+			this->boxPosition.y = parentContentY;
+		}
+		else if (this->parent->alignItems == CENTER_ITEMS) {
+
+			int yOffset = (maxHeight - this->boxSize.y) / 2;
+			this->boxPosition.y = parentContentY + yOffset;
+
+		}
+		else if (this->parent->alignItems == END_ITEMS) {
+			int yOffset = maxHeight - this->boxSize.y;
+			this->boxPosition.y = parentContentY + yOffset;
+
+		}
+		else {
+			this->boxPosition.y = parentContentY;
+		}
+		
+		
 	}
 	// if the element is not the first child take into account the position of the child before it and use the largest margin between the two
 	else {
@@ -285,7 +361,21 @@ void Element::CalculateBoxPositionHorizontal() {
 			int posX = childBefore->boxPosition.x + childBefore->boxSize.x + margin;
 
 			this->boxPosition.x = posX;
-			this->boxPosition.y = childBefore->boxPosition.y;
+			if (this->parent->alignItems == START_ITEMS) {
+				this->boxPosition.y = childBefore->boxPosition.y;
+			}
+			else if (this->parent->alignItems == CENTER_ITEMS) {
+				int yOffset = (maxHeight - this->boxSize.y) / 2;
+				this->boxPosition.y = parentContentY + yOffset;
+			}
+			else if (this->parent->alignItems == END_ITEMS) {
+				int yOffset = maxHeight - this->boxSize.y;
+				this->boxPosition.y = parentContentY + yOffset;
+			}
+			else {
+				this->boxPosition.y = parentContentY;
+			}
+			
 		}
 	}
 	
@@ -298,15 +388,67 @@ void Element::CalculateBoxPositionVertical() {
 	// if the element is not root. thus having a parent
 
 	//std::cout << this->name << ": Element has parent" << std::endl;
-
+	int maxWidth = this->parent->childrenWidth;
+	int parentContentX = this->parent->contentPosition.x;
+	int parentContentY = this->parent->contentPosition.y;
 	// if the element is the first child it lines up with start of content not taking its left margin into account
 	if (FirstChildToParent(this)) {
-		int parentContentX = this->parent->contentPosition.x;
-		int parentContentY = this->parent->contentPosition.y;
+		
 
-		// set box position
-		this->boxPosition.x = parentContentX;
-		this->boxPosition.y = parentContentY;
+		// set box position for y 
+		if (this->parent->alignContent == START) {
+			//this->boxPosition.x = parentContentX;
+			this->boxPosition.y = parentContentY;
+		}
+		else if (this->parent->alignContent == CENTER_CONTENT) {
+			int childrenHeight = this->parent->childrenHeight;
+			int parentHeight = this->parent->GetContentHeight();
+
+			int childrenCenter = childrenHeight / 2;
+			int parentCenter = parentHeight / 2;
+
+			int childrenStartY = parentContentY + parentCenter - childrenCenter;
+
+			//this->boxPosition.x = parentContentX;
+			this->boxPosition.y = childrenStartY;
+
+		}
+		else if (this->parent->alignContent == END) {
+			int childrenHeight = this->parent->childrenHeight;
+			int parentHeight = this->parent->GetContentHeight();
+
+
+			int childrenStartY = parentContentY + parentHeight - childrenHeight;
+
+			//this->boxPosition.x = parentContentX;
+			this->boxPosition.y = childrenStartY;
+
+		}
+		else {
+			//this->boxPosition.x = parentContentX;
+			this->boxPosition.y = parentContentY;
+		}
+
+		// set box position for x 
+		if (this->parent->alignItems == START_ITEMS) {
+			this->boxPosition.x = parentContentX;
+		}
+		else if (this->parent->alignItems == CENTER_ITEMS) {
+
+			int xOffset = (maxWidth - this->boxSize.x) / 2;
+			this->boxPosition.x = parentContentX + xOffset;
+
+		}
+		else if (this->parent->alignItems == END_ITEMS) {
+			int xOffset = maxWidth - this->boxSize.x;
+			this->boxPosition.x = parentContentX + xOffset;
+
+		}
+		else {
+			this->boxPosition.x = parentContentX;
+		}
+
+
 	}
 	// if the element is not the first child take into account the position of the child before it and use the largest margin between the two
 	else {
@@ -321,7 +463,20 @@ void Element::CalculateBoxPositionVertical() {
 			int posY = childBefore->boxPosition.y + childBefore->boxSize.y + margin;
 
 			this->boxPosition.y = posY;
-			this->boxPosition.x = childBefore->boxPosition.x;
+			if (this->parent->alignItems == START_ITEMS) {
+				this->boxPosition.x = parentContentX;
+			}
+			else if (this->parent->alignItems == CENTER_ITEMS) {
+				int xOffset = (maxWidth - this->boxSize.x) / 2;
+				this->boxPosition.x = parentContentX + xOffset;
+			}
+			else if (this->parent->alignItems == END_ITEMS) {
+				int xOffset = maxWidth - this->boxSize.x;
+				this->boxPosition.x = parentContentX + xOffset;
+			}
+			else {
+				this->boxPosition.x = parentContentX;
+			}
 		}
 	}
 
@@ -400,21 +555,116 @@ void Element::AddChild(Element* child) {
 		this->headChild = child;
 		this->tailChild = child;
 	}
-		
-	this->tailChild->childAfter = child;
-	child->childBefore = this->tailChild;
-	this->tailChild = child;
+	else {
+		this->tailChild->childAfter = child;
+		child->childBefore = this->tailChild;
+		this->tailChild = child;
+	}
+	
 }
 
 void Element::RenderBox(BoxRenderer* boxRenderer) {
-	boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
+	if (this->parent == nullptr) {
+		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
+	}
+	else if (this->parent->overflow == HIDDEN) {
+		//std::cout << "HIDDEN" << std::endl;
+		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
+		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, this->rotation, this->idColor);
+	}
+	else {
+		//std::cout << "VISIBLE" << std::endl;
+		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
+	}
+	
 }
 
 void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer) {
-	contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->rotation, glm::vec3(1.0f, 1.0f, 1.0f));
+	if (this->parent == nullptr) {
+		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->rotation, this->idColor);
+	}
+	else if (this->parent->overflow == HIDDEN) {
+		//std::cout << "HIDDEN" << std::endl;
+		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, this->rotation, this->idColor);
+	}
+	else {
+		//std::cout << "VISIBLE" << std::endl;
+		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->rotation, this->idColor);
+	}
 }
 
 void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe) {
-	contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
+	if (this->parent == nullptr) {
+		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
+	}
+	else if (this->parent->overflow == HIDDEN) {
+		//std::cout << "HIDDEN" << std::endl;
+		//contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, wireframe, this->rotation, this->idColor);
+	}
+	else {
+		//std::cout << "VISIBLE" << std::endl;
+		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
+	}
 }
 
+void Element::CalculateChildrenWidth() {
+	if (this->headChild == nullptr) {
+		this->childrenWidth = 0;
+	}
+	int width = 0;
+	if (this->alignment == HORIZONTAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			width += curr->boxSize.x;
+			if (curr->childAfter != nullptr) {
+				// get both margins
+				int currMargin = curr->childAfter->GetMarginRight();
+				int nextMargin = curr->GetMarginLeft();
+				width += (currMargin > nextMargin) ? currMargin : nextMargin;
+			}
+			curr = curr->childAfter;
+		}
+	}
+	else if (this->alignment == VERTICAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			if (curr->boxSize.x > width) {
+				width = curr->boxSize.x;
+			}
+			curr = curr->childAfter;
+		}
+	}
+	this->childrenWidth = width;
+}
+
+void Element::CalculateChildrenHeight() {
+	if (this->headChild == nullptr) {
+		this->childrenHeight = 0;
+	}
+	int height = 0;
+	if (this->alignment == HORIZONTAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			if (curr->boxSize.y > height) {
+				height = curr->boxSize.y;
+			}
+			curr = curr->childAfter;
+		}
+	}
+	else if (this->alignment == VERTICAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			height += curr->boxSize.y;
+			if (curr->childAfter != nullptr) {
+				// get both margins
+				int currMargin = curr->childAfter->GetMarginBottom();
+				int nextMargin = curr->GetMarginTop();
+				height += (currMargin > nextMargin) ? currMargin : nextMargin;
+			}
+			curr = curr->childAfter;
+		}
+	}
+	this->childrenHeight = height;
+}

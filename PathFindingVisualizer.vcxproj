@@ -181,8 +181,12 @@
   <ItemGroup>
     <None Include="box.frag" />
     <None Include="box.vert" />
+    <None Include="boxOverflowHidden.frag" />
+    <None Include="boxOverflowHidden.vert" />
     <None Include="content.frag" />
     <None Include="content.vert" />
+    <None Include="contentBoxOverflowHidden.frag" />
+    <None Include="contentBoxOverflowHidden.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

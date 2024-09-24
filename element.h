@@ -18,6 +18,18 @@ enum Alignment {
 	HORIZONTAL 
 };
 
+enum AlignContent {
+	CENTER_CONTENT,
+	START,
+	END
+};
+
+enum AlignItems {
+	START_ITEMS,
+	CENTER_ITEMS,
+	END_ITEMS
+};
+
 enum Overflow {
 	HIDDEN,
 	VISIBLE
@@ -45,8 +57,14 @@ public:
 	glm::vec2 boxSize;
 	glm::vec2 contentSize;
 	float rotation;
-	// Children alignment
-	Alignment alignment;
+	// Children info
+	// for cetner, left, or right aligning of elements in the parent content
+	AlignContent alignContent;
+	AlignItems alignItems;
+	// for horizontal or vertical element layout
+	Alignment alignment; 
+	int childrenWidth;
+	int childrenHeight;
 	// children overflow hidden or not 
 	Overflow overflow;
 
@@ -64,6 +82,8 @@ public:
 	void CalculateContentPosition();
 	void CalculateContentSize();
 	void CalculateBoxSize();
+	void CalculateChildrenWidth();
+	void CalculateChildrenHeight();
 	void SetFillWidth();
 	void SetFillHeight();
 	void AddChild(Element* child);

@@ -1,8 +1,10 @@
+#include <iostream> 
 #include "box_renderer.h"
 
-BoxRenderer::BoxRenderer(Shader& shader)
+BoxRenderer::BoxRenderer(Shader& boxShader, Shader& boxOverflowHiddenShader)
 {
-	this->shader = shader;
+	this->boxShader = boxShader;
+    this->boxOverflowHiddenShader = boxOverflowHiddenShader;
 	this->initRenderData();
 }
 
@@ -11,10 +13,18 @@ BoxRenderer::~BoxRenderer()
 	glDeleteVertexArrays(1, &this->quadVAO);
 }
 
+void BoxRenderer::SetScreenWidth(int width) {
+    this->screenWidth = width;
+}
+
+void BoxRenderer::SetScreenHeight(int height) {
+    this->screenHeight = height;
+}
+
 void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
 {
     // prepare transformations
-    this->shader.Use();
+    this->boxShader.Use();
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
 
@@ -24,10 +34,56 @@ void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size
 
     model = glm::scale(model, glm::vec3(size, 1.0f)); // last scale
 
-    this->shader.SetMatrix4("model", model);
+    this->boxShader.SetMatrix4("model", model);
 
     // render textured quad
-    this->shader.SetVector3f("boxColor", color);
+    this->boxShader.SetVector3f("boxColor", color);
+
+    glActiveTexture(GL_TEXTURE0);
+    texture.Bind();
+
+    glBindVertexArray(this->quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, float rotate, glm::vec3 color)
+{
+    // prepare transformations
+    this->boxOverflowHiddenShader.Use();
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
+
+    model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // move origin of rotation to center of quad
+    model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
+    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f)); // move origin back
+
+    model = glm::scale(model, glm::vec3(size, 1.0f)); // last scale
+
+    this->boxOverflowHiddenShader.SetMatrix4("model", model);
+    //this->boxOverflowHiddenShader.SetVector2f("parentContentPosition", parentContentPosition);
+    //this->boxOverflowHiddenShader.SetVector2f("parentContentSize", parentContentSize);
+    // render textured quad
+    this->boxOverflowHiddenShader.SetVector3f("boxColor", color);
+
+    // TODO:: try to calculate these then send them to the shader to see if that helps
+    glm::vec2 screenSize(this->screenWidth, this->screenHeight);
+    float topY = (((screenSize.y - parentContentPosition.y) / screenSize.y) * 2.0) - 1.0;
+    float bottomY = (((screenSize.y - (parentContentPosition.y + parentContentSize.y)) / screenSize.y) * 2.0) - 1.0;
+    float leftX = ((parentContentPosition.x / screenSize.x) * 2.0) - 1.0;
+    float rightX = (((parentContentPosition.x + parentContentSize.x) / screenSize.x) * 2.0) - 1.0;
+    /*
+    std::cout << "topY: " << topY << std::endl;
+    std::cout << "bottomY: " << bottomY << std::endl;
+    std::cout << "leftX: " << leftX << std::endl;
+    std::cout << "rightX: " << rightX << std::endl;
+
+    std::cout << parentContentPosition.x << " " << parentContentPosition.y << std::endl;
+    std::cout << parentContentSize.x << " " << parentContentSize.y << std::endl;
+    */
+    glm::vec4 boundaries(topY, bottomY, leftX, rightX);
+    this->boxOverflowHiddenShader.SetVector4f("boundaries", boundaries);
+
 
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
