@@ -29,9 +29,11 @@ public:
 	void Init();
 	Element* AddElement(std::string name);
 	bool ColorIdExists(glm::vec3 colorId);
+	void SetAllElementsScreenSizes(int width, int height);
 	void SetAllElementsSizes();
 	void SetAllElementsPositions();
 	void SetAllElementsChildrenWidthAndHeight();
+	void SetAllElementsParentsContentBorders();
 	void RenderDocumentFromVectors(Renderers* renderers);
 	void RenderDocument(Renderers* renderers);
 	void RenderDocument(BoxRenderer* boxRenderer);

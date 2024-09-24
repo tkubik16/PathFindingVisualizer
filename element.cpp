@@ -570,7 +570,7 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
-		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, this->rotation, this->idColor);
+		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, this->parentContentBorders, this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -601,7 +601,7 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wire
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
-		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, wireframe, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, this->parentContentBorders, wireframe, this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -667,4 +667,30 @@ void Element::CalculateChildrenHeight() {
 		}
 	}
 	this->childrenHeight = height;
+}
+
+glm::vec4 Element::CalculateBorders() {
+
+	glm::vec2 screenSize(this->screenWidth, this->screenHeight);
+	float topY = (((screenSize.y - this->contentPosition.y) / screenSize.y) * 2.0) - 1.0;
+	float bottomY = (((screenSize.y - (this->contentPosition.y + this->contentSize.y)) / screenSize.y) * 2.0) - 1.0;
+	float leftX = ((this->contentPosition.x / screenSize.x) * 2.0) - 1.0;
+	float rightX = (((this->contentPosition.x + this->contentSize.x) / screenSize.x) * 2.0) - 1.0;
+
+	return glm::vec4(topY, bottomY, leftX, rightX);
+}
+
+void Element::SetChildrensParentContentBorders(glm::vec4 borders) {
+	if (this->headChild != nullptr) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			curr->parentContentBorders = borders;
+			curr = curr->childAfter;
+		}
+	}
+}
+
+void Element::SetScreenSize(int width, int height) {
+	this->screenWidth = width;
+	this->screenHeight = height;
 }

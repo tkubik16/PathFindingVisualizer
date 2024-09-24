@@ -80,12 +80,12 @@ void Program::Init()
 	Element* secondBox = this->Doc.AddElement("secondBox");
 	Element* container = this->Doc.AddElement("container");
 
-	firstBox->boxModel.SetSize(100, 100);
+	firstBox->boxModel.SetSize(500, 100);
 	//firstBox->SetBoxWidthMode(PERCENTAGE);
 	firstBox->boxModel.SetPaddingAll(25);
 	firstBox->boxModel.SetMarginAll(25);
 
-	secondBox->boxModel.SetSize(100, 100);
+	secondBox->boxModel.SetSize(500, 100);
 	//secondBox->SetBoxWidthMode(PERCENTAGE);
 	secondBox->boxModel.SetPaddingAll(25);
 	secondBox->boxModel.SetMarginAll(25);
@@ -99,23 +99,20 @@ void Program::Init()
 	this->Doc.Init();
 
 	this->Doc.root->boxModel.SetPaddingAll(50);
-	this->Doc.root->AddChild(container);
-	container->PrintInfo();
-	container->AddChild(firstBox);
-	container->AddChild(secondBox);
-	//this->Doc.root->AddChild(firstBox);
-	//this->Doc.root->AddChild(secondBox);
+
+	this->Doc.root->AddChild(firstBox);
+	this->Doc.root->AddChild(secondBox);
 	this->Doc.root->alignment = HORIZONTAL;
 	this->Doc.root->alignContent = END;
 	//this->Doc.root->alignItems = END_ITEMS;
 	//this->Doc.root->overflow = VISIBLE;
 	
-	
+	std::cout << this->Doc.screenWidth << " " << this->Doc.screenHeight << std::endl;
+	this->Doc.SetAllElementsScreenSizes(this->screenWidth, this->screenHeight);
 	this->Doc.SetAllElementsSizes();
-	
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
-
 	this->Doc.SetAllElementsPositions();
+	this->Doc.SetAllElementsParentsContentBorders();
 
 	this->Doc.root->PrintInfo();
 	//firstBox->PrintInfo();
@@ -159,9 +156,11 @@ void Program::UpdateScreenSize(int width, int height) {
 
 	// update elements based on screen size change
 	this->Doc.UpdateRootToScreenSize(screenWidth, screenHeight);
+	this->Doc.SetAllElementsScreenSizes(width, height);
 	this->Doc.SetAllElementsSizes();
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
 	this->Doc.SetAllElementsPositions();
+	this->Doc.SetAllElementsParentsContentBorders();
 
 	// update framebuffers based on screen size change
 	boxBuffer->UpdateScreenSize(width, height);

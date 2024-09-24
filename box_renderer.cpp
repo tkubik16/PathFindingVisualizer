@@ -47,7 +47,7 @@ void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size
     glBindVertexArray(0);
 }
 
-void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, float rotate, glm::vec3 color)
+void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, glm::vec4 borders, float rotate, glm::vec3 color)
 {
     // prepare transformations
     this->boxOverflowHiddenShader.Use();
@@ -67,22 +67,24 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
     this->boxOverflowHiddenShader.SetVector3f("boxColor", color);
 
     // TODO:: try to calculate these then send them to the shader to see if that helps
+    /*
     glm::vec2 screenSize(this->screenWidth, this->screenHeight);
     float topY = (((screenSize.y - parentContentPosition.y) / screenSize.y) * 2.0) - 1.0;
     float bottomY = (((screenSize.y - (parentContentPosition.y + parentContentSize.y)) / screenSize.y) * 2.0) - 1.0;
     float leftX = ((parentContentPosition.x / screenSize.x) * 2.0) - 1.0;
     float rightX = (((parentContentPosition.x + parentContentSize.x) / screenSize.x) * 2.0) - 1.0;
-    /*
-    std::cout << "topY: " << topY << std::endl;
-    std::cout << "bottomY: " << bottomY << std::endl;
-    std::cout << "leftX: " << leftX << std::endl;
-    std::cout << "rightX: " << rightX << std::endl;
+    */
+    
+    std::cout << "topY: " << borders.x << std::endl;
+    std::cout << "bottomY: " << borders.y << std::endl;
+    std::cout << "leftX: " << borders.z << std::endl;
+    std::cout << "rightX: " << borders.w << std::endl;
 
     std::cout << parentContentPosition.x << " " << parentContentPosition.y << std::endl;
     std::cout << parentContentSize.x << " " << parentContentSize.y << std::endl;
-    */
-    glm::vec4 boundaries(topY, bottomY, leftX, rightX);
-    this->boxOverflowHiddenShader.SetVector4f("boundaries", boundaries);
+    
+    //glm::vec4 boundaries(topY, bottomY, leftX, rightX);
+    this->boxOverflowHiddenShader.SetVector4f("boundaries", borders);
 
 
     glActiveTexture(GL_TEXTURE0);

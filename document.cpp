@@ -10,7 +10,7 @@ Document::Document()
 	this->root = new Element("root");
 }
 
-Document::Document(int width, int height) : randomColors(true)
+Document::Document(int width, int height) : randomColors(true), screenWidth(width), screenHeight(height)
 {
 	
 	this->root = Document::AddElement("root");
@@ -242,6 +242,39 @@ void Document::SetAllElementsChildrenWidthAndHeight() {
 		
 		curr->CalculateChildrenWidth();
 		curr->CalculateChildrenHeight();
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}
+
+void Document::SetAllElementsScreenSizes(int width, int height) {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		curr->SetScreenSize(width, height);
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}
+
+void Document::SetAllElementsParentsContentBorders() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+		glm::vec4 borders = curr->CalculateBorders();
+		curr->SetChildrensParentContentBorders(borders);
 		elQueue.pop();
 		Element* currChild = curr->headChild;
 		while (currChild != nullptr) {

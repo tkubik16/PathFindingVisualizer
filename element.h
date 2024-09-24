@@ -47,6 +47,9 @@ public:
 	Element* childAfter;
 	int parentWidth;
 	int parentHeight;
+	int screenWidth;
+	int screenHeight;
+	glm::vec4 parentContentBorders;
 	std::vector<Element*> children;
 	Element* headChild;
 	Element* tailChild;
@@ -92,6 +95,10 @@ public:
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer);
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe);
 	void PrintChildren();
+	glm::vec4 CalculateBorders();
+	void SetChildrensParentContentBorders(glm::vec4 borders);
+
+	void SetScreenSize(int width, int height);
 
 	// methods for Setting Mode
 	void SetBoxWidthMode(Mode mode);
