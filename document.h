@@ -35,6 +35,7 @@ public:
 	void SetAllElementsChildrenWidthAndHeight();
 	void SetAllElementsParentsContentBorders();
 	void SetAllElementsRealContentBorders();
+	void SetAllElementsCornerCoords();
 	void RenderDocumentFromVectors(Renderers* renderers);
 	void RenderDocument(Renderers* renderers);
 	void RenderDocument(BoxRenderer* boxRenderer);

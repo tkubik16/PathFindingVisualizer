@@ -300,3 +300,20 @@ void Document::SetAllElementsRealContentBorders() {
 		}
 	}
 }
+
+void Document::SetAllElementsCornerCoords() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+
+		curr->CalculateCornerCoords();
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}

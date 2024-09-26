@@ -47,7 +47,7 @@ void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size
     glBindVertexArray(0);
 }
 
-void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, glm::vec4 borders, float rotate, glm::vec3 color)
+void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, glm::vec4 borders, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, float rotate, glm::vec3 color)
 {
     // prepare transformations
     this->boxOverflowHiddenShader.Use();
@@ -65,6 +65,19 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
     //this->boxOverflowHiddenShader.SetVector2f("parentContentSize", parentContentSize);
     // render textured quad
     this->boxOverflowHiddenShader.SetVector3f("boxColor", color);
+
+
+
+    this->boxOverflowHiddenShader.SetVector2f("topLeft", topLeft);
+    this->boxOverflowHiddenShader.SetVector2f("topRight", topRight);
+    this->boxOverflowHiddenShader.SetVector2f("bottomLeft", bottomLeft);
+    this->boxOverflowHiddenShader.SetVector2f("bottomRight", bottomRight);
+    this->boxOverflowHiddenShader.SetVector2f("screenSize", screenSize);
+    this->boxOverflowHiddenShader.SetFloat("radius", radius);
+
+    //std::cout << radius << std::endl;
+    //std::cout << "bottomRight" << std::endl;
+    //std::cout << bottomRight.x << " " << bottomRight.y << std::endl;
 
     // TODO:: try to calculate these then send them to the shader to see if that helps
     /*

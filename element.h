@@ -71,13 +71,23 @@ public:
 	int childrenHeight;
 	// children overflow hidden or not 
 	Overflow overflow;
+	// corner radius
+	int radius;
+	glm::vec2 topLeft;
+	glm::vec2 topRight;
+	glm::vec2 bottomLeft;
+	glm::vec2 bottomRight;
 
 	Element();
 	Element(std::string name);
 	~Element();
+	// print methods
 	void PrintInfo();
 	void PrintBorders();
 	void PrintRealBorders();
+	void PrintCornerCoords();
+
+
 	void SetChildrensParentDimensions();
 	void SetParentDimensions(int width, int height);
 	void CalculatePositions();
@@ -103,6 +113,11 @@ public:
 	void SetChildrensParentContentBorders(glm::vec4 borders);
 
 	void SetScreenSize(int width, int height);
+
+	// corner radius methods
+	void SetRadius(int radius);
+	void CalculateCornerCoords();
+	float GetRadius();
 
 	// methods for Setting Mode
 	void SetBoxWidthMode(Mode mode);

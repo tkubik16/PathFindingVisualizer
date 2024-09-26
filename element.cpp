@@ -11,7 +11,7 @@ Element::Element() : alignment(VERTICAL)
 
 }
 
-Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL), overflow(HIDDEN), alignContent(START), alignItems(START_ITEMS), childAfter(nullptr), childBefore(nullptr), parentContentBorders(glm::vec4(1, -1, -1, 1)), theRealContentBorders(glm::vec4(1, -1, -1, 1))
+Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL), overflow(HIDDEN), alignContent(START), alignItems(START_ITEMS), childAfter(nullptr), childBefore(nullptr), parentContentBorders(glm::vec4(1, -1, -1, 1)), theRealContentBorders(glm::vec4(1, -1, -1, 1)), radius(0)
 {
 
 }
@@ -158,6 +158,9 @@ void Element::PrintInfo() {
 	std::cout << "rotation:" << std::endl;
 	std::cout << this->rotation << std::endl;
 
+	std::cout << "radius:" << std::endl;
+	std::cout << this->radius << std::endl;
+
 	std::cout << "parent:" << std::endl;
 	if (this->parent == nullptr)
 		std::cout << " no parent" << std::endl;
@@ -201,6 +204,26 @@ void Element::PrintBorders() {
 void Element::PrintRealBorders() {
 	std::cout << "theRealBorders(topY, bottomY, leftX, rightX):" << std::endl;
 	std::cout << this->theRealContentBorders.x << " " << this->theRealContentBorders.y << " " << this->theRealContentBorders.z << " " << this->theRealContentBorders.w << std::endl;
+}
+
+void Element::PrintCornerCoords() {
+	std::cout << "position (x,y):" << std::endl;
+	std::cout << this->boxPosition.x << ", " << this->boxPosition.y << std::endl;
+
+	std::cout << "size (width, height):" << std::endl;
+	std::cout << this->boxSize.x << ", " << this->boxSize.y << std::endl;
+
+	std::cout << "topLeft (x,y):" << std::endl;
+	std::cout << "(" << this->topLeft.x << ", " << this->topLeft.y << ")" << std::endl;
+
+	std::cout << "topRight (x,y):" << std::endl;
+	std::cout << "(" << this->topRight.x << ", " << this->topRight.y << ")" << std::endl;
+
+	std::cout << "bottomLeft (x,y):" << std::endl;
+	std::cout << "(" << this->bottomLeft.x << ", " << this->bottomLeft.y << ")" << std::endl;
+
+	std::cout << "bottomRight (x,y):" << std::endl;
+	std::cout << "(" << this->bottomRight.x << ", " << this->bottomRight.y << ")" << std::endl;
 }
 
 void Element::PrintChildren() {
@@ -580,7 +603,7 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
-		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, this->theRealContentBorders, this->rotation, this->idColor);
+		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, this->theRealContentBorders, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -729,4 +752,65 @@ void Element::FindRealContentBorders() {
 		curr = curr->parent;
 	}
 	//std::cout << std::endl;
+}
+
+void Element::SetRadius(int radius) {
+	this->radius = radius;
+}
+
+void Element::CalculateCornerCoords() {
+	int width = this->boxSize.x;
+	int height = this->boxSize.y;
+	
+	int smallSide = (width < height) ? width : height;
+
+	int maxRadius = this->radius;
+	if (this->radius > smallSide / 2) {
+		maxRadius = smallSide / 2;
+	}
+	// set top left coord currently not screen coords
+	this->topLeft.x = this->boxPosition.x + maxRadius;
+	this->topLeft.y = this->boxPosition.y + maxRadius;
+
+	// set top right
+	this->topRight.x = this->boxPosition.x + width - maxRadius;
+	this->topRight.y = this->boxPosition.y + maxRadius;
+
+	// set bottomLeft
+	this->bottomLeft.x = this->boxPosition.x + maxRadius;
+	this->bottomLeft.y = this->boxPosition.y + height - maxRadius;
+
+	// set bottomRight
+	this->bottomRight.x = this->boxPosition.x + width - maxRadius;
+	this->bottomRight.y = this->boxPosition.y + height - maxRadius;
+
+	// convert to screen coords
+	this->topLeft.x = (this->topLeft.x / this->screenWidth) * 2 - 1;
+	this->topLeft.y = ((this->screenHeight - this->topLeft.y ) / this->screenHeight) * 2 - 1;
+
+	// TODO: Fix these screen coord calculations
+	this->topRight.x = (this->topRight.x / this->screenWidth) * 2 - 1;
+	this->topRight.y = ((this->screenHeight - this->topRight.y) / this->screenHeight) * 2 - 1;
+
+	this->bottomLeft.x = (this->bottomLeft.x / this->screenWidth) * 2 - 1;
+	this->bottomLeft.y = ((this->screenHeight - this->bottomLeft.y) / this->screenHeight) * 2 - 1;
+
+	this->bottomRight.x = (this->bottomRight.x / this->screenWidth) * 2 - 1;
+	this->bottomRight.y = ((this->screenHeight - this->bottomRight.y) / this->screenHeight) * 2 - 1;
+
+}
+
+float Element::GetRadius() {
+	int width = this->boxSize.x;
+	int height = this->boxSize.y;
+
+	int smallSide = (width < height) ? width : height;
+
+	int maxRadius = this->radius;
+	if (this->radius > smallSide / 2) {
+		maxRadius = smallSide / 2;
+	}
+	//std::cout << maxRadius << std::endl;
+	//return (float)((maxRadius / this->screenWidth) * 2 - 1);
+	return (float)maxRadius;
 }
