@@ -19,6 +19,7 @@ public:
 	glm::mat4 view;
 	float scrollDist;
 	Renderers* renderers;
+	Framebuffer* boxBuffer;
 	// constructor/destructor
 	Program(int width, int height);
 	~Program();
@@ -30,6 +31,8 @@ public:
 	void Update();
 	void Render();
 	void UpdateScreenSize(int width, int height);
+	void SampleBoxBuffer(double x, double y);
+	Element* GetElement(std::string colorId);
 	
 
 };

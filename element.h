@@ -35,6 +35,63 @@ enum Overflow {
 	VISIBLE
 };
 
+// these will all be placed in the FreeElement list for a render pass after the Document Tree
+enum Positioning {
+	STATIC,
+	RELATIVE,
+	FIXED,	
+	ABSOLUTE
+};
+
+/*
+
+~static
+
+This is the default for every single page element. Different elements don’t have 
+different default values for positioning, they all start out as static. Static doesn’t
+mean much; it just means that the element will flow into the page as it normally would.
+The only reason you would ever set an element to position: static; is to forcefully 
+remove some positioning that got applied to an element outside of your control. This is
+fairly rare, as positioning doesn’t cascade.
+
+~relative
+
+This type of positioning is probably the most confusing and misused. What it really means 
+is “relative to itself”. If you set position: relative; on an element but no other 
+positioning attributes (top, left, bottom or right), it will have no effect on it’s positioning
+at all, it will be exactly as it would be if you left it as position: static; But if you do give
+it some other positioning attribute, say, top: 10px;, it will shift its position 10 pixels
+down from where it would normally be. I’m sure you can imagine, the ability to shift an element 
+around based on its regular position is pretty useful. I find myself using this to line up form 
+elements many times that have a tendency to not want to line up how I want them to.
+
+~absolute
+
+This is a very powerful type of positioning that allows you to literally place 
+any page element exactly where you want it. You use the positioning attributes 
+top, left, bottom, and right to set the location. Remember that these values will 
+be relative to the next parent element with relative (or absolute) positioning. If 
+there is no such parent, it will default all the way back up to the <html> element 
+itself meaning it will be placed relative to the page itself.
+
+The trade-off (and most important thing to remember) about absolute positioning is that 
+these elements are removed from the flow of elements on the page. An element with this 
+type of positioning is not affected by other elements and it doesn’t affect other elements.
+This is a serious thing to consider every time you use absolute positioning. Its overuse or 
+improper use can limit the flexibility of your site.
+
+~fixed
+
+A fixed position element is positioned relative to the viewport, or the browser window 
+itself. The viewport doesn’t change when the window is scrolled, so a fixed positioned 
+element will stay right where it is when the page is scrolled.
+
+This might be used for something like a navigation bar that you want to remain visible at
+all times regardless of the pages scroll position. The concern with fixed positioning is 
+that it can cause situations where the fixed element overlaps content such that is is 
+inaccessible. The trick is having enough space to avoid that, and tricks like this.
+*/
+
 class Element
 {
 public:
@@ -42,6 +99,7 @@ public:
 	glm::vec3 idColor;
 	BoxModel boxModel;
 	std::string name;
+	int zIndex;
 	Element* parent;
 	Element* childBefore;
 	Element* childAfter;
@@ -71,6 +129,8 @@ public:
 	int childrenHeight;
 	// children overflow hidden or not 
 	Overflow overflow;
+	// Positioning
+	Positioning positioning;
 	// corner radius
 	int radius;
 	glm::vec2 topLeft;
@@ -96,6 +156,7 @@ public:
 	void CalculateBoxPositionHorizontal();
 	void CalculateBoxPositionVertical();
 	void CalculateContentPosition();
+	void AdjustIfNonStatic();
 	void CalculateContentSize();
 	void CalculateBoxSize();
 	void CalculateChildrenWidth();

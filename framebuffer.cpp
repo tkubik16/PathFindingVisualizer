@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include "framebuffer.h"
 
@@ -59,4 +60,32 @@ void Framebuffer::Bind() {
 
 void Framebuffer::Unbind() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+std::string Framebuffer::Sample(double x, double y) {
+	
+	//std::cout << x << " " << y << std::endl;
+	this->Bind();
+	unsigned char pixel[4];
+	glReadPixels(x, y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixel);
+	this->Unbind();
+	//std::cout << "SampledPixel" << std::endl;
+	//std::cout << (float)pixel[0] / 255 << ", " << (float)pixel[1] / 255 << ", " << (float)pixel[2] / 255 << ", " << (float)pixel[3] / 255 << std::endl;
+	// TODO: get the main to call a function in program.cpp which calls this program with the appropriate coordinates that were clicked on
+	float r = (float)pixel[0] / 255;
+	float g = (float)pixel[1] / 255;
+	float b = (float)pixel[2] / 255;
+	float a = (float)pixel[3] / 255;
+	//std::cout << "rgb: " << r << "," << g << "," << b << "," << a << std::endl;
+	std::ostringstream ss;
+	ss << this->Round(r) << "," << this->Round(g) << "," << this->Round(b);
+	std::string s(ss.str());
+	//std::cout << s << std::endl;
+	return s;
+}
+
+float Framebuffer::Round(float var) {
+	//std::cout << var << std::endl;
+	float value = (int)(var * 100 + .5);
+	return (float)value / 100;
 }

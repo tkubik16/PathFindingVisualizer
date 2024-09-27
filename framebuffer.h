@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 class Framebuffer
 {
@@ -19,6 +20,8 @@ public:
 	void UpdateScreenSize(int width, int height);
 	void Bind();
 	void Unbind();
+	std::string Sample(double x, double y);
+	float Round(float var);
 
 };
 

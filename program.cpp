@@ -13,8 +13,9 @@ ContentBoxRenderer* contentBoxRenderer;
 
 Element* firstBox;
 Element* container;
+Element* fixedElement;
 
-Framebuffer* boxBuffer;
+//Framebuffer* boxBuffer;
 
 Program::Program(int width, int height) : Doc(width, height), screenWidth(width), screenHeight(height), Keys(), KeysProcessed(), scrollDist(0.0f), renderers()
 {
@@ -75,19 +76,24 @@ void Program::Init()
 	this->renderers->SetScreenSize(this->screenWidth, this->screenHeight);
 
 	// Initialize buffers
-	boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
-	boxBuffer->Init();
+	this->boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
+	this->boxBuffer->Init();
 
 	// Elements
 	firstBox = this->Doc.AddElement("firstBox");
 	Element* secondBox = this->Doc.AddElement("secondBox");
 	container = this->Doc.AddElement("container");
+	fixedElement = this->Doc.AddElement("fixed");
+
+	//this->Doc.AddFixedElement(fixedElement);
+	//this->Doc.UpdateFixedElementZIndex(fixedElement);
 
 	firstBox->boxModel.SetSize(500, 100);
 	//firstBox->SetBoxWidthMode(PERCENTAGE);
 	firstBox->boxModel.SetPaddingAll(25);
 	firstBox->boxModel.SetMarginAll(25);
 	firstBox->SetRadius(25);
+	this->Doc.root->overflow = VISIBLE;
 
 	secondBox->boxModel.SetSize(500, 100);
 	//secondBox->SetBoxWidthMode(PERCENTAGE);
@@ -132,9 +138,9 @@ void Program::Init()
 	//container->PrintInfo();
 	//firstBox->FindRealContentBorders();
 	//this->Doc.root->PrintInfo();
-	container->PrintInfo();
+	//container->PrintInfo();
 	//firstBox->CalculateCornerCoords();
-	container->PrintCornerCoords();
+	//container->PrintCornerCoords();
 	//container->PrintCornerCoords();
 }
 
@@ -188,7 +194,7 @@ void Program::UpdateScreenSize(int width, int height) {
 	//container->PrintRealBorders();
 
 	// update framebuffers based on screen size change
-	boxBuffer->UpdateScreenSize(width, height);
+	this->boxBuffer->UpdateScreenSize(width, height);
 }
 
 void Program::Render()
@@ -201,10 +207,28 @@ void Program::Render()
 	//this->Doc.RenderDocument(boxRenderer);
 	//this->Doc.RenderDocument(contentBoxRenderer);
 	//this->Doc.RenderDocumentFromVectors(this->renderers);
-	boxBuffer->Bind();
+	this->boxBuffer->Bind();
 	this->Doc.RenderDocument(this->renderers);
-	boxBuffer->Unbind();
-	this->renderers->textureRenderer->Draw(boxBuffer->texture, glm::vec2(0.0, 0.0), glm::vec2(this->screenWidth, this->screenHeight));
+	this->boxBuffer->Unbind();
+	this->renderers->textureRenderer->Draw(this->boxBuffer->texture, glm::vec2(0.0, 0.0), glm::vec2(this->screenWidth, this->screenHeight));
 	//this->Doc.RenderDocument(this->renderers);
+}
+
+void Program::SampleBoxBuffer(double x, double y) {
+	std::string colorId = this->boxBuffer->Sample(x, y);
+	//std::cout << colorId << std::endl;
+	Element* clickedElement = this->GetElement(colorId);
+	if (clickedElement != nullptr) {
+		std::cout << clickedElement->name << std::endl;
+	}
+	
+}
+
+Element* Program::GetElement(std::string colorId) {
+	if (this->Doc.colorIdMap.count(colorId) != 0) {
+		Element* clickedElement = this->Doc.colorIdMap.at(colorId);
+		return clickedElement;
+	}
+	return nullptr;
 }
 

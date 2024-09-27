@@ -61,6 +61,7 @@ Element* Document::AddElement(std::string name) {
 	this->colorIdMap[s] = newElement;
 	std::cout << "Map size: " << this->colorIdMap.size() << std::endl;
 	std::cout << std::endl;
+	std::cout << s << std::endl;
 
 	
 	return newElement;
@@ -78,6 +79,24 @@ bool Document::ColorIdExists(glm::vec3 colorId)
 	}
 
 	return false;
+}
+
+void Document::AddFixedElement(Element* element) {
+	FixedElement newEl(element, element->zIndex);
+	this->fixedElements.push_back(newEl);
+	std::cout << this->fixedElements.back().element->name << " Z-Index: " << this->fixedElements.back().zIndex << std::endl;
+}
+
+// Might need a version of this that takes a name and a zIndex
+void Document::UpdateFixedElementZIndex(Element* element) {
+	for (std::vector<FixedElement>::iterator it = this->fixedElements.begin(); it != this->fixedElements.end(); ++it) {
+		if (it->element == element) {
+			it->zIndex = element->zIndex;
+			std::cout << "Document::UpdateFixedElementZIndex" << std::endl;
+			std::cout << it->element->name << " " << it->zIndex << std::endl;
+			break;
+		}
+	}
 }
 
 void Document::RenderDocument(Renderers* renderers) {
@@ -222,6 +241,9 @@ void Document::SetAllElementsPositions() {
 		//std::cout << curr->name << std::endl;
 		//curr->CalculatePositions();
 		curr->CalculateBoxPosition();
+		if (curr->positioning != STATIC) {
+			curr->AdjustIfNonStatic();
+		}
 		curr->CalculateContentPosition();
 		elQueue.pop();
 		Element* currChild = curr->headChild;

@@ -11,7 +11,22 @@ Element::Element() : alignment(VERTICAL)
 
 }
 
-Element::Element(std::string name) : name(name), boxPosition(0, 0), boxSize(0, 0), rotation(0), parent(nullptr), alignment(VERTICAL), overflow(HIDDEN), alignContent(START), alignItems(START_ITEMS), childAfter(nullptr), childBefore(nullptr), parentContentBorders(glm::vec4(1, -1, -1, 1)), theRealContentBorders(glm::vec4(1, -1, -1, 1)), radius(0)
+Element::Element(std::string name) : 
+	name(name), 
+	zIndex(1),
+	boxPosition(0, 0), 
+	boxSize(0, 0), 
+	rotation(0), 
+	parent(nullptr), 
+	alignment(VERTICAL), 
+	overflow(HIDDEN), 
+	alignContent(START), 
+	alignItems(START_ITEMS), 
+	childAfter(nullptr), 
+	childBefore(nullptr), 
+	parentContentBorders(glm::vec4(1, -1, -1, 1)), 
+	theRealContentBorders(glm::vec4(1, -1, -1, 1)), 
+	radius(0)
 {
 
 }
@@ -512,6 +527,10 @@ void Element::CalculateBoxPositionVertical() {
 			}
 		}
 	}
+
+}
+
+void Element::AdjustIfNonStatic() {
 
 }
 

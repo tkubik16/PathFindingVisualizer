@@ -11,6 +11,8 @@
 // GLFW function declarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 // The Width of the screen
 unsigned int SCREEN_WIDTH = 1000;
@@ -44,6 +46,8 @@ int main(int argc, char* argv[])
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     // OpenGL configuration
     // --------------------
@@ -111,7 +115,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
+    if (key >= 0 && key < 1024)
+    {
+        if (action == GLFW_PRESS)
+            PathFindingVisualizer.Keys[key] = true;
+        else if (action == GLFW_RELEASE)
+        {
+            PathFindingVisualizer.Keys[key] = false;
+            PathFindingVisualizer.KeysProcessed[key] = false;
+        }
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -138,4 +151,40 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
     glfwSwapBuffers(window);
 
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    //std::cout << xpos << " " << ypos << std::endl;
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    //TODO: maybe do the same thing as key presses but with button presses
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+        int framebufferWidth, framebufferHeight;
+        glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+
+        double xPos, yPos;
+        glfwGetCursorPos(window, &xPos, &yPos);
+        //std::cout << xpos << " " << ypos << std::endl;
+
+        // Convert GLFW's screen coordinates to pixel coordinates using the ratio between the window size and the framebuffer size
+        double xPosInPixels = xPos * static_cast<double>(framebufferWidth) / windowWidth;
+        double yPosInPixels = yPos * static_cast<double>(framebufferHeight) / windowHeight;
+
+        // Shift to use OpenGL's convention of pixel centers being at half-integers
+        xPosInPixels += 0.5;
+        yPosInPixels += 0.5;
+
+        // Invert along the y-axis
+        yPosInPixels = framebufferHeight - yPosInPixels;
+
+
+        PathFindingVisualizer.SampleBoxBuffer(xPosInPixels, yPosInPixels);
+    }
+        
 }

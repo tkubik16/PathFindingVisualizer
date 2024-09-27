@@ -11,12 +11,28 @@
 #include "box_renderer.h"
 #include "content_box_renderer.h"
 
+struct FixedElement {
+	FixedElement(Element* el, int ind) : element(el), zIndex(ind)
+	{
+
+	}
+
+	~FixedElement()
+	{
+
+	}
+
+	Element* element;
+	int zIndex;
+};
+
 class Document
 {
 public:
 	// map of color Ids to element pointers to know what element the mouse pointer is interacting with based on color of pixel in special frame buffer
 	std::map<std::string, Element*> colorIdMap;
 	Element* root;
+	std::vector<FixedElement> fixedElements;
 	int screenWidth;
 	int screenHeight;
 	bool randomColors;
@@ -28,6 +44,8 @@ public:
 
 	void Init();
 	Element* AddElement(std::string name);
+	void AddFixedElement(Element* element);
+	void UpdateFixedElementZIndex(Element* element);
 	bool ColorIdExists(glm::vec3 colorId);
 	void SetAllElementsScreenSizes(int width, int height);
 	void SetAllElementsSizes();
