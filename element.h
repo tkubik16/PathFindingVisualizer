@@ -12,6 +12,8 @@
 #include "box_renderer.h"
 #include "content_box_renderer.h"
 
+
+
 // The mode in which width and height gets calculated (How the value will be translated)
 enum Alignment {
 	VERTICAL,
@@ -35,8 +37,32 @@ enum Overflow {
 	VISIBLE
 };
 
+/*
+space - between
+The items are evenly distributed within the alignment container along the main axis.
+The spacing between each pair of adjacent items is the same.The first item is flush 
+with the main - start edge, and the last item is flush with the main - end edge.
+
+space - around
+The items are evenly distributed within the alignment container along the main axis.
+The spacing between each pair of adjacent items is the same.The empty space before the 
+first and after the last item equals half of the space between each pair of adjacent 
+items.If there is only one item, it will be centered.
+
+space - evenly
+The items are evenly distributed within the alignment container along the main axis.
+The spacing between each pair of adjacent items, the main - start edge and the first 
+item, and the main - end edge and the last item, are all exactly the same.
+*/
+
+enum Spacing {
+	SPACE_BETWEEN,
+	SPACE_AROUND,
+	SPACE_EVENLY
+};
+
 // these will all be placed in the FreeElement list for a render pass after the Document Tree
-enum Positioning {
+enum PositioningType {
 	STATIC,
 	RELATIVE,
 	FIXED,	
@@ -92,6 +118,28 @@ that it can cause situations where the fixed element overlaps content such that 
 inaccessible. The trick is having enough space to avoid that, and tricks like this.
 */
 
+struct Positioning {
+
+	Positioning() : positioningType(STATIC), top(0), bottom(0), left(0), right(0), positionCenterHorizontally(false), positionCenterVertically(false), mode(PIXELS)
+	{
+
+	}
+
+	~Positioning() {
+
+	}
+	// variables for positioning
+	PositioningType positioningType;
+	int top;
+	int bottom;
+	int left;
+	int right;
+	bool positionCenterVertically;
+	bool positionCenterHorizontally;
+	Mode mode;
+
+};
+
 class Element
 {
 public:
@@ -137,6 +185,7 @@ public:
 	glm::vec2 topRight;
 	glm::vec2 bottomLeft;
 	glm::vec2 bottomRight;
+	
 
 	Element();
 	Element(std::string name);
@@ -159,8 +208,12 @@ public:
 	void AdjustIfNonStatic();
 	void CalculateContentSize();
 	void CalculateBoxSize();
+	// to be used for space between and space around
 	void CalculateChildrenWidth();
 	void CalculateChildrenHeight();
+
+	void CalculateChildrenWidthWithMargins();
+	void CalculateChildrenHeightWithMargins();
 	void SetFillWidth();
 	void SetFillHeight();
 	void AddChild(Element* child);
@@ -174,6 +227,12 @@ public:
 	void SetChildrensParentContentBorders(glm::vec4 borders);
 
 	void SetScreenSize(int width, int height);
+
+	// methods for RELATIVE, FIXED, ABSOLUTE
+	void CalculatePositionRelative();
+	void CalculatePositionFixed();
+	void CalculatePositionAbsolute();
+	glm::vec2 GetCenter(); // to be used to center an element
 
 	// corner radius methods
 	void SetRadius(int radius);
@@ -206,6 +265,12 @@ public:
 	int GetMarginBottom();
 	int GetMarginLeft();
 	int GetMarginRight();
+
+	//Positioning methods
+	int GetTop();
+	int GetBottom();
+	int GetLeft();
+	int GetRight();
 
 
 private:

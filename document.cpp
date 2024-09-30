@@ -230,6 +230,7 @@ void Document::SetAllElementsPositions() {
 }
 */
 
+// TODO: Fix this so that FIXED and ABSOLUTE elements are ignored in the positioning
 void Document::SetAllElementsPositions() {
 	//std::cout << "Document::SetAllElementsPositions():" << std::endl;
 	std::queue<Element*> elQueue;
@@ -241,7 +242,7 @@ void Document::SetAllElementsPositions() {
 		//std::cout << curr->name << std::endl;
 		//curr->CalculatePositions();
 		curr->CalculateBoxPosition();
-		if (curr->positioning != STATIC) {
+		if (curr->positioning.positioningType != STATIC) {
 			curr->AdjustIfNonStatic();
 		}
 		curr->CalculateContentPosition();
@@ -262,8 +263,8 @@ void Document::SetAllElementsChildrenWidthAndHeight() {
 		Element* curr = elQueue.front();
 
 		
-		curr->CalculateChildrenWidth();
-		curr->CalculateChildrenHeight();
+		curr->CalculateChildrenWidthWithMargins();
+		curr->CalculateChildrenHeightWithMargins();
 		elQueue.pop();
 		Element* currChild = curr->headChild;
 		while (currChild != nullptr) {

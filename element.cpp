@@ -21,12 +21,13 @@ Element::Element(std::string name) :
 	alignment(VERTICAL), 
 	overflow(HIDDEN), 
 	alignContent(START), 
-	alignItems(START_ITEMS), 
+	alignItems(START_ITEMS),
 	childAfter(nullptr), 
 	childBefore(nullptr), 
 	parentContentBorders(glm::vec4(1, -1, -1, 1)), 
 	theRealContentBorders(glm::vec4(1, -1, -1, 1)), 
 	radius(0)
+
 {
 
 }
@@ -529,9 +530,68 @@ void Element::CalculateBoxPositionVertical() {
 	}
 
 }
-
+// TODO: make the adjustments for RELATIVE, FIXED, ABSOLUTE
 void Element::AdjustIfNonStatic() {
+	if (this->positioning.positioningType == FIXED) {
+		this->CalculatePositionFixed();
+	}
+}
 
+/*
+~fixed
+
+A fixed position element is positioned relative to the viewport, or the browser window
+itself. The viewport doesn’t change when the window is scrolled, so a fixed positioned
+element will stay right where it is when the page is scrolled.
+
+This might be used for something like a navigation bar that you want to remain visible at
+all times regardless of the pages scroll position. The concern with fixed positioning is
+that it can cause situations where the fixed element overlaps content such that is is
+inaccessible. The trick is having enough space to avoid that, and tricks like this.
+*/
+void Element::CalculatePositionFixed() {
+	if (this->positioning.positionCenterHorizontally == true) {
+
+	}
+	else if (this->positioning.positionCenterVertically == true) {
+
+	}
+}
+
+int Element::GetTop() {
+	if (this->positioning.mode == PIXELS) return this->positioning.top;
+
+	int screenHeight = this->screenHeight;
+
+	float percentage = (float)this->positioning.top / 100.0;
+	return screenHeight * percentage;
+}
+
+int Element::GetBottom() {
+	if (this->positioning.mode == PIXELS) return this->positioning.bottom;
+
+	int screenHeight = this->screenHeight;
+
+	float percentage = (float)this->positioning.bottom / 100.0;
+	return screenHeight * percentage;
+}
+
+int Element::GetLeft() {
+	if (this->positioning.mode == PIXELS) return this->positioning.left;
+
+	int screenWidth = this->screenWidth;
+
+	float percentage = (float)this->positioning.left / 100.0;
+	return screenWidth * percentage;
+}
+
+int Element::GetRight() {
+	if (this->positioning.mode == PIXELS) return this->positioning.right;
+
+	int screenWidth = this->screenWidth;
+
+	float percentage = (float)this->positioning.right / 100.0;
+	return screenWidth * percentage;
 }
 
 void Element::CalculateContentPosition() {
@@ -617,7 +677,7 @@ void Element::AddChild(Element* child) {
 
 void Element::RenderBox(BoxRenderer* boxRenderer) {
 	if (this->parent == nullptr) {
-		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
+		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
 	}
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
@@ -626,7 +686,7 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
-		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
+		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
 	}
 	
 }
@@ -661,7 +721,7 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wire
 	}
 }
 
-void Element::CalculateChildrenWidth() {
+void Element::CalculateChildrenWidthWithMargins() {
 	if (this->headChild == nullptr) {
 		this->childrenWidth = 0;
 	}
@@ -669,6 +729,10 @@ void Element::CalculateChildrenWidth() {
 	if (this->alignment == HORIZONTAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
+			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+				curr = curr->childAfter;
+				continue; 
+			}
 			width += curr->boxSize.x;
 			if (curr->childAfter != nullptr) {
 				// get both margins
@@ -682,6 +746,74 @@ void Element::CalculateChildrenWidth() {
 	else if (this->alignment == VERTICAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
+			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+				curr = curr->childAfter;
+				continue;
+			}			
+			if (curr->boxSize.x > width) {
+				width = curr->boxSize.x;
+			}
+			curr = curr->childAfter;
+		}
+	}
+	this->childrenWidth = width;
+}
+
+void Element::CalculateChildrenHeightWithMargins() {
+	if (this->headChild == nullptr) {
+		this->childrenHeight = 0;
+	}
+	int height = 0;
+	if (this->alignment == HORIZONTAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+				curr = curr->childAfter;
+				continue;
+			}
+			if (curr->boxSize.y > height) {
+				height = curr->boxSize.y;
+			}
+			curr = curr->childAfter;
+		}
+	}
+	else if (this->alignment == VERTICAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+				curr = curr->childAfter;
+				continue;
+			}
+			height += curr->boxSize.y;
+			curr = curr->childAfter;
+		}
+	}
+	this->childrenHeight = height;
+}
+
+void Element::CalculateChildrenWidth() {
+	if (this->headChild == nullptr) {
+		this->childrenWidth = 0;
+	}
+	int width = 0;
+	if (this->alignment == HORIZONTAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+				curr = curr->childAfter;
+				continue;
+			}
+			width += curr->boxSize.x;
+			curr = curr->childAfter;
+		}
+	}
+	else if (this->alignment == VERTICAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+				curr = curr->childAfter;
+				continue;
+			}
 			if (curr->boxSize.x > width) {
 				width = curr->boxSize.x;
 			}

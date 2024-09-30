@@ -93,6 +93,7 @@ void Program::Init()
 	firstBox->boxModel.SetPaddingAll(25);
 	firstBox->boxModel.SetMarginAll(25);
 	firstBox->SetRadius(25);
+	firstBox->positioning.positioningType = FIXED;
 	this->Doc.root->overflow = VISIBLE;
 
 	secondBox->boxModel.SetSize(500, 100);
@@ -141,7 +142,9 @@ void Program::Init()
 	//container->PrintInfo();
 	//firstBox->CalculateCornerCoords();
 	//container->PrintCornerCoords();
+	//firstBox->PrintCornerCoords();
 	//container->PrintCornerCoords();
+	//this->Doc.root->PrintCornerCoords();
 }
 
 void Program::ProcessInput(float dt)

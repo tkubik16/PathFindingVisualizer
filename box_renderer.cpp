@@ -21,7 +21,7 @@ void BoxRenderer::SetScreenHeight(int height) {
     this->screenHeight = height;
 }
 
-void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
+void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, float rotate, glm::vec3 color)
 {
     // prepare transformations
     this->boxShader.Use();
@@ -38,7 +38,16 @@ void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size
 
     // render textured quad
     this->boxShader.SetVector3f("boxColor", color);
+    this->boxShader.SetVector2f("topLeft", topLeft);
+    this->boxShader.SetVector2f("topRight", topRight);
+    this->boxShader.SetVector2f("bottomLeft", bottomLeft);
+    this->boxShader.SetVector2f("bottomRight", bottomRight);
+    this->boxShader.SetVector2f("screenSize", screenSize);
+    this->boxShader.SetFloat("radius", radius);
 
+
+    
+    
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
 
@@ -74,6 +83,8 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
     this->boxOverflowHiddenShader.SetVector2f("bottomRight", bottomRight);
     this->boxOverflowHiddenShader.SetVector2f("screenSize", screenSize);
     this->boxOverflowHiddenShader.SetFloat("radius", radius);
+
+    
 
     //std::cout << radius << std::endl;
     //std::cout << "bottomRight" << std::endl;
