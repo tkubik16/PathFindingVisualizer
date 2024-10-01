@@ -212,6 +212,22 @@ void Element::PrintInfo() {
 	std::cout << std::endl;
 }
 
+void Element::PrintPositioning() {
+	std::cout << "PositionType: " << std::endl;
+	if (this->positioning.positioningType == STATIC) {
+		std::cout << "STATIC" << std::endl;
+	}
+	else if (this->positioning.positioningType == RELATIVE) {
+		std::cout << "RELATIVE" << std::endl;
+	}
+	else if (this->positioning.positioningType == ABSOLUTE) {
+		std::cout << "ABSOLUTE" << std::endl;
+	}
+	else if (this->positioning.positioningType == FIXED) {
+		std::cout << "FIXED" << std::endl;
+	}
+}
+
 void Element::PrintBorders() {
 	std::cout << "Borders(topY, bottomY, leftX, rightX):" << std::endl;
 	std::cout << this->parentContentBorders.x << " " << this->parentContentBorders.y << " " << this->parentContentBorders.z << " " << this->parentContentBorders.w << std::endl;
@@ -292,6 +308,38 @@ bool FirstChildToParent(Element* element) {
 	return false;
 }
 
+bool FirstInlineChildToParent(Element* element) {
+	Element* parent = element->parent;
+	if (parent->headChild == nullptr) return false;
+
+	Element* curr = parent->headChild;
+	while (curr != nullptr) {
+
+		if (curr->positioning.positioningType == STATIC || curr->positioning.positioningType == RELATIVE) {
+			if (curr == element) return true;
+			else break;
+		}
+		curr = curr->childAfter;
+	}
+	return false;
+}
+
+Element* GetInlineChildBefore(Element* element) {
+	if (element->childBefore == nullptr) {
+		std::cout << "ERROR::ELEMENT GetInlineChildBefore(): element does not have a child before." << std::endl;
+		return nullptr;
+	}
+	Element* curr = element->childBefore;
+	while (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) {
+		if (curr->childBefore == nullptr) {
+			std::cout << "ERROR::ELEMENT GetInlineChildBefore(): Somehow no element before this one is STATIC or RELATIVE." << std::endl;
+			return nullptr;
+		}
+		curr = curr->childBefore;
+	}
+	return curr;
+}
+
 void Element::CalculateBoxPosition() {
 	//std::cout << "Element::CalculateBoxPosition():" << std::endl;
 	if (this->parent == nullptr) {
@@ -329,6 +377,9 @@ void Element::CalculateBoxPositionRoot() {
 }
 
 void Element::CalculateBoxPositionHorizontal() {
+	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+		return;
+	}
 	//std::cout << "Element::CalculateBoxPositionHorizontal():" << std::endl;
 	int xOffset = 0;
 	int yOffset = 0;
@@ -339,7 +390,7 @@ void Element::CalculateBoxPositionHorizontal() {
 	int parentContentX = this->parent->contentPosition.x;
 	int parentContentY = this->parent->contentPosition.y;
 	// if the element is the first child it lines up with start of content not taking its left margin into account
-	if (FirstChildToParent(this)) {
+	if (FirstInlineChildToParent(this)) {
 		
 
 		// set box position x value
@@ -369,6 +420,15 @@ void Element::CalculateBoxPositionHorizontal() {
 
 			this->boxPosition.x = childrenStartX;
 			//this->boxPosition.y = parentContentY;
+
+		}
+		else if (this->parent->alignContent == SPACE_EVENLY) {
+
+		}
+		else if (this->parent->alignContent == SPACE_BETWEEN) {
+
+		}
+		else if (this->parent->alignContent == SPACE_AROUND) {
 
 		}
 		else {
@@ -403,7 +463,8 @@ void Element::CalculateBoxPositionHorizontal() {
 			std::cout << "ELEMENT::ERROR: childBefore is nullptr when it is not the firstChild to parent" << std::endl;
 		}
 			
-		Element* childBefore = this->childBefore;
+		//Element* childBefore = this->childBefore;
+		Element* childBefore = GetInlineChildBefore(this);
 		if (childBefore != nullptr)
 		{
 			int margin = (childBefore->GetMarginRight() > this->GetMarginLeft()) ? childBefore->GetMarginRight() : this->GetMarginLeft();
@@ -431,6 +492,10 @@ void Element::CalculateBoxPositionHorizontal() {
 }
 
 void Element::CalculateBoxPositionVertical() {
+	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+		return;
+	}
+
 	//std::cout << "Element::CalculateBoxPositionVertical():" << std::endl;
 	int xOffset = 0;
 	int yOffset = 0;
@@ -441,7 +506,7 @@ void Element::CalculateBoxPositionVertical() {
 	int parentContentX = this->parent->contentPosition.x;
 	int parentContentY = this->parent->contentPosition.y;
 	// if the element is the first child it lines up with start of content not taking its left margin into account
-	if (FirstChildToParent(this)) {
+	if (FirstInlineChildToParent(this)) {
 		
 
 		// set box position for y 
@@ -471,6 +536,15 @@ void Element::CalculateBoxPositionVertical() {
 
 			//this->boxPosition.x = parentContentX;
 			this->boxPosition.y = childrenStartY;
+
+		}
+		else if (this->parent->alignContent == SPACE_EVENLY) {
+
+		}
+		else if (this->parent->alignContent == SPACE_BETWEEN) {
+
+		}
+		else if (this->parent->alignContent == SPACE_AROUND) {
 
 		}
 		else {
@@ -505,7 +579,9 @@ void Element::CalculateBoxPositionVertical() {
 			std::cout << "ELEMENT::ERROR: childBefore is nullptr when it is not the firstChild to parent" << std::endl;
 		}
 
-		Element* childBefore = this->childBefore;
+		Element* childBefore = GetInlineChildBefore(this);
+
+		//Element* childBefore = this->childBefore;
 		if (childBefore != nullptr)
 		{
 			int margin = (childBefore->GetMarginBottom() > this->GetMarginTop()) ? childBefore->GetMarginBottom() : this->GetMarginTop();
@@ -756,7 +832,7 @@ void Element::CalculateChildrenWidthWithMargins() {
 			curr = curr->childAfter;
 		}
 	}
-	this->childrenWidth = width;
+	this->childrenWidthWithMargins = width;
 }
 
 void Element::CalculateChildrenHeightWithMargins() {
@@ -788,7 +864,7 @@ void Element::CalculateChildrenHeightWithMargins() {
 			curr = curr->childAfter;
 		}
 	}
-	this->childrenHeight = height;
+	this->childrenHeightWithMargins = height;
 }
 
 void Element::CalculateChildrenWidth() {

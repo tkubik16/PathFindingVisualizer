@@ -23,7 +23,10 @@ enum Alignment {
 enum AlignContent {
 	CENTER_CONTENT,
 	START,
-	END
+	END,
+	SPACE_BETWEEN,
+	SPACE_AROUND,
+	SPACE_EVENLY
 };
 
 enum AlignItems {
@@ -55,11 +58,13 @@ The spacing between each pair of adjacent items, the main - start edge and the f
 item, and the main - end edge and the last item, are all exactly the same.
 */
 
+/*
 enum Spacing {
 	SPACE_BETWEEN,
 	SPACE_AROUND,
 	SPACE_EVENLY
 };
+*/
 
 // these will all be placed in the FreeElement list for a render pass after the Document Tree
 enum PositioningType {
@@ -175,6 +180,8 @@ public:
 	Alignment alignment; 
 	int childrenWidth;
 	int childrenHeight;
+	int childrenWidthWithMargins;
+	int childrenHeightWithMargins;
 	// children overflow hidden or not 
 	Overflow overflow;
 	// Positioning
@@ -195,6 +202,7 @@ public:
 	void PrintBorders();
 	void PrintRealBorders();
 	void PrintCornerCoords();
+	void PrintPositioning();
 
 
 	void SetChildrensParentDimensions();

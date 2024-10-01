@@ -93,18 +93,20 @@ void Program::Init()
 	firstBox->boxModel.SetPaddingAll(25);
 	firstBox->boxModel.SetMarginAll(25);
 	firstBox->SetRadius(25);
-	firstBox->positioning.positioningType = FIXED;
+	//firstBox->positioning.positioningType = ABSOLUTE;
 	this->Doc.root->overflow = VISIBLE;
 
 	secondBox->boxModel.SetSize(500, 100);
 	//secondBox->SetBoxWidthMode(PERCENTAGE);
 	secondBox->boxModel.SetPaddingAll(25);
 	secondBox->boxModel.SetMarginAll(25);
+	secondBox->positioning.positioningType = FIXED;
 	secondBox->SetRadius(100);
 
 	container->boxModel.SetSize(100, 100);
 	container->boxModel.SetPaddingAll(25);
 	container->SetRadius(200);
+	//container->positioning.positioningType = FIXED;
 	container->alignContent = END;
 	//container->SetBoxWidthMode(PERCENTAGE);
 	//container->SetBoxHeightMode(PERCENTAGE);
@@ -144,7 +146,11 @@ void Program::Init()
 	//container->PrintCornerCoords();
 	//firstBox->PrintCornerCoords();
 	//container->PrintCornerCoords();
-	//this->Doc.root->PrintCornerCoords();
+	this->Doc.root->PrintPositioning();
+	container->PrintPositioning();
+	firstBox->PrintPositioning();
+	secondBox->PrintPositioning();
+
 }
 
 void Program::ProcessInput(float dt)
