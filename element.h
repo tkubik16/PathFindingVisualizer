@@ -66,7 +66,7 @@ enum Spacing {
 };
 */
 
-// these will all be placed in the FreeElement list for a render pass after the Document Tree
+// FIXED and ABSOLUTE will be placed in the FreeElement list for a render pass after the Document Tree
 enum PositioningType {
 	STATIC,
 	RELATIVE,
@@ -203,6 +203,7 @@ public:
 	void PrintRealBorders();
 	void PrintCornerCoords();
 	void PrintPositioning();
+	void PrintChildrenWidthAndHeight();
 
 
 	void SetChildrensParentDimensions();
@@ -213,12 +214,13 @@ public:
 	void CalculateBoxPositionHorizontal();
 	void CalculateBoxPositionVertical();
 	void CalculateContentPosition();
-	void AdjustIfNonStatic();
+	
 	void CalculateContentSize();
 	void CalculateBoxSize();
-	// to be used for space between and space around
+	// to be used for space between and space around adn space evenly
 	void CalculateChildrenWidth();
 	void CalculateChildrenHeight();
+	int GetNumInlineChildren();
 
 	void CalculateChildrenWidthWithMargins();
 	void CalculateChildrenHeightWithMargins();
@@ -237,10 +239,14 @@ public:
 	void SetScreenSize(int width, int height);
 
 	// methods for RELATIVE, FIXED, ABSOLUTE
+	void AdjustIfNonStatic();
 	void CalculatePositionRelative();
 	void CalculatePositionFixed();
 	void CalculatePositionAbsolute();
-	glm::vec2 GetCenter(); // to be used to center an element
+	void CenterHorizontal(); 
+	void CenterVertical();
+	glm::vec2 GetCenteringOffsets();
+
 
 	// corner radius methods
 	void SetRadius(int radius);

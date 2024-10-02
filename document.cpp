@@ -242,6 +242,24 @@ void Document::SetAllElementsPositions() {
 		//std::cout << curr->name << std::endl;
 		//curr->CalculatePositions();
 		curr->CalculateBoxPosition();
+
+		curr->CalculateContentPosition();
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}
+
+void Document::AdjustElementsIfNonStatic() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+
 		if (curr->positioning.positioningType != STATIC) {
 			curr->AdjustIfNonStatic();
 		}
@@ -265,6 +283,8 @@ void Document::SetAllElementsChildrenWidthAndHeight() {
 		
 		curr->CalculateChildrenWidthWithMargins();
 		curr->CalculateChildrenHeightWithMargins();
+		curr->CalculateChildrenWidth();
+		curr->CalculateChildrenHeight();
 		elQueue.pop();
 		Element* currChild = curr->headChild;
 		while (currChild != nullptr) {

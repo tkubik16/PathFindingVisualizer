@@ -266,6 +266,13 @@ void Element::PrintChildren() {
 	}
 }
 
+void Element::PrintChildrenWidthAndHeight() {
+	std::cout << "With margins (width, height):" << std::endl;
+	std::cout << "    " << this->childrenWidthWithMargins << ", " << this->childrenHeightWithMargins << std::endl;
+	std::cout << "Without margins (width, height):" << std::endl;
+	std::cout << "    " << this->childrenWidth << ", " << this->childrenHeight << std::endl;
+}
+
 void Element::CalculatePositions() {
 	//std::cout << "Element::CalculateBoxPositions()" << std::endl;
 	int xOffset = 0;
@@ -340,6 +347,19 @@ Element* GetInlineChildBefore(Element* element) {
 	return curr;
 }
 
+int Element::GetNumInlineChildren() {
+	if (this->headChild == nullptr) return 0;
+	int num = 0;
+	Element* curr = this->headChild;
+	while (curr != nullptr) {
+		if (curr->positioning.positioningType == STATIC || curr->positioning.positioningType == RELATIVE) {
+			num++;
+		}
+		curr = curr->childAfter;
+	}
+	return num;
+}
+
 void Element::CalculateBoxPosition() {
 	//std::cout << "Element::CalculateBoxPosition():" << std::endl;
 	if (this->parent == nullptr) {
@@ -399,10 +419,10 @@ void Element::CalculateBoxPositionHorizontal() {
 			//this->boxPosition.y = parentContentY;
 		}
 		else if (this->parent->alignContent == CENTER_CONTENT) {
-			int childrenWidth = this->parent->childrenWidth;
+			int childrenWidthWithMargins = this->parent->childrenWidthWithMargins;
 			int parentWidth = this->parent->GetContentWidth();
 
-			int childrenCenter = childrenWidth / 2;
+			int childrenCenter = childrenWidthWithMargins / 2;
 			int parentCenter = parentWidth / 2;
 
 			int childrenStartX = parentContentX + parentCenter - childrenCenter;
@@ -412,24 +432,45 @@ void Element::CalculateBoxPositionHorizontal() {
 
 		}
 		else if (this->parent->alignContent == END) {
-			int childrenWidth = this->parent->childrenWidth;
+			int childrenWidthWithMargins = this->parent->childrenWidthWithMargins;
 			int parentWidth = this->parent->GetContentWidth();
 
 
-			int childrenStartX = parentContentX + parentWidth - childrenWidth;
+			int childrenStartX = parentContentX + parentWidth - childrenWidthWithMargins;
 
 			this->boxPosition.x = childrenStartX;
 			//this->boxPosition.y = parentContentY;
 
 		}
 		else if (this->parent->alignContent == SPACE_EVENLY) {
-
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.x = parentContentX + spacing;
 		}
 		else if (this->parent->alignContent == SPACE_BETWEEN) {
-
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren - 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.x = parentContentX;
 		}
 		else if (this->parent->alignContent == SPACE_AROUND) {
-
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 3);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.x = parentContentX + spacing * 2;
 		}
 		else {
 			this->boxPosition.x = parentContentX;
@@ -467,10 +508,42 @@ void Element::CalculateBoxPositionHorizontal() {
 		Element* childBefore = GetInlineChildBefore(this);
 		if (childBefore != nullptr)
 		{
-			int margin = (childBefore->GetMarginRight() > this->GetMarginLeft()) ? childBefore->GetMarginRight() : this->GetMarginLeft();
-			int posX = childBefore->boxPosition.x + childBefore->boxSize.x + margin;
-
-			this->boxPosition.x = posX;
+			if (this->parent->alignContent == SPACE_EVENLY) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.x = childBefore->boxPosition.x + childBefore->boxSize.x + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_BETWEEN) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren - 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.x = childBefore->boxPosition.x + childBefore->boxSize.x + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_AROUND) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 3);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.x = childBefore->boxPosition.x + childBefore->boxSize.x + spacing;
+			}
+			else {
+				int margin = (childBefore->GetMarginRight() > this->GetMarginLeft()) ? childBefore->GetMarginRight() : this->GetMarginLeft();
+				int posX = childBefore->boxPosition.x + childBefore->boxSize.x + margin;
+				this->boxPosition.x = posX;
+			}
+			
 			if (this->parent->alignItems == START_ITEMS) {
 				this->boxPosition.y = childBefore->boxPosition.y;
 			}
@@ -515,10 +588,10 @@ void Element::CalculateBoxPositionVertical() {
 			this->boxPosition.y = parentContentY;
 		}
 		else if (this->parent->alignContent == CENTER_CONTENT) {
-			int childrenHeight = this->parent->childrenHeight;
+			int childrenHeightWithMargins = this->parent->childrenHeightWithMargins;
 			int parentHeight = this->parent->GetContentHeight();
 
-			int childrenCenter = childrenHeight / 2;
+			int childrenCenter = childrenHeightWithMargins / 2;
 			int parentCenter = parentHeight / 2;
 
 			int childrenStartY = parentContentY + parentCenter - childrenCenter;
@@ -528,24 +601,45 @@ void Element::CalculateBoxPositionVertical() {
 
 		}
 		else if (this->parent->alignContent == END) {
-			int childrenHeight = this->parent->childrenHeight;
+			int childrenHeightWithMargins = this->parent->childrenHeightWithMargins;
 			int parentHeight = this->parent->GetContentHeight();
 
 
-			int childrenStartY = parentContentY + parentHeight - childrenHeight;
+			int childrenStartY = parentContentY + parentHeight - childrenHeightWithMargins;
 
 			//this->boxPosition.x = parentContentX;
 			this->boxPosition.y = childrenStartY;
 
 		}
 		else if (this->parent->alignContent == SPACE_EVENLY) {
-
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.y = parentContentY + spacing;
 		}
 		else if (this->parent->alignContent == SPACE_BETWEEN) {
-
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren - 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.y = parentContentY;
 		}
 		else if (this->parent->alignContent == SPACE_AROUND) {
-
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 3);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.y = parentContentY + spacing * 2;
 		}
 		else {
 			//this->boxPosition.x = parentContentX;
@@ -584,10 +678,42 @@ void Element::CalculateBoxPositionVertical() {
 		//Element* childBefore = this->childBefore;
 		if (childBefore != nullptr)
 		{
-			int margin = (childBefore->GetMarginBottom() > this->GetMarginTop()) ? childBefore->GetMarginBottom() : this->GetMarginTop();
-			int posY = childBefore->boxPosition.y + childBefore->boxSize.y + margin;
+			if (this->parent->alignContent == SPACE_EVENLY) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.y = childBefore->boxPosition.y + childBefore->boxSize.y + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_BETWEEN) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren - 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.y = childBefore->boxPosition.y + childBefore->boxSize.y + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_AROUND) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 3);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.y = childBefore->boxPosition.y + childBefore->boxSize.y + spacing;
+			}
+			else {
+				int margin = (childBefore->GetMarginBottom() > this->GetMarginTop()) ? childBefore->GetMarginBottom() : this->GetMarginTop();
+				int posY = childBefore->boxPosition.y + childBefore->boxSize.y + margin;
 
-			this->boxPosition.y = posY;
+				this->boxPosition.y = posY;
+			}
 			if (this->parent->alignItems == START_ITEMS) {
 				this->boxPosition.x = parentContentX;
 			}
@@ -611,6 +737,17 @@ void Element::AdjustIfNonStatic() {
 	if (this->positioning.positioningType == FIXED) {
 		this->CalculatePositionFixed();
 	}
+	else if (this->positioning.positioningType == RELATIVE) {
+		this->CalculatePositionRelative();
+	}
+}
+
+void Element::CalculatePositionRelative() {
+	// yes they will interfere with eachother
+	this->boxPosition.x += this->GetLeft();
+	this->boxPosition.x -= this->GetRight();
+	this->boxPosition.y += this->GetTop();
+	this->boxPosition.y -= this->GetBottom();
 }
 
 /*
@@ -835,7 +972,7 @@ void Element::CalculateChildrenWidthWithMargins() {
 	this->childrenWidthWithMargins = width;
 }
 
-void Element::CalculateChildrenHeightWithMargins() {
+void Element::CalculateChildrenHeight() {
 	if (this->headChild == nullptr) {
 		this->childrenHeight = 0;
 	}
@@ -864,7 +1001,7 @@ void Element::CalculateChildrenHeightWithMargins() {
 			curr = curr->childAfter;
 		}
 	}
-	this->childrenHeightWithMargins = height;
+	this->childrenHeight = height;
 }
 
 void Element::CalculateChildrenWidth() {
@@ -899,7 +1036,7 @@ void Element::CalculateChildrenWidth() {
 	this->childrenWidth = width;
 }
 
-void Element::CalculateChildrenHeight() {
+void Element::CalculateChildrenHeightWithMargins() {
 	if (this->headChild == nullptr) {
 		this->childrenHeight = 0;
 	}
@@ -926,7 +1063,7 @@ void Element::CalculateChildrenHeight() {
 			curr = curr->childAfter;
 		}
 	}
-	this->childrenHeight = height;
+	this->childrenHeightWithMargins = height;
 }
 
 glm::vec4 Element::CalculateBorders() {

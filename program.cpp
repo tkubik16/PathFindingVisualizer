@@ -88,26 +88,28 @@ void Program::Init()
 	//this->Doc.AddFixedElement(fixedElement);
 	//this->Doc.UpdateFixedElementZIndex(fixedElement);
 
-	firstBox->boxModel.SetSize(500, 100);
+	firstBox->boxModel.SetSize(100, 100);
 	//firstBox->SetBoxWidthMode(PERCENTAGE);
 	firstBox->boxModel.SetPaddingAll(25);
-	firstBox->boxModel.SetMarginAll(25);
-	firstBox->SetRadius(25);
+	//firstBox->boxModel.SetMarginAll(25);
+	//firstBox->SetRadius(25);
 	//firstBox->positioning.positioningType = ABSOLUTE;
 	this->Doc.root->overflow = VISIBLE;
 
-	secondBox->boxModel.SetSize(500, 100);
+	secondBox->boxModel.SetSize(100, 100);
 	//secondBox->SetBoxWidthMode(PERCENTAGE);
 	secondBox->boxModel.SetPaddingAll(25);
 	secondBox->boxModel.SetMarginAll(25);
-	secondBox->positioning.positioningType = FIXED;
+	//secondBox->positioning.positioningType = FIXED;
 	secondBox->SetRadius(100);
 
 	container->boxModel.SetSize(100, 100);
 	container->boxModel.SetPaddingAll(25);
 	container->SetRadius(200);
-	//container->positioning.positioningType = FIXED;
+	container->positioning.positioningType = FIXED;
 	container->alignContent = END;
+	//container->positioning.bottom = 100;
+	//container->positioning.mode = PERCENTAGE;
 	//container->SetBoxWidthMode(PERCENTAGE);
 	//container->SetBoxHeightMode(PERCENTAGE);
 	
@@ -121,7 +123,7 @@ void Program::Init()
 	this->Doc.root->AddChild(firstBox);
 	this->Doc.root->AddChild(secondBox);
 	this->Doc.root->alignment = VERTICAL;
-	this->Doc.root->alignContent = START;
+	this->Doc.root->alignContent = SPACE_AROUND;
 	//this->Doc.root->alignItems = END_ITEMS;
 	//this->Doc.root->overflow = VISIBLE;
 
@@ -134,6 +136,7 @@ void Program::Init()
 	this->Doc.SetAllElementsSizes();
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
 	this->Doc.SetAllElementsPositions();
+	this->Doc.AdjustElementsIfNonStatic();
 	this->Doc.SetAllElementsParentsContentBorders();
 	this->Doc.SetAllElementsRealContentBorders();
 	this->Doc.SetAllElementsCornerCoords();
@@ -146,10 +149,9 @@ void Program::Init()
 	//container->PrintCornerCoords();
 	//firstBox->PrintCornerCoords();
 	//container->PrintCornerCoords();
-	this->Doc.root->PrintPositioning();
-	container->PrintPositioning();
-	firstBox->PrintPositioning();
-	secondBox->PrintPositioning();
+	//this->Doc.root->PrintPositioning();
+	this->Doc.root->PrintChildrenWidthAndHeight();
+	
 
 }
 
@@ -195,6 +197,7 @@ void Program::UpdateScreenSize(int width, int height) {
 	this->Doc.SetAllElementsSizes();
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
 	this->Doc.SetAllElementsPositions();
+	this->Doc.AdjustElementsIfNonStatic();
 	this->Doc.SetAllElementsParentsContentBorders();
 	this->Doc.SetAllElementsRealContentBorders();
 	this->Doc.SetAllElementsCornerCoords();

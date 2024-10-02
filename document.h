@@ -50,6 +50,7 @@ public:
 	void SetAllElementsScreenSizes(int width, int height);
 	void SetAllElementsSizes();
 	void SetAllElementsPositions();
+	void AdjustElementsIfNonStatic();
 	void SetAllElementsChildrenWidthAndHeight();
 	void SetAllElementsParentsContentBorders();
 	void SetAllElementsRealContentBorders();
