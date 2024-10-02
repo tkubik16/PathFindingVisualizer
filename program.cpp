@@ -88,12 +88,19 @@ void Program::Init()
 	//this->Doc.AddFixedElement(fixedElement);
 	//this->Doc.UpdateFixedElementZIndex(fixedElement);
 
-	firstBox->boxModel.SetSize(100, 100);
+	firstBox->boxModel.SetSize(200, 200);
 	//firstBox->SetBoxWidthMode(PERCENTAGE);
 	firstBox->boxModel.SetPaddingAll(25);
 	//firstBox->boxModel.SetMarginAll(25);
 	//firstBox->SetRadius(25);
-	//firstBox->positioning.positioningType = ABSOLUTE;
+	firstBox->positioning.positioningType = ABSOLUTE;
+	firstBox->overflow = HIDDEN;
+	firstBox->positioning.centerHorizontally = true;
+	firstBox->positioning.centerVertically = true;
+	firstBox->positioning.left = -1;
+	firstBox->positioning.right = -1;
+	firstBox->positioning.top = -1;
+	firstBox->positioning.bottom = -1;
 	this->Doc.root->overflow = VISIBLE;
 
 	secondBox->boxModel.SetSize(100, 100);
@@ -106,8 +113,16 @@ void Program::Init()
 	container->boxModel.SetSize(100, 100);
 	container->boxModel.SetPaddingAll(25);
 	container->SetRadius(200);
-	container->positioning.positioningType = FIXED;
+	container->positioning.positioningType = ABSOLUTE;
+	container->positioning.centerHorizontally = true;
+	container->positioning.centerVertically = true;
 	container->alignContent = END;
+	container->positioning.mode = PERCENTAGE;
+	container->positioning.left = -1;
+	container->positioning.right = -1;
+	container->positioning.top = -1;
+	container->positioning.bottom = 75;
+	container->hideableViaOverflow = false;
 	//container->positioning.bottom = 100;
 	//container->positioning.mode = PERCENTAGE;
 	//container->SetBoxWidthMode(PERCENTAGE);
@@ -118,8 +133,8 @@ void Program::Init()
 	this->Doc.Init();
 
 	this->Doc.root->boxModel.SetPaddingAll(50);
-	this->Doc.root->AddChild(container);
-
+	//this->Doc.root->AddChild(container);
+	firstBox->AddChild(container);
 	this->Doc.root->AddChild(firstBox);
 	this->Doc.root->AddChild(secondBox);
 	this->Doc.root->alignment = VERTICAL;

@@ -11,22 +11,23 @@ Element::Element() : alignment(VERTICAL)
 
 }
 
-Element::Element(std::string name) : 
-	name(name), 
+Element::Element(std::string name) :
+	name(name),
 	zIndex(1),
-	boxPosition(0, 0), 
-	boxSize(0, 0), 
-	rotation(0), 
-	parent(nullptr), 
-	alignment(VERTICAL), 
-	overflow(HIDDEN), 
-	alignContent(START), 
+	boxPosition(0, 0),
+	boxSize(0, 0),
+	rotation(0),
+	parent(nullptr),
+	alignment(VERTICAL),
+	overflow(HIDDEN),
+	alignContent(START),
 	alignItems(START_ITEMS),
-	childAfter(nullptr), 
-	childBefore(nullptr), 
-	parentContentBorders(glm::vec4(1, -1, -1, 1)), 
-	theRealContentBorders(glm::vec4(1, -1, -1, 1)), 
-	radius(0)
+	childAfter(nullptr),
+	childBefore(nullptr),
+	parentContentBorders(glm::vec4(1, -1, -1, 1)),
+	theRealContentBorders(glm::vec4(1, -1, -1, 1)),
+	radius(0),
+	hideableViaOverflow(true)
 
 {
 
@@ -740,6 +741,9 @@ void Element::AdjustIfNonStatic() {
 	else if (this->positioning.positioningType == RELATIVE) {
 		this->CalculatePositionRelative();
 	}
+	else if (this->positioning.positioningType == ABSOLUTE) {
+		this->CalculatePositionAbsolute();
+	}
 }
 
 void Element::CalculatePositionRelative() {
@@ -748,6 +752,56 @@ void Element::CalculatePositionRelative() {
 	this->boxPosition.x -= this->GetRight();
 	this->boxPosition.y += this->GetTop();
 	this->boxPosition.y -= this->GetBottom();
+}
+
+void Element::CalculatePositionAbsolute() {
+	Element* relativeOrAbsoluteParent = this->FindParentRelativeOrAbsolute();
+
+	glm::vec2 centeringOffsets = this->GetParentCenteringOffsets(relativeOrAbsoluteParent);
+
+	if (this->positioning.centerHorizontally == true) {
+		this->boxPosition.x = centeringOffsets.x;
+	}
+	if (this->positioning.centerVertically == true) {
+		this->boxPosition.y = centeringOffsets.y;
+	}
+	// the 4 positional movements which is distance from that edge
+	if (this->positioning.left > -1) {
+		int leftPixels = this->GetLeft(relativeOrAbsoluteParent);
+		int width = this->boxSize.x;
+
+		int parentLeftEdge = relativeOrAbsoluteParent->boxPosition.x;
+		this->boxPosition.x = parentLeftEdge;
+		this->boxPosition.x += leftPixels;
+	}
+	if (this->positioning.right > -1) {
+		int rightPixels = this->GetRight(relativeOrAbsoluteParent);
+		int width = this->boxSize.x;
+
+		int parentRightEdge = relativeOrAbsoluteParent->boxPosition.x + relativeOrAbsoluteParent->boxSize.x;
+		this->boxPosition.x = parentRightEdge - width;
+		this->boxPosition.x -= rightPixels;
+	}
+	if (this->positioning.top > -1) {
+		int topPixels = this->GetTop(relativeOrAbsoluteParent);
+		int height = this->boxSize.y;
+
+		int parentTopEdge = relativeOrAbsoluteParent->boxPosition.y;
+		this->boxPosition.y = parentTopEdge;
+		this->boxPosition.y += topPixels;
+	}
+	if (this->positioning.bottom > -1) {
+		int bottomPixels = this->GetBottom(relativeOrAbsoluteParent);
+		int height = this->boxSize.y;
+
+		int parentBottomEdge = relativeOrAbsoluteParent->boxPosition.y + relativeOrAbsoluteParent->boxSize.y;
+		this->boxPosition.y = parentBottomEdge - height;
+		this->boxPosition.y -= bottomPixels;
+	}
+	
+	
+	
+
 }
 
 /*
@@ -762,12 +816,124 @@ all times regardless of the pages scroll position. The concern with fixed positi
 that it can cause situations where the fixed element overlaps content such that is is
 inaccessible. The trick is having enough space to avoid that, and tricks like this.
 */
+
 void Element::CalculatePositionFixed() {
-	if (this->positioning.positionCenterHorizontally == true) {
+	glm::vec2 centeringOffsets = this->GetCenteringOffsets();
 
+	if (this->positioning.centerHorizontally == true) {
+		this->boxPosition.x = centeringOffsets.x;
 	}
-	else if (this->positioning.positionCenterVertically == true) {
+	if (this->positioning.centerVertically == true) {
+		this->boxPosition.y = centeringOffsets.y;
+	}
+	
+	// the 4 positional movements which is distance from that edge
+	if (this->positioning.left > -1) {
+		int leftPixels = this->GetLeft();
+		int width = this->boxSize.x;
+		
 
+		int parentLeftEdge = 0;
+		this->boxPosition.x = parentLeftEdge;
+		this->boxPosition.x += leftPixels;
+	}
+	if (this->positioning.right > -1) {
+		int rightPixels = this->GetRight();
+		int width = this->boxSize.x;
+		int screenWidth = this->screenWidth;
+
+		int parentRightEdge = screenWidth;
+		this->boxPosition.x = parentRightEdge - width;
+		this->boxPosition.x -= rightPixels;
+	}
+	if (this->positioning.top > -1) {
+		int topPixels = this->GetTop();
+		int height = this->boxSize.y;
+
+		int parentTopEdge = 0;
+		this->boxPosition.y = parentTopEdge;
+		this->boxPosition.y += topPixels;
+	}
+	if (this->positioning.bottom > -1) {
+		int bottomPixels = this->GetBottom();
+		int height = this->boxSize.y;
+		int screenHeight = this->screenHeight;
+
+		int parentBottomEdge = screenHeight;
+		this->boxPosition.y = parentBottomEdge - height;
+		this->boxPosition.y -= bottomPixels;
+	}
+}
+
+glm::vec2 Element::GetCenteringOffsets() {
+	if (this->positioning.positioningType == FIXED) {
+		int screenWidth = this->screenWidth;
+		int screenHeight = this->screenHeight;
+
+		int halfWidth = screenWidth / 2;
+		int halfHeight = screenHeight / 2;
+		int posX = halfWidth - (this->boxSize.x / 2);
+		int posY = halfHeight - (this->boxSize.y / 2);
+		return glm::vec2(posX, posY);
+	}
+
+	return glm::vec2(0, 0);
+}
+
+glm::vec2 Element::GetParentCenteringOffsets(Element* parent) {
+
+	int parentWidth = parent->boxSize.x;
+	int parentHeight = parent->boxSize.y;
+	int parentPosX = parent->boxPosition.x;
+	int parentPosY = parent->boxPosition.y;
+
+	int halfWidth = parentWidth / 2;
+	int halfHeight = parentHeight / 2;
+	int centerX = halfWidth + parentPosX;
+	int centerY = halfHeight + parentPosY;
+
+	int posX = centerX - (this->boxSize.x / 2);
+	int posY = centerY - (this->boxSize.y / 2);
+	return glm::vec2(posX, posY);
+	
+}
+
+Element* Element::FindParentRelativeOrAbsolute() {
+	if (this->parent == nullptr) return nullptr;
+
+	Element* curr = this->parent;
+	if (curr->parent == nullptr) return curr;
+	while (curr != nullptr || curr->parent != nullptr ) {
+		if (curr->positioning.positioningType == RELATIVE || curr->positioning.positioningType == ABSOLUTE) {
+			return curr;
+		}
+		curr = curr->parent;
+	}
+	return curr;
+}
+
+
+void Element::SetPositioningType(PositioningType type)
+{
+	if (type == ABSOLUTE) {
+		this->positioning.positioningType = ABSOLUTE;
+		this->positioning.left = -1;
+		this->positioning.right = -1;
+		this->positioning.top = -1;
+		this->positioning.bottom = -1;
+	}
+	else if (type == RELATIVE) {
+		this->positioning.positioningType = RELATIVE;
+	}
+	else if (type == FIXED) {
+		this->positioning.positioningType = FIXED;
+		this->positioning.left = -1;
+		this->positioning.right = -1;
+		this->positioning.top = -1;
+		this->positioning.bottom = -1;
+	}
+	else if (type == STATIC) {
+		this->positioning.positioningType = STATIC;
 	}
 }
 
@@ -805,6 +971,42 @@ int Element::GetRight() {
 
 	float percentage = (float)this->positioning.right / 100.0;
 	return screenWidth * percentage;
+}
+
+int Element::GetTop(Element* parent) {
+	if (this->positioning.mode == PIXELS) return this->positioning.top;
+
+	int parentHeight = parent->boxSize.y;
+
+	float percentage = (float)this->positioning.top / 100.0;
+	return parentHeight * percentage;
+}
+
+int Element::GetBottom(Element* parent) {
+	if (this->positioning.mode == PIXELS) return this->positioning.bottom;
+
+	int parentHeight = parent->boxSize.y;
+
+	float percentage = (float)this->positioning.bottom / 100.0;
+	return parentHeight * percentage;
+}
+
+int Element::GetLeft(Element* parent) {
+	if (this->positioning.mode == PIXELS) return this->positioning.left;
+
+	int parentWidth = parent->boxSize.x;
+
+	float percentage = (float)this->positioning.left / 100.0;
+	return parentWidth * percentage;
+}
+
+int Element::GetRight(Element* parent) {
+	if (this->positioning.mode == PIXELS) return this->positioning.right;
+
+	int parentWidth = parent->boxSize.x;
+
+	float percentage = (float)this->positioning.right / 100.0;
+	return parentWidth * percentage;
 }
 
 void Element::CalculateContentPosition() {
@@ -892,6 +1094,9 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	if (this->parent == nullptr) {
 		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
 	}
+	else if ( !this->hideableViaOverflow ) {
+		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+	}
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
@@ -921,6 +1126,9 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer) {
 
 void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe) {
 	if (this->parent == nullptr) {
+		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
+	}
+	else if (!this->hideableViaOverflow) {
 		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
 	}
 	else if (this->parent->overflow == HIDDEN) {

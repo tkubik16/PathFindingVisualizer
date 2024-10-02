@@ -125,7 +125,7 @@ inaccessible. The trick is having enough space to avoid that, and tricks like th
 
 struct Positioning {
 
-	Positioning() : positioningType(STATIC), top(0), bottom(0), left(0), right(0), positionCenterHorizontally(false), positionCenterVertically(false), mode(PIXELS)
+	Positioning() : positioningType(STATIC), top(0), bottom(0), left(0), right(0), centerHorizontally(false), centerVertically(false), mode(PIXELS)
 	{
 
 	}
@@ -139,8 +139,8 @@ struct Positioning {
 	int bottom;
 	int left;
 	int right;
-	bool positionCenterVertically;
-	bool positionCenterHorizontally;
+	bool centerVertically;
+	bool centerHorizontally;
 	Mode mode;
 
 };
@@ -184,6 +184,7 @@ public:
 	int childrenHeightWithMargins;
 	// children overflow hidden or not 
 	Overflow overflow;
+	bool hideableViaOverflow;
 	// Positioning
 	Positioning positioning;
 	// corner radius
@@ -246,6 +247,8 @@ public:
 	void CenterHorizontal(); 
 	void CenterVertical();
 	glm::vec2 GetCenteringOffsets();
+	Element* FindParentRelativeOrAbsolute();
+	glm::vec2 GetParentCenteringOffsets(Element* parent);
 
 
 	// corner radius methods
@@ -281,10 +284,15 @@ public:
 	int GetMarginRight();
 
 	//Positioning methods
+	void SetPositioningType(PositioningType type);
 	int GetTop();
 	int GetBottom();
 	int GetLeft();
 	int GetRight();
+	int GetTop(Element* parent);
+	int GetBottom(Element* parent);
+	int GetLeft(Element* parent);
+	int GetRight(Element* parent);
 
 
 private:
