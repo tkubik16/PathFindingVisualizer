@@ -10,7 +10,7 @@ Document::Document()
 	this->root = new Element("root");
 }
 
-Document::Document(int width, int height) : randomColors(true), screenWidth(width), screenHeight(height)
+Document::Document(int width, int height) : randomColors(false), screenWidth(width), screenHeight(height)
 {
 	
 	this->root = Document::AddElement("root");
