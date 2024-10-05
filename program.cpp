@@ -6,14 +6,24 @@
 #include "texture_renderer.h"
 #include "resource_manager.h"
 #include "element.h"
+#include "style.h"
 
 BoxRenderer* boxRenderer;
 ContentBoxRenderer* contentBoxRenderer;
 //TextureRenderer* textureRenderer;
 
 Element* firstBox;
-Element* container;
+Element* container1;
+Element* container2;
+Element* container3;
+Element* container4;
+Element* c1Box1;
+Element* c1Box2;
+Element* c1Box3;
+Element* c1Box4;
+Element* c1Box5;
 Element* fixedElement;
+Style* testStyle;
 
 //Framebuffer* boxBuffer;
 
@@ -79,74 +89,93 @@ void Program::Init()
 	this->boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
 	this->boxBuffer->Init();
 
+	// Styles
+	testStyle = new Style("testStyle", "testClass");
+	testStyle->PrintStyle();
+
 	// Elements
-	firstBox = this->Doc.AddElement("firstBox");
-	Element* secondBox = this->Doc.AddElement("secondBox");
-	container = this->Doc.AddElement("container");
-	fixedElement = this->Doc.AddElement("fixed");
+	container1 = this->Doc.AddElement("container1");
+	container1->SetBoxWidthMode(PERCENTAGE);
+	container1->SetBoxHeightMode(PERCENTAGE);
+	container1->boxModel.SetSize(100, 100 / 4 - 1);
+	container1->boxModel.SetPaddingAll(30);
+	container1->SetRadius(25);
+	container1->alignment = HORIZONTAL;
+	container1->alignItems = CENTER_ITEMS;
 
-	//this->Doc.AddFixedElement(fixedElement);
-	//this->Doc.UpdateFixedElementZIndex(fixedElement);
+	container2 = this->Doc.AddElement("container2");
+	container2->SetBoxWidthMode(PERCENTAGE);
+	container2->SetBoxHeightMode(PERCENTAGE);
+	container2->boxModel.SetSize(100, 100 / 4 - 1);
+	container2->boxModel.SetPaddingAll(30);
+	container2->SetRadius(25);
 
-	firstBox->boxModel.SetSize(200, 200);
-	//firstBox->SetBoxWidthMode(PERCENTAGE);
-	firstBox->boxModel.SetPaddingAll(25);
-	//firstBox->boxModel.SetMarginAll(25);
-	//firstBox->SetRadius(25);
-	firstBox->positioning.positioningType = ABSOLUTE;
-	firstBox->overflow = HIDDEN;
-	firstBox->positioning.centerHorizontally = true;
-	firstBox->positioning.centerVertically = true;
-	firstBox->positioning.left = -1;
-	firstBox->positioning.right = -1;
-	firstBox->positioning.top = -1;
-	firstBox->positioning.bottom = -1;
-	this->Doc.root->overflow = VISIBLE;
+	container3 = this->Doc.AddElement("container3");
+	container3->SetBoxWidthMode(PERCENTAGE);
+	container3->SetBoxHeightMode(PERCENTAGE);
+	container3->boxModel.SetSize(100, 100 / 4 - 1);
+	container3->boxModel.SetPaddingAll(30);
+	container3->SetRadius(25);
 
-	secondBox->boxModel.SetSize(100, 100);
-	//secondBox->SetBoxWidthMode(PERCENTAGE);
-	secondBox->boxModel.SetPaddingAll(25);
-	secondBox->boxModel.SetMarginAll(25);
-	//secondBox->positioning.positioningType = FIXED;
-	secondBox->SetRadius(100);
+	container4 = this->Doc.AddElement("container4");
+	container4->SetBoxWidthMode(PERCENTAGE);
+	container4->SetBoxHeightMode(PERCENTAGE);
+	container4->boxModel.SetSize(100, 100 / 4 - 1);
+	container4->boxModel.SetPaddingAll(30);
+	container4->SetRadius(25);
 
-	container->boxModel.SetSize(100, 100);
-	container->boxModel.SetPaddingAll(25);
-	container->SetRadius(200);
-	container->positioning.positioningType = ABSOLUTE;
-	container->positioning.centerHorizontally = true;
-	container->positioning.centerVertically = true;
-	container->alignContent = END;
-	container->positioning.mode = PERCENTAGE;
-	container->positioning.left = -1;
-	container->positioning.right = -1;
-	container->positioning.top = -1;
-	container->positioning.bottom = 75;
-	container->hideableViaOverflow = false;
-	//container->positioning.bottom = 100;
-	//container->positioning.mode = PERCENTAGE;
-	//container->SetBoxWidthMode(PERCENTAGE);
-	//container->SetBoxHeightMode(PERCENTAGE);
+	c1Box1 = this->Doc.AddElement("c1Box1");
+	c1Box1->boxModel.SetSize(100, 100);
+	c1Box1->boxModel.SetPaddingAll(15);
+	c1Box1->SetRadius(0);
+	c1Box1->boxModel.SetMarginAll(30);
+
+	c1Box2 = this->Doc.AddElement("c1Box2");
+	c1Box2->boxModel.SetSize(100, 100);
+	c1Box2->boxModel.SetPaddingAll(15);
+	c1Box2->SetRadius(10);
+	c1Box2->boxModel.SetMarginAll(30);
+
+	c1Box3 = this->Doc.AddElement("c1Box3");
+	c1Box3->boxModel.SetSize(100, 100);
+	c1Box3->boxModel.SetPaddingAll(15);
+	c1Box3->SetRadius(20);
+	c1Box3->boxModel.SetMarginAll(30);
+
+	c1Box4 = this->Doc.AddElement("c1Box4");
+	c1Box4->boxModel.SetSize(100, 100);
+	c1Box4->boxModel.SetPaddingAll(15);
+	c1Box4->SetRadius(30);
+	c1Box4->boxModel.SetMarginAll(30);
+
+	c1Box5 = this->Doc.AddElement("c1Box5");
+	c1Box5->boxModel.SetSize(100, 100);
+	c1Box5->boxModel.SetPaddingAll(15);
+	c1Box5->SetRadius(50);
+	c1Box5->boxModel.SetMarginAll(30);
 	
 	
 	// below here create doc tree maybe
 	this->Doc.Init();
-
 	this->Doc.root->boxModel.SetPaddingAll(50);
-	//this->Doc.root->AddChild(container);
-	firstBox->AddChild(container);
-	this->Doc.root->AddChild(firstBox);
-	this->Doc.root->AddChild(secondBox);
+	this->Doc.root->AddChild(container1);
+	this->Doc.root->AddChild(container2);
+	this->Doc.root->AddChild(container3);
+	this->Doc.root->AddChild(container4);
 	this->Doc.root->alignment = VERTICAL;
-	this->Doc.root->alignContent = SPACE_AROUND;
-	//this->Doc.root->alignItems = END_ITEMS;
-	//this->Doc.root->overflow = VISIBLE;
+	this->Doc.root->alignContent = SPACE_BETWEEN;
+	this->Doc.root->overflow = HIDDEN;
 
-	//container->AddChild(firstBox);
-	//container->AddChild(secondBox);
+	container1->AddChild(c1Box1);
+	container1->AddChild(c1Box2);
+	container1->AddChild(c1Box3);
+	container1->AddChild(c1Box4);
+	container1->AddChild(c1Box5);
+
 	
 	
-	std::cout << this->Doc.screenWidth << " " << this->Doc.screenHeight << std::endl;
+	
+	//std::cout << this->Doc.screenWidth << " " << this->Doc.screenHeight << std::endl;
 	this->Doc.SetAllElementsScreenSizes(this->screenWidth, this->screenHeight);
 	this->Doc.SetAllElementsSizes();
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
@@ -165,8 +194,8 @@ void Program::Init()
 	//firstBox->PrintCornerCoords();
 	//container->PrintCornerCoords();
 	//this->Doc.root->PrintPositioning();
-	this->Doc.root->PrintChildrenWidthAndHeight();
-	
+	//this->Doc.root->PrintChildrenWidthAndHeight();
+	//container1->PrintInfo();
 
 }
 

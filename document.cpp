@@ -54,14 +54,14 @@ Element* Document::AddElement(std::string name) {
 	}
 	
 
-	std::cout << "New Element added. ColorID: [" << newElement->idColor.x << ", " << newElement->idColor.y << ", " << newElement->idColor.z << "]" << std::endl;
+	//std::cout << "New Element added. ColorID: [" << newElement->idColor.x << ", " << newElement->idColor.y << ", " << newElement->idColor.z << "]" << std::endl;
 	std::ostringstream ss;
 	ss << newElement->idColor.x << "," << newElement->idColor.y << "," << newElement->idColor.z;
 	std::string s(ss.str());
 	this->colorIdMap[s] = newElement;
-	std::cout << "Map size: " << this->colorIdMap.size() << std::endl;
-	std::cout << std::endl;
-	std::cout << s << std::endl;
+	//std::cout << "Map size: " << this->colorIdMap.size() << std::endl;
+	//std::cout << std::endl;
+	//std::cout << s << std::endl;
 
 	
 	return newElement;

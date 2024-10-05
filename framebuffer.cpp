@@ -5,7 +5,7 @@
 
 Framebuffer::Framebuffer(int width, int height) : screenWidth(width), screenHeight(height), fbo(0), texture(0)
 {
-	std::cout << "Framebuffer: " << width << ", " << height << std::endl;
+	//std::cout << "Framebuffer: " << width << ", " << height << std::endl;
 }
 
 Framebuffer::~Framebuffer() {

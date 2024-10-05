@@ -159,6 +159,7 @@
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="style.cpp" />
     <ClCompile Include="T:\downloads\glad (1)\src\glad.c" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texture_renderer.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="renderers.h" />
+    <ClInclude Include="style.h" />
     <ClInclude Include="texture_renderer.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />

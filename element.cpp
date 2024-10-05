@@ -38,6 +38,10 @@ Element::~Element()
 	
 }
 
+
+
+
+
 int Element::GetBoxWidth() {
 	int boxModelWidth = this->boxModel.width;
 	if (this->boxModel.boxWidthMode == PERCENTAGE) {
@@ -483,9 +487,10 @@ void Element::CalculateBoxPositionHorizontal() {
 			this->boxPosition.y = parentContentY;
 		}
 		else if (this->parent->alignItems == CENTER_ITEMS) {
-
-			int yOffset = (maxHeight - this->boxSize.y) / 2;
-			this->boxPosition.y = parentContentY + yOffset;
+			int parentOffset = (this->parent->contentSize.y - this->boxSize.y) / 2;
+			//if (parentOffset < 0) parentOffset = 0;
+			//int yOffset = (maxHeight - this->boxSize.y) / 2;
+			this->boxPosition.y = parentContentY + parentOffset;
 
 		}
 		else if (this->parent->alignItems == END_ITEMS) {
@@ -549,8 +554,10 @@ void Element::CalculateBoxPositionHorizontal() {
 				this->boxPosition.y = childBefore->boxPosition.y;
 			}
 			else if (this->parent->alignItems == CENTER_ITEMS) {
-				int yOffset = (maxHeight - this->boxSize.y) / 2;
-				this->boxPosition.y = parentContentY + yOffset;
+				int parentOffset = (this->parent->contentSize.y - this->boxSize.y) / 2;
+				//if (parentOffset < 0) parentOffset = 0;
+				//int yOffset = (maxHeight - this->boxSize.y) / 2;
+				this->boxPosition.y = parentContentY + parentOffset;
 			}
 			else if (this->parent->alignItems == END_ITEMS) {
 				int yOffset = maxHeight - this->boxSize.y;
@@ -652,10 +659,10 @@ void Element::CalculateBoxPositionVertical() {
 			this->boxPosition.x = parentContentX;
 		}
 		else if (this->parent->alignItems == CENTER_ITEMS) {
-
-			int xOffset = (maxWidth - this->boxSize.x) / 2;
-			this->boxPosition.x = parentContentX + xOffset;
-
+			int parentOffset = (this->parent->contentSize.x - this->boxSize.x) / 2;
+			//if (parentOffset < 0) parentOffset = 0;
+			//int xOffset = (maxWidth - this->boxSize.x) / 2;
+			this->boxPosition.x = parentContentX + parentOffset;
 		}
 		else if (this->parent->alignItems == END_ITEMS) {
 			int xOffset = maxWidth - this->boxSize.x;
@@ -719,8 +726,10 @@ void Element::CalculateBoxPositionVertical() {
 				this->boxPosition.x = parentContentX;
 			}
 			else if (this->parent->alignItems == CENTER_ITEMS) {
-				int xOffset = (maxWidth - this->boxSize.x) / 2;
-				this->boxPosition.x = parentContentX + xOffset;
+				int parentOffset = (this->parent->contentSize.x - this->boxSize.x) / 2;
+				//if (parentOffset < 0) parentOffset = 0;
+				//int xOffset = (maxWidth - this->boxSize.x) / 2;
+				this->boxPosition.x = parentContentX + parentOffset;
 			}
 			else if (this->parent->alignItems == END_ITEMS) {
 				int xOffset = maxWidth - this->boxSize.x;

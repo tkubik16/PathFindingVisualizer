@@ -4,7 +4,14 @@
 #include "box_model.h"
 
 
-BoxModel::BoxModel() : padding(0, 0, 0, 0, PIXELS), border(0, 0, 0, 0, PIXELS), margin(0, 0, 0, 0, PIXELS), boxWidthMode(PIXELS), boxHeightMode(PIXELS)
+BoxModel::BoxModel() :
+	width(10),
+	height(10),
+	padding(0, 0, 0, 0, PIXELS), 
+	border(0, 0, 0, 0, PIXELS), 
+	margin(0, 0, 0, 0, PIXELS), 
+	boxWidthMode(PIXELS), 
+	boxHeightMode(PIXELS)
 {
 
 }
@@ -17,15 +24,14 @@ void BoxModel::PrintInfo() {
 	//std::cout << "content: ";
 	//this->content.Print();
 	//std::cout << std::endl;
-	std::cout << "width: " << this->width << std::endl;
-	std::cout << "height: " << this->height << std::endl;
-	std::cout << "padding: ";
+	std::cout << "BoxModel:" << std::endl;
+	std::cout << "    width: " << this->width << std::endl;
+	std::cout << "    height: " << this->height << std::endl;
+	std::cout << "    padding: ";
 	this->padding.Print();
-	std::cout << std::endl;
-	std::cout << "margin: ";
+	std::cout << "    margin: ";
 	this->margin.Print();
-	std::cout << std::endl;
-	std::cout << "border: ";
+	std::cout << "    border: ";
 	this->border.Print();
 	std::cout << std::endl;
 }

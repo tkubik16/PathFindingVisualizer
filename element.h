@@ -143,6 +143,42 @@ struct Positioning {
 	bool centerHorizontally;
 	Mode mode;
 
+	void PrintPositioning() {
+		std::cout << "Positioning:\n";
+		std::cout << "    PositioningType: ";
+		if (this->positioningType == STATIC) {
+			std::cout << "STATIC" << std::endl;
+		}
+		else if (this->positioningType == RELATIVE) {
+			std::cout << "RELATIVE" << std::endl;
+		}
+		else if (this->positioningType == ABSOLUTE) {
+			std::cout << "ABSOLUTE" << std::endl;
+		}
+		else if (this->positioningType == FIXED) {
+			std::cout << "FIXED" << std::endl;
+		}
+		else {
+			std::cout << "ERROR: enum " << this->positioningType << " does not exist." << std::endl;
+		}
+		std::cout << "    Top: " << this->top << std::endl;
+		std::cout << "    Bottom: " << this->bottom << std::endl;
+		std::cout << "    Left: " << this->left << std::endl;
+		std::cout << "    Right: " << this->right << std::endl;
+		std::cout << "    CenterVertically: " << this->centerVertically << std::endl;
+		std::cout << "    CenterHorizontally: " << this->centerHorizontally << std::endl;
+		std::cout << "    Mode: ";
+		if (this->mode == PERCENTAGE) {
+			std::cout << "PERCENTAGE" << std::endl;
+		}
+		else if (this->mode == PIXELS) {
+			std::cout << "PIXELS" << std::endl;
+		}
+		else {
+			std::cout << "ERROR: enum " << this->mode << " does not exist." << std::endl;
+		}
+	}
+
 };
 
 class Element
@@ -152,6 +188,7 @@ public:
 	glm::vec3 idColor;
 	BoxModel boxModel;
 	std::string name;
+	std::string className;
 	int zIndex;
 	Element* parent;
 	Element* childBefore;
