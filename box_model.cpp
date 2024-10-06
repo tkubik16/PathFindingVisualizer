@@ -33,7 +33,6 @@ void BoxModel::PrintInfo() {
 	this->margin.Print();
 	std::cout << "    border: ";
 	this->border.Print();
-	std::cout << std::endl;
 }
 
 // Content setter functions

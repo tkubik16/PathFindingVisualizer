@@ -203,9 +203,11 @@ public:
 	Element* headChild;
 	Element* tailChild;
 	// data that will get calculated later based on parent and sibling relations
+	glm::vec2 borderPosition;
 	glm::vec2 boxPosition;
 	glm::vec2 contentPosition;
 	// x is width and y is height
+	glm::vec2 borderSize;
 	glm::vec2 boxSize;
 	glm::vec2 contentSize;
 	float rotation;

@@ -102,6 +102,7 @@ void Program::Init()
 	container1->SetRadius(25);
 	container1->alignment = HORIZONTAL;
 	container1->alignItems = CENTER_ITEMS;
+	container1->alignContent = CENTER_CONTENT;
 
 	container2 = this->Doc.AddElement("container2");
 	container2->SetBoxWidthMode(PERCENTAGE);

@@ -13,6 +13,30 @@
 class Style
 {
 public:
+	
+	
+
+	Style(std::string styleName, std::string className);
+	~Style();
+
+	void PrintStyle();
+
+	void SetStyleName(std::string name);
+	void SetClassName(std::string name);
+	// boxmodel setters
+	void SetWidth(int width);
+	void SetHeight(int height);
+	void SetBoxWidthMode(Mode mode);
+	void SetBoxHeightMode(Mode mode);
+	void SetPadding(int padding);
+	void SetPadding(int top, int bottom, int left, int right);
+	void SetBorder(int border);
+	void SetBorder(int top, int bottom, int left, int right);
+	void SetMargin(int border);
+	void SetMargin(int top, int bottom, int left, int right);
+
+
+private:
 	// style only data
 	std::string styleName;
 	// styleable data 
@@ -33,14 +57,6 @@ public:
 	bool hideableViaOverflow;
 	// Positioning
 	Positioning positioning;
-	
-
-	Style(std::string styleName, std::string className);
-	~Style();
-
-	void PrintStyle();
-
-
 };
 
 
