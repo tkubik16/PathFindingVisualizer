@@ -16,6 +16,8 @@ Element::Element(std::string name) :
 	zIndex(1),
 	boxPosition(0, 0),
 	boxSize(0, 0),
+	borderPosition(0, 0),
+	borderSize(0, 0),
 	rotation(0),
 	parent(nullptr),
 	alignment(VERTICAL),
@@ -27,6 +29,7 @@ Element::Element(std::string name) :
 	parentContentBorders(glm::vec4(1, -1, -1, 1)),
 	theRealContentBorders(glm::vec4(1, -1, -1, 1)),
 	radius(0),
+	borderRadius(0),
 	hideableViaOverflow(true)
 
 {
@@ -68,6 +71,46 @@ int Element::GetContentWidth() {
 
 int Element::GetContentHeight() {
 	return this->contentSize.y;
+}
+
+int Element::GetBorderTop() {
+	int topBorder = this->boxModel.border.top;
+	if (this->boxModel.border.mode == PERCENTAGE) {
+		return this->GetBoxHeight() * (topBorder / 100.0);
+	}
+	else {
+		return topBorder;
+	}
+}
+
+int Element::GetBorderBottom() {
+	int bottomBorder = this->boxModel.border.bottom;
+	if (this->boxModel.border.mode == PERCENTAGE) {
+		return this->GetBoxHeight() * (bottomBorder / 100.0);
+	}
+	else {
+		return bottomBorder;
+	}
+}
+
+int Element::GetBorderLeft() {
+	int leftBorder = this->boxModel.border.left;
+	if (this->boxModel.border.mode == PERCENTAGE) {
+		return this->GetBoxWidth() * (leftBorder / 100.0);
+	}
+	else {
+		return leftBorder;
+	}
+}
+
+int Element::GetBorderRight() {
+	int rightBorder = this->boxModel.border.right;
+	if (this->boxModel.border.mode == PERCENTAGE) {
+		return this->GetBoxWidth() * (rightBorder / 100.0);
+	}
+	else {
+		return rightBorder;
+	}
 }
 
 // Set methods for boxModel Modes
@@ -159,6 +202,14 @@ void Element::PrintInfo() {
 	std::cout << "idColor:" << std::endl;
 	std::cout << this->idColor.x << ", " << this->idColor.y << ", " << this->idColor.z << std::endl;
 
+	std::cout << "OVERFLOW: " << std::endl;
+	if (this->overflow == HIDDEN)
+		std::cout << "HIDDEN" << std::endl;
+	else if (this->overflow == VISIBLE)
+		std::cout << "HIDDEN" << std::endl;
+	else
+		std::cout << "ERROR: enum " << this->overflow << " for overflwo does not exist" << std::endl;
+
 	std::cout << "Alignment: " << std::endl;
 	if (this->alignment == VERTICAL)
 		std::cout << "VERTICAL" << std::endl;
@@ -168,11 +219,17 @@ void Element::PrintInfo() {
 	std::cout << "position (x,y):" << std::endl;
 	std::cout << this->boxPosition.x << ", " << this->boxPosition.y << std::endl;
 
-	std::cout << "parent (width, height):" << std::endl;
-	std::cout << this->parentWidth << ", " << this->parentHeight << std::endl;
-
 	std::cout << "size (width, height):" << std::endl;
 	std::cout << this->boxSize.x << ", " << this->boxSize.y << std::endl;
+
+	std::cout << "borderPosition (x,y):" << std::endl;
+	std::cout << this->borderPosition.x << ", " << this->borderPosition.y << std::endl;
+
+	std::cout << "borderSize (width, height):" << std::endl;
+	std::cout << this->borderSize.x << ", " << this->borderSize.y << std::endl;
+
+	std::cout << "parent (width, height):" << std::endl;
+	std::cout << this->parentWidth << ", " << this->parentHeight << std::endl;
 
 	std::cout << "ContentPosition: (" << this->contentPosition.x << ", " << this->contentPosition.y << ")" << ", " << "ContentSize: (" << this->contentSize.x << ", " << this->contentSize.y << ")" << std::endl;
 
@@ -181,6 +238,9 @@ void Element::PrintInfo() {
 
 	std::cout << "radius:" << std::endl;
 	std::cout << this->radius << std::endl;
+
+	std::cout << "borderRadius:" << std::endl;
+	std::cout << this->borderRadius << std::endl;
 
 	std::cout << "parent:" << std::endl;
 	if (this->parent == nullptr)
@@ -202,13 +262,23 @@ void Element::PrintInfo() {
 
 
 	std::cout << "childrenWidth: " << this->childrenWidth << " childrenHeight: " << this->childrenHeight << std::endl;
+	std::cout << "childrenWidthWithMargins: " << this->childrenWidthWithMargins << " childrenHeightWithMargins: " << this->childrenHeightWithMargins << std::endl;
 	std::cout << "AlignContent: ";
 	if (this->alignContent == CENTER_CONTENT)
-		std::cout << "CENTER";
+		std::cout << "CENTER_CONTENT";
 	else if (this->alignContent == START)
 		std::cout << "START";
 	else if (this->alignContent == END)
 		std::cout << "END";
+	std::cout << std::endl;
+
+	std::cout << "AlignItems: ";
+	if (this->alignItems == CENTER_ITEMS)
+		std::cout << "CENTER_ITEMS";
+	else if (this->alignItems == START_ITEMS)
+		std::cout << "START_ITEMS";
+	else if (this->alignItems == END_ITEMS)
+		std::cout << "END_ITEMS";
 	std::cout << std::endl;
 
 	std::cout << std::endl;
@@ -261,6 +331,26 @@ void Element::PrintCornerCoords() {
 
 	std::cout << "bottomRight (x,y):" << std::endl;
 	std::cout << "(" << this->bottomRight.x << ", " << this->bottomRight.y << ")" << std::endl;
+}
+
+void Element::PrintBorderCornerCoords() {
+	std::cout << "borderPosition (x,y):" << std::endl;
+	std::cout << this->borderPosition.x << ", " << this->borderPosition.y << std::endl;
+
+	std::cout << "borderSize (width, height):" << std::endl;
+	std::cout << this->borderSize.x << ", " << this->borderSize.y << std::endl;
+
+	std::cout << "topLeft (x,y):" << std::endl;
+	std::cout << "(" << this->borderTopLeft.x << ", " << this->borderTopLeft.y << ")" << std::endl;
+
+	std::cout << "topRight (x,y):" << std::endl;
+	std::cout << "(" << this->borderTopRight.x << ", " << this->borderTopRight.y << ")" << std::endl;
+
+	std::cout << "bottomLeft (x,y):" << std::endl;
+	std::cout << "(" << this->borderBottomLeft.x << ", " << this->borderBottomLeft.y << ")" << std::endl;
+
+	std::cout << "bottomRight (x,y):" << std::endl;
+	std::cout << "(" << this->borderBottomRight.x << ", " << this->borderBottomRight.y << ")" << std::endl;
 }
 
 void Element::PrintChildren() {
@@ -365,6 +455,758 @@ int Element::GetNumInlineChildren() {
 	return num;
 }
 
+void Element::CalculateBorderPosition()
+{
+	if (this->parent == nullptr) {
+		//std::cout << "this->parent == nullptr" << std::endl;
+		this->CalculateBorderPositionRoot();
+		return;
+	}
+	else if (this->parent->alignment == HORIZONTAL) {
+		//std::cout << "alignment == horizontal" << std::endl;
+		this->CalculateBorderPositionHorizontal();
+	}
+	else if (this->parent->alignment == VERTICAL) {
+		//std::cout << "alignment == vertical" << std::endl;
+		this->CalculateBorderPositionVertical();
+	}
+}
+
+// set up so margin and border do not affect root top left being at (0,0)
+void Element::CalculateBorderPositionRoot()
+{
+	int xOffset = 0;
+	int yOffset = 0;
+	// if the element is root
+	if (this->parent == nullptr) {
+		this->boxPosition.x = 0;
+		this->boxPosition.y = 0;
+		this->borderPosition.x = 0 - this->GetBorderLeft();
+		this->borderPosition.y = 0 - this->GetBorderTop();
+	}
+	else {
+		std::cout << "ERROR::Element::CalculateBorderPositionRoot() This should only be being called on the root who has no parent but this element has a parent." << std::endl;
+	}
+}
+
+// TODO: switch this over to work for the BorderPosition instead of BoxPosition
+void Element::CalculateBorderPositionHorizontal()
+{
+	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+		return;
+	}
+	//std::cout << "Element::CalculateBoxPositionHorizontal():" << std::endl;
+	int xOffset = 0;
+	int yOffset = 0;
+	// if the element is not root. thus having a parent
+
+	//std::cout << this->name << ": Element has parent" << std::endl;
+	int maxHeight = this->parent->childrenHeight;
+	int parentContentX = this->parent->contentPosition.x;
+	int parentContentY = this->parent->contentPosition.y;
+	// if the element is the first child it lines up with start of content not taking its left margin into account
+	if (FirstInlineChildToParent(this)) {
+
+
+		// set box position x value
+		if (this->parent->alignContent == START) {
+			this->borderPosition.x = parentContentX;
+			//this->boxPosition.x = parentContentX;
+		}
+		else if (this->parent->alignContent == CENTER_CONTENT) {
+			int childrenWidthWithMargins = this->parent->childrenWidthWithMargins;
+			int parentWidth = this->parent->GetContentWidth();
+
+			int childrenCenter = childrenWidthWithMargins / 2;
+			int parentCenter = parentWidth / 2;
+
+			int childrenStartX = parentContentX + parentCenter - childrenCenter;
+
+			this->borderPosition.x = childrenStartX;
+			//this->boxPosition.y = parentContentY;
+
+		}
+		else if (this->parent->alignContent == END) {
+			int childrenWidthWithMargins = this->parent->childrenWidthWithMargins;
+			int parentWidth = this->parent->GetContentWidth();
+
+
+			int childrenStartX = parentContentX + parentWidth - childrenWidthWithMargins;
+
+			this->borderPosition.x = childrenStartX;
+			//this->boxPosition.y = parentContentY;
+
+		}
+		else if (this->parent->alignContent == SPACE_EVENLY) {
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->borderPosition.x = parentContentX + spacing;
+		}
+		else if (this->parent->alignContent == SPACE_BETWEEN) {
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren - 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->borderPosition.x = parentContentX;
+		}
+		else if (this->parent->alignContent == SPACE_AROUND) {
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 3);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->borderPosition.x = parentContentX + spacing * 2;
+		}
+		else {
+			this->borderPosition.x = parentContentX;
+			//this->boxPosition.y = parentContentY;
+		}
+
+		// set box position y value
+		if (this->parent->alignItems == START_ITEMS) {
+			this->borderPosition.y = parentContentY;
+		}
+		else if (this->parent->alignItems == CENTER_ITEMS) {
+			int parentOffset = (this->parent->contentSize.y - this->borderSize.y) / 2;
+			//if (parentOffset < 0) parentOffset = 0;
+			//int yOffset = (maxHeight - this->boxSize.y) / 2;
+			this->borderPosition.y = parentContentY + parentOffset;
+
+		}
+		else if (this->parent->alignItems == END_ITEMS) {
+			int parentOffset = this->parent->contentSize.y - this->borderSize.y;
+			this->borderPosition.y = parentContentY + parentOffset;
+
+		}
+		else {
+			this->borderPosition.y = parentContentY;
+		}
+
+
+	}
+	// if the element is not the first child take into account the position of the child before it and use the largest margin between the two
+	else {
+		if (this->childBefore == nullptr) {
+			std::cout << "ELEMENT::ERROR: childBefore is nullptr when it is not the firstChild to parent" << std::endl;
+		}
+
+		//Element* childBefore = this->childBefore;
+		Element* childBefore = GetInlineChildBefore(this);
+		if (childBefore != nullptr)
+		{
+			if (this->parent->alignContent == SPACE_EVENLY) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->borderPosition.x = childBefore->borderPosition.x + childBefore->borderSize.x + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_BETWEEN) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren - 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->borderPosition.x = childBefore->borderPosition.x + childBefore->borderSize.x + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_AROUND) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 3);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->borderPosition.x = childBefore->borderPosition.x + childBefore->borderSize.x + spacing;
+			}
+			else {
+				int margin = (childBefore->GetMarginRight() > this->GetMarginLeft()) ? childBefore->GetMarginRight() : this->GetMarginLeft();
+				int posX = childBefore->borderPosition.x + childBefore->borderSize.x + margin;
+				this->borderPosition.x = posX;
+			}
+
+			if (this->parent->alignItems == START_ITEMS) {
+				this->borderPosition.y = childBefore->borderPosition.y;
+			}
+			else if (this->parent->alignItems == CENTER_ITEMS) {
+				int parentOffset = (this->parent->contentSize.y - this->borderSize.y) / 2;
+				//if (parentOffset < 0) parentOffset = 0;
+				//int yOffset = (maxHeight - this->boxSize.y) / 2;
+				this->borderPosition.y = parentContentY + parentOffset;
+			}
+			else if (this->parent->alignItems == END_ITEMS) {
+				int parentOffset = this->parent->contentSize.y - this->borderSize.y;
+				this->borderPosition.y = parentContentY + parentOffset;
+			}
+			else {
+				this->borderPosition.y = parentContentY;
+			}
+
+		}
+	}
+}
+
+void Element::CalculateBorderPositionVertical()
+{
+	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+		return;
+	}
+
+	//std::cout << "Element::CalculateBoxPositionVertical():" << std::endl;
+	int xOffset = 0;
+	int yOffset = 0;
+	// if the element is not root. thus having a parent
+
+	//std::cout << this->name << ": Element has parent" << std::endl;
+	int maxWidth = this->parent->childrenWidth;
+	int parentContentX = this->parent->contentPosition.x;
+	int parentContentY = this->parent->contentPosition.y;
+	// if the element is the first child it lines up with start of content not taking its left margin into account
+	if (FirstInlineChildToParent(this)) {
+
+
+		// set box position for y 
+		if (this->parent->alignContent == START) {
+			this->borderPosition.y = parentContentY;
+		}
+		else if (this->parent->alignContent == CENTER_CONTENT) {
+			int childrenHeightWithMargins = this->parent->childrenHeightWithMargins;
+			int parentHeight = this->parent->GetContentHeight();
+
+			int childrenCenter = childrenHeightWithMargins / 2;
+			int parentCenter = parentHeight / 2;
+
+			int childrenStartY = parentContentY + parentCenter - childrenCenter;
+
+			this->borderPosition.y = childrenStartY;
+
+		}
+		else if (this->parent->alignContent == END) {
+			int childrenHeightWithMargins = this->parent->childrenHeightWithMargins;
+			int parentHeight = this->parent->GetContentHeight();
+
+
+			int childrenStartY = parentContentY + parentHeight - childrenHeightWithMargins;
+
+			this->borderPosition.y = childrenStartY;
+
+		}
+		else if (this->parent->alignContent == SPACE_EVENLY) {
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->borderPosition.y = parentContentY + spacing;
+		}
+		else if (this->parent->alignContent == SPACE_BETWEEN) {
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren - 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->borderPosition.y = parentContentY;
+		}
+		else if (this->parent->alignContent == SPACE_AROUND) {
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 3);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->borderPosition.y = parentContentY + spacing * 2;
+		}
+		else {
+			this->borderPosition.y = parentContentY;
+		}
+
+		// set box position for x 
+		if (this->parent->alignItems == START_ITEMS) {
+			this->borderPosition.x = parentContentX;
+		}
+		else if (this->parent->alignItems == CENTER_ITEMS) {
+			int parentOffset = (this->parent->contentSize.x - this->borderSize.x) / 2;
+			this->borderPosition.x = parentContentX + parentOffset;
+		}
+		else if (this->parent->alignItems == END_ITEMS) {
+			int parentOffset = this->parent->contentSize.x - this->borderSize.x;
+			this->borderPosition.x = parentContentX + parentOffset;
+
+		}
+		else {
+			this->borderPosition.x = parentContentX;
+		}
+
+
+	}
+	// if the element is not the first child take into account the position of the child before it and use the largest margin between the two
+	else {
+		if (this->childBefore == nullptr) {
+			std::cout << "ELEMENT::ERROR: childBefore is nullptr when it is not the firstChild to parent" << std::endl;
+		}
+
+		Element* childBefore = GetInlineChildBefore(this);
+
+		//Element* childBefore = this->childBefore;
+		if (childBefore != nullptr)
+		{
+			if (this->parent->alignContent == SPACE_EVENLY) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->borderPosition.y = childBefore->borderPosition.y + childBefore->borderSize.y + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_BETWEEN) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren - 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->borderPosition.y = childBefore->borderPosition.y + childBefore->borderSize.y + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_AROUND) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 3);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->borderPosition.y = childBefore->borderPosition.y + childBefore->borderSize.y + spacing;
+			}
+			else {
+				int margin = (childBefore->GetMarginBottom() > this->GetMarginTop()) ? childBefore->GetMarginBottom() : this->GetMarginTop();
+				int posY = childBefore->borderPosition.y + childBefore->borderSize.y + margin;
+
+				this->borderPosition.y = posY;
+			}
+			if (this->parent->alignItems == START_ITEMS) {
+				this->borderPosition.x = parentContentX;
+			}
+			else if (this->parent->alignItems == CENTER_ITEMS) {
+				int parentOffset = (this->parent->contentSize.x - this->borderSize.x) / 2;
+				//if (parentOffset < 0) parentOffset = 0;
+				//int xOffset = (maxWidth - this->boxSize.x) / 2;
+				this->borderPosition.x = parentContentX + parentOffset;
+			}
+			else if (this->parent->alignItems == END_ITEMS) {
+				int parentOffset = this->parent->contentSize.x - this->borderSize.x;
+				this->borderPosition.x = parentContentX + parentOffset;
+			}
+			else {
+				this->borderPosition.x = parentContentX;
+			}
+		}
+	}
+}
+
+void Element::CalculateBoxPositionBasedOnBorderPosition() {
+	this->boxPosition.x = this->borderPosition.x + this->GetBorderLeft();
+	this->boxPosition.y = this->borderPosition.y + this->GetBorderTop();
+}
+
+void Element::CalculateBoxPosition() {
+	//std::cout << "Element::CalculateBoxPosition():" << std::endl;
+	if (this->parent == nullptr) {
+		//std::cout << "this->parent == nullptr" << std::endl;
+		this->CalculateBoxPositionRoot();
+		return;
+	}
+	else if (this->parent->alignment == HORIZONTAL) {
+		//std::cout << "alignment == horizontal" << std::endl;
+		this->CalculateBoxPositionHorizontal();
+	}
+	else if (this->parent->alignment == VERTICAL) {
+		//std::cout << "alignment == vertical" << std::endl;
+		this->CalculateBoxPositionVertical();
+	}
+}
+
+// TODO: adjust these to just place the position based on border position and offset it by left border width and top border width
+void Element::CalculateBoxPositionRoot() {
+	int xOffset = 0;
+	int yOffset = 0;
+	// if the element is root
+	if (this->parent == nullptr) {
+
+		xOffset = this->boxModel.border.left;
+		yOffset = this->boxModel.border.top;
+
+		// set box position
+		this->boxPosition.x = this->borderPosition.x + xOffset;
+		this->boxPosition.y = this->borderPosition.y + yOffset;
+	}
+}
+
+void Element::CalculateBoxPositionHorizontal() {
+	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+		return;
+	}
+	//std::cout << "Element::CalculateBoxPositionHorizontal():" << std::endl;
+	int xOffset = 0;
+	int yOffset = 0;
+	// if the element is not root. thus having a parent
+
+	//std::cout << this->name << ": Element has parent" << std::endl;
+	int maxHeight = this->parent->childrenHeight;
+	int parentContentX = this->parent->contentPosition.x;
+	int parentContentY = this->parent->contentPosition.y;
+	// if the element is the first child it lines up with start of content not taking its left margin into account
+	if (FirstInlineChildToParent(this)) {
+
+
+		// set box position x value
+		if (this->parent->alignContent == START) {
+			this->boxPosition.x = parentContentX;
+			//this->boxPosition.y = parentContentY;
+		}
+		else if (this->parent->alignContent == CENTER_CONTENT) {
+			int childrenWidthWithMargins = this->parent->childrenWidthWithMargins;
+			int parentWidth = this->parent->GetContentWidth();
+
+			int childrenCenter = childrenWidthWithMargins / 2;
+			int parentCenter = parentWidth / 2;
+
+			int childrenStartX = parentContentX + parentCenter - childrenCenter;
+
+			this->boxPosition.x = childrenStartX;
+			//this->boxPosition.y = parentContentY;
+
+		}
+		else if (this->parent->alignContent == END) {
+			int childrenWidthWithMargins = this->parent->childrenWidthWithMargins;
+			int parentWidth = this->parent->GetContentWidth();
+
+
+			int childrenStartX = parentContentX + parentWidth - childrenWidthWithMargins;
+
+			this->boxPosition.x = childrenStartX;
+			//this->boxPosition.y = parentContentY;
+
+		}
+		else if (this->parent->alignContent == SPACE_EVENLY) {
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.x = parentContentX + spacing;
+		}
+		else if (this->parent->alignContent == SPACE_BETWEEN) {
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren - 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.x = parentContentX;
+		}
+		else if (this->parent->alignContent == SPACE_AROUND) {
+			int childrenWidth = this->parent->childrenWidth;
+			int parentContentWidth = this->parent->GetContentWidth();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 3);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.x = parentContentX + spacing * 2;
+		}
+		else {
+			this->boxPosition.x = parentContentX;
+			//this->boxPosition.y = parentContentY;
+		}
+
+		// set box position y value
+		if (this->parent->alignItems == START_ITEMS) {
+			this->boxPosition.y = parentContentY;
+		}
+		else if (this->parent->alignItems == CENTER_ITEMS) {
+			int parentOffset = (this->parent->contentSize.y - this->boxSize.y) / 2;
+			//if (parentOffset < 0) parentOffset = 0;
+			//int yOffset = (maxHeight - this->boxSize.y) / 2;
+			this->boxPosition.y = parentContentY + parentOffset;
+
+		}
+		else if (this->parent->alignItems == END_ITEMS) {
+			int yOffset = maxHeight - this->boxSize.y;
+			this->boxPosition.y = parentContentY + yOffset;
+
+		}
+		else {
+			this->boxPosition.y = parentContentY;
+		}
+
+
+	}
+	// if the element is not the first child take into account the position of the child before it and use the largest margin between the two
+	else {
+		if (this->childBefore == nullptr) {
+			std::cout << "ELEMENT::ERROR: childBefore is nullptr when it is not the firstChild to parent" << std::endl;
+		}
+
+		//Element* childBefore = this->childBefore;
+		Element* childBefore = GetInlineChildBefore(this);
+		if (childBefore != nullptr)
+		{
+			if (this->parent->alignContent == SPACE_EVENLY) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.x = childBefore->boxPosition.x + childBefore->boxSize.x + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_BETWEEN) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren - 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.x = childBefore->boxPosition.x + childBefore->boxSize.x + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_AROUND) {
+				int childrenWidth = this->parent->childrenWidth;
+				int parentContentWidth = this->parent->GetContentWidth();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentWidth - childrenWidth) / (numInlineChildren + 3);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.x = childBefore->boxPosition.x + childBefore->boxSize.x + spacing;
+			}
+			else {
+				int margin = (childBefore->GetMarginRight() > this->GetMarginLeft()) ? childBefore->GetMarginRight() : this->GetMarginLeft();
+				int posX = childBefore->boxPosition.x + childBefore->boxSize.x + margin;
+				this->boxPosition.x = posX;
+			}
+
+			if (this->parent->alignItems == START_ITEMS) {
+				this->boxPosition.y = childBefore->boxPosition.y;
+			}
+			else if (this->parent->alignItems == CENTER_ITEMS) {
+				int parentOffset = (this->parent->contentSize.y - this->boxSize.y) / 2;
+				//if (parentOffset < 0) parentOffset = 0;
+				//int yOffset = (maxHeight - this->boxSize.y) / 2;
+				this->boxPosition.y = parentContentY + parentOffset;
+			}
+			else if (this->parent->alignItems == END_ITEMS) {
+				int yOffset = maxHeight - this->boxSize.y;
+				this->boxPosition.y = parentContentY + yOffset;
+			}
+			else {
+				this->boxPosition.y = parentContentY;
+			}
+
+		}
+	}
+
+}
+
+void Element::CalculateBoxPositionVertical() {
+	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+		return;
+	}
+
+	//std::cout << "Element::CalculateBoxPositionVertical():" << std::endl;
+	int xOffset = 0;
+	int yOffset = 0;
+	// if the element is not root. thus having a parent
+
+	//std::cout << this->name << ": Element has parent" << std::endl;
+	int maxWidth = this->parent->childrenWidth;
+	int parentContentX = this->parent->contentPosition.x;
+	int parentContentY = this->parent->contentPosition.y;
+	// if the element is the first child it lines up with start of content not taking its left margin into account
+	if (FirstInlineChildToParent(this)) {
+
+
+		// set box position for y 
+		if (this->parent->alignContent == START) {
+			//this->boxPosition.x = parentContentX;
+			this->boxPosition.y = parentContentY;
+		}
+		else if (this->parent->alignContent == CENTER_CONTENT) {
+			int childrenHeightWithMargins = this->parent->childrenHeightWithMargins;
+			int parentHeight = this->parent->GetContentHeight();
+
+			int childrenCenter = childrenHeightWithMargins / 2;
+			int parentCenter = parentHeight / 2;
+
+			int childrenStartY = parentContentY + parentCenter - childrenCenter;
+
+			//this->boxPosition.x = parentContentX;
+			this->boxPosition.y = childrenStartY;
+
+		}
+		else if (this->parent->alignContent == END) {
+			int childrenHeightWithMargins = this->parent->childrenHeightWithMargins;
+			int parentHeight = this->parent->GetContentHeight();
+
+
+			int childrenStartY = parentContentY + parentHeight - childrenHeightWithMargins;
+
+			//this->boxPosition.x = parentContentX;
+			this->boxPosition.y = childrenStartY;
+
+		}
+		else if (this->parent->alignContent == SPACE_EVENLY) {
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.y = parentContentY + spacing;
+		}
+		else if (this->parent->alignContent == SPACE_BETWEEN) {
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren - 1);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.y = parentContentY;
+		}
+		else if (this->parent->alignContent == SPACE_AROUND) {
+			int childrenHeight = this->parent->childrenHeight;
+			int parentContentHeight = this->parent->GetContentHeight();
+			int numInlineChildren = this->parent->GetNumInlineChildren();
+			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 3);
+			if (spacing < 0) {
+				spacing = 0;
+			}
+			this->boxPosition.y = parentContentY + spacing * 2;
+		}
+		else {
+			//this->boxPosition.x = parentContentX;
+			this->boxPosition.y = parentContentY;
+		}
+
+		// set box position for x 
+		if (this->parent->alignItems == START_ITEMS) {
+			this->boxPosition.x = parentContentX;
+		}
+		else if (this->parent->alignItems == CENTER_ITEMS) {
+			int parentOffset = (this->parent->contentSize.x - this->boxSize.x) / 2;
+			//if (parentOffset < 0) parentOffset = 0;
+			//int xOffset = (maxWidth - this->boxSize.x) / 2;
+			this->boxPosition.x = parentContentX + parentOffset;
+		}
+		else if (this->parent->alignItems == END_ITEMS) {
+			int xOffset = maxWidth - this->boxSize.x;
+			this->boxPosition.x = parentContentX + xOffset;
+
+		}
+		else {
+			this->boxPosition.x = parentContentX;
+		}
+
+
+	}
+	// if the element is not the first child take into account the position of the child before it and use the largest margin between the two
+	else {
+		if (this->childBefore == nullptr) {
+			std::cout << "ELEMENT::ERROR: childBefore is nullptr when it is not the firstChild to parent" << std::endl;
+		}
+
+		Element* childBefore = GetInlineChildBefore(this);
+
+		//Element* childBefore = this->childBefore;
+		if (childBefore != nullptr)
+		{
+			if (this->parent->alignContent == SPACE_EVENLY) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.y = childBefore->boxPosition.y + childBefore->boxSize.y + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_BETWEEN) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren - 1);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.y = childBefore->boxPosition.y + childBefore->boxSize.y + spacing;
+			}
+			else if (this->parent->alignContent == SPACE_AROUND) {
+				int childrenHeight = this->parent->childrenHeight;
+				int parentContentHeight = this->parent->GetContentHeight();
+				int numInlineChildren = this->parent->GetNumInlineChildren();
+				int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren + 3);
+				if (spacing < 0) {
+					spacing = 0;
+				}
+				this->boxPosition.y = childBefore->boxPosition.y + childBefore->boxSize.y + spacing;
+			}
+			else {
+				int margin = (childBefore->GetMarginBottom() > this->GetMarginTop()) ? childBefore->GetMarginBottom() : this->GetMarginTop();
+				int posY = childBefore->boxPosition.y + childBefore->boxSize.y + margin;
+
+				this->boxPosition.y = posY;
+			}
+			if (this->parent->alignItems == START_ITEMS) {
+				this->boxPosition.x = parentContentX;
+			}
+			else if (this->parent->alignItems == CENTER_ITEMS) {
+				int parentOffset = (this->parent->contentSize.x - this->boxSize.x) / 2;
+				//if (parentOffset < 0) parentOffset = 0;
+				//int xOffset = (maxWidth - this->boxSize.x) / 2;
+				this->boxPosition.x = parentContentX + parentOffset;
+			}
+			else if (this->parent->alignItems == END_ITEMS) {
+				int xOffset = maxWidth - this->boxSize.x;
+				this->boxPosition.x = parentContentX + xOffset;
+			}
+			else {
+				this->boxPosition.x = parentContentX;
+			}
+		}
+	}
+
+}
+
+/*
 void Element::CalculateBoxPosition() {
 	//std::cout << "Element::CalculateBoxPosition():" << std::endl;
 	if (this->parent == nullptr) {
@@ -742,6 +1584,7 @@ void Element::CalculateBoxPositionVertical() {
 	}
 
 }
+*/
 // TODO: make the adjustments for RELATIVE, FIXED, ABSOLUTE
 void Element::AdjustIfNonStatic() {
 	if (this->positioning.positioningType == FIXED) {
@@ -1053,6 +1896,18 @@ void Element::CalculateBoxSize() {
 	//std::cout << width << " " << height << std::endl;
 }
 
+void Element::CalculateBordersSize() {
+	int width = this->GetBoxWidth();
+	int height = this->GetBoxHeight();
+	int top = this->GetBorderTop();
+	int bottom = this->GetBorderBottom();
+	int left = this->GetBorderLeft();
+	int right = this->GetBorderRight();
+
+	this->borderSize.x = width + left + right;
+	this->borderSize.y = height + top + bottom;
+}
+
 void Element::SetChildrensParentDimensions() {
 	int width = this->contentSize.x;
 	int height = this->contentSize.y;
@@ -1118,6 +1973,26 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	
 }
 
+void Element::RenderBorder(BorderRenderer* borderRenderer) {
+	if (this->parent == nullptr) {
+		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+	}
+	else if (!this->hideableViaOverflow) {
+		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+	}
+	else if (this->parent->overflow == HIDDEN) {
+		//std::cout << "HIDDEN" << std::endl;
+		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
+		borderRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->parent->contentPosition, this->parent->contentSize, this->theRealContentBorders, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		//borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+	}
+	else {
+		//std::cout << "VISIBLE" << std::endl;
+		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+	}
+
+}
+
 void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer) {
 	if (this->parent == nullptr) {
 		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->rotation, this->idColor);
@@ -1166,9 +2041,12 @@ void Element::CalculateChildrenWidthWithMargins() {
 			width += curr->boxSize.x;
 			if (curr->childAfter != nullptr) {
 				// get both margins
-				int currMargin = curr->childAfter->GetMarginRight();
-				int nextMargin = curr->GetMarginLeft();
+				int nextMargin = curr->childAfter->GetMarginLeft();
+				int currMargin = curr->GetMarginRight();
+				int currRightBorder = curr->GetBorderRight();
+				int nextLeftBorder = curr->childAfter->GetBorderLeft();
 				width += (currMargin > nextMargin) ? currMargin : nextMargin;
+				width += currRightBorder + nextLeftBorder;
 			}
 			curr = curr->childAfter;
 		}
@@ -1180,13 +2058,48 @@ void Element::CalculateChildrenWidthWithMargins() {
 				curr = curr->childAfter;
 				continue;
 			}			
-			if (curr->boxSize.x > width) {
-				width = curr->boxSize.x;
+			int currWidth = curr->boxSize.x + curr->GetBorderLeft() + curr->GetBorderRight();
+			if (currWidth > width) {
+				width = currWidth;
 			}
 			curr = curr->childAfter;
 		}
 	}
 	this->childrenWidthWithMargins = width;
+}
+
+void Element::CalculateChildrenHeightWithMargins() {
+	if (this->headChild == nullptr) {
+		this->childrenHeight = 0;
+	}
+	int height = 0;
+	if (this->alignment == HORIZONTAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			int currHeight = curr->boxSize.y + curr->GetBorderTop() + curr->GetBorderBottom();
+			if (currHeight > height) {
+				height = currHeight;
+			}
+			curr = curr->childAfter;
+		}
+	}
+	else if (this->alignment == VERTICAL) {
+		Element* curr = this->headChild;
+		while (curr != nullptr) {
+			height += curr->boxSize.y;
+			if (curr->childAfter != nullptr) {
+				// get both margins
+				int currMargin = curr->childAfter->GetMarginBottom();
+				int nextMargin = curr->GetMarginTop();
+				int currBorderBottom = curr->GetBorderBottom();
+				int nextBorderTop = curr->childAfter->GetBorderTop();
+				height += (currMargin > nextMargin) ? currMargin : nextMargin;
+				height += currBorderBottom + nextBorderTop;
+			}
+			curr = curr->childAfter;
+		}
+	}
+	this->childrenHeightWithMargins = height;
 }
 
 void Element::CalculateChildrenHeight() {
@@ -1201,8 +2114,9 @@ void Element::CalculateChildrenHeight() {
 				curr = curr->childAfter;
 				continue;
 			}
-			if (curr->boxSize.y > height) {
-				height = curr->boxSize.y;
+			int currHeight = curr->boxSize.y + curr->GetBorderTop() + curr->GetBorderBottom();
+			if (currHeight > height) {
+				height = currHeight;
 			}
 			curr = curr->childAfter;
 		}
@@ -1214,7 +2128,7 @@ void Element::CalculateChildrenHeight() {
 				curr = curr->childAfter;
 				continue;
 			}
-			height += curr->boxSize.y;
+			height += curr->boxSize.y + curr->GetBorderTop() + curr->GetBorderBottom();
 			curr = curr->childAfter;
 		}
 	}
@@ -1233,7 +2147,8 @@ void Element::CalculateChildrenWidth() {
 				curr = curr->childAfter;
 				continue;
 			}
-			width += curr->boxSize.x;
+			int currWidth = curr->boxSize.x + curr->GetBorderLeft() + curr->GetBorderRight();
+			width += currWidth;
 			curr = curr->childAfter;
 		}
 	}
@@ -1244,8 +2159,9 @@ void Element::CalculateChildrenWidth() {
 				curr = curr->childAfter;
 				continue;
 			}
-			if (curr->boxSize.x > width) {
-				width = curr->boxSize.x;
+			int currWidth = curr->boxSize.x + curr->GetBorderLeft() + curr->GetBorderRight();
+			if (currWidth > width) {
+				width = currWidth;
 			}
 			curr = curr->childAfter;
 		}
@@ -1253,36 +2169,9 @@ void Element::CalculateChildrenWidth() {
 	this->childrenWidth = width;
 }
 
-void Element::CalculateChildrenHeightWithMargins() {
-	if (this->headChild == nullptr) {
-		this->childrenHeight = 0;
-	}
-	int height = 0;
-	if (this->alignment == HORIZONTAL) {
-		Element* curr = this->headChild;
-		while (curr != nullptr) {
-			if (curr->boxSize.y > height) {
-				height = curr->boxSize.y;
-			}
-			curr = curr->childAfter;
-		}
-	}
-	else if (this->alignment == VERTICAL) {
-		Element* curr = this->headChild;
-		while (curr != nullptr) {
-			height += curr->boxSize.y;
-			if (curr->childAfter != nullptr) {
-				// get both margins
-				int currMargin = curr->childAfter->GetMarginBottom();
-				int nextMargin = curr->GetMarginTop();
-				height += (currMargin > nextMargin) ? currMargin : nextMargin;
-			}
-			curr = curr->childAfter;
-		}
-	}
-	this->childrenHeightWithMargins = height;
-}
 
+
+// borders being boundaries for HIDDEN visibility
 glm::vec4 Element::CalculateBorders() {
 
 	glm::vec2 screenSize(this->screenWidth, this->screenHeight);
@@ -1389,6 +2278,72 @@ float Element::GetRadius() {
 
 	int maxRadius = this->radius;
 	if (this->radius > smallSide / 2) {
+		maxRadius = smallSide / 2;
+	}
+	//std::cout << maxRadius << std::endl;
+	//return (float)((maxRadius / this->screenWidth) * 2 - 1);
+	return (float)maxRadius;
+}
+
+void Element::SetBorderRadius()
+{
+	this->borderRadius = this->radius + this->boxModel.border.left;
+}
+
+void Element::SetBorderRadius(int radius) {
+	this->borderRadius = radius;
+}
+
+void Element::CalculateBorderCornerCoords() {
+	int width = this->borderSize.x;
+	int height = this->borderSize.y;
+
+	int smallSide = (width < height) ? width : height;
+
+	int maxRadius = this->borderRadius;
+	if (this->borderRadius > smallSide / 2) {
+		maxRadius = smallSide / 2;
+	}
+	// set top left coord currently not screen coords
+	this->borderTopLeft.x = this->borderPosition.x + maxRadius;
+	this->borderTopLeft.y = this->borderPosition.y + maxRadius;
+
+	// set top right
+	this->borderTopRight.x = this->borderPosition.x + width - maxRadius;
+	this->borderTopRight.y = this->borderPosition.y + maxRadius;
+
+	// set bottomLeft
+	this->borderBottomLeft.x = this->borderPosition.x + maxRadius;
+	this->borderBottomLeft.y = this->borderPosition.y + height - maxRadius;
+
+	// set bottomRight
+	this->borderBottomRight.x = this->borderPosition.x + width - maxRadius;
+	this->borderBottomRight.y = this->borderPosition.y + height - maxRadius;
+
+	// convert to screen coords
+	this->borderTopLeft.x = (this->borderTopLeft.x / this->screenWidth) * 2 - 1;
+	this->borderTopLeft.y = ((this->screenHeight - this->borderTopLeft.y) / this->screenHeight) * 2 - 1;
+
+	
+	this->borderTopRight.x = (this->borderTopRight.x / this->screenWidth) * 2 - 1;
+	this->borderTopRight.y = ((this->screenHeight - this->borderTopRight.y) / this->screenHeight) * 2 - 1;
+
+	this->borderBottomLeft.x = (this->borderBottomLeft.x / this->screenWidth) * 2 - 1;
+	this->borderBottomLeft.y = ((this->screenHeight - this->borderBottomLeft.y) / this->screenHeight) * 2 - 1;
+
+	this->borderBottomRight.x = (this->borderBottomRight.x / this->screenWidth) * 2 - 1;
+	this->borderBottomRight.y = ((this->screenHeight - this->borderBottomRight.y) / this->screenHeight) * 2 - 1;
+
+}
+
+float Element::GetBorderRadius() {
+	int width = this->borderSize.x;
+	int height = this->borderSize.y;
+
+	int smallSide = (width < height) ? width : height;
+
+	int maxRadius = this->borderRadius;
+	if (this->borderRadius > smallSide / 2) {
 		maxRadius = smallSide / 2;
 	}
 	//std::cout << maxRadius << std::endl;

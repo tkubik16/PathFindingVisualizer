@@ -32,6 +32,7 @@ public:
 	void Render();
 	void UpdateScreenSize(int width, int height);
 	void SampleBoxBuffer(double x, double y);
+	void SampleBoxBufferRightClick(double x, double y);
 	Element* GetElement(std::string colorId);
 	
 

@@ -63,6 +63,9 @@
     <ClCompile Include="style.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="border_renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="box_model.h">
@@ -107,6 +110,9 @@
     <ClInclude Include="style.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="border_renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="box.vert">
@@ -131,6 +137,18 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="contentBoxOverflowHidden.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="border.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="border.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="borderOverflowHidden.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="borderOverflowHidden.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

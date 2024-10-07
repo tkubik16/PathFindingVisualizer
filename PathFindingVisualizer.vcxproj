@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="border_renderer.cpp" />
     <ClCompile Include="box_model.cpp" />
     <ClCompile Include="box_renderer.cpp" />
     <ClCompile Include="content_box_renderer.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="texture_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="border_renderer.h" />
     <ClInclude Include="box_model.h" />
     <ClInclude Include="box_renderer.h" />
     <ClInclude Include="content_box_renderer.h" />
@@ -181,6 +183,10 @@
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="border.frag" />
+    <None Include="border.vert" />
+    <None Include="borderOverflowHidden.frag" />
+    <None Include="borderOverflowHidden.vert" />
     <None Include="box.frag" />
     <None Include="box.vert" />
     <None Include="boxOverflowHidden.frag" />

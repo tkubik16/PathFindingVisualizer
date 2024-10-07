@@ -114,6 +114,7 @@ void Style::PrintStyle() {
 	std::cout << "Z-Index: " << this->zIndex << std::endl;
 	std::cout << "Rotation: " << this->rotation << std::endl;
 	std::cout << "Radius: " << this->radius << std::endl;
+	std::cout << "BorderRadius: " << this->borderRadius << std::endl;
 	std::cout << "Alignment: ";
 	PrintAlignment(this->alignment);
 	std::cout << "AlignContent: ";

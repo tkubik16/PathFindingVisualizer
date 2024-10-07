@@ -106,7 +106,9 @@ void Document::RenderDocument(Renderers* renderers) {
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
 		//std::cout << curr->name << std::endl;
+		curr->RenderBorder(renderers->borderRenderer);
 		curr->RenderBox(renderers->boxRenderer);
+		//curr->RenderBorder(renderers->borderRenderer);
 		curr->RenderContentBox(renderers->contentBoxRenderer, true);
 		elQueue.pop();
 
@@ -202,6 +204,7 @@ void Document::SetAllElementsSizes() {
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
 		curr->CalculateBoxSize();
+		curr->CalculateBordersSize();
 		curr->CalculateContentSize();
 		elQueue.pop();
 		Element* currChild = curr->headChild;
@@ -241,8 +244,9 @@ void Document::SetAllElementsPositions() {
 		
 		//std::cout << curr->name << std::endl;
 		//curr->CalculatePositions();
-		curr->CalculateBoxPosition();
-
+		curr->CalculateBorderPosition();
+		curr->CalculateBoxPositionBasedOnBorderPosition();
+		//curr->CalculateBoxPosition();
 		curr->CalculateContentPosition();
 		elQueue.pop();
 		Element* currChild = curr->headChild;
@@ -352,6 +356,7 @@ void Document::SetAllElementsCornerCoords() {
 		Element* curr = elQueue.front();
 
 		curr->CalculateCornerCoords();
+		curr->CalculateBorderCornerCoords();
 		elQueue.pop();
 		Element* currChild = curr->headChild;
 		while (currChild != nullptr) {

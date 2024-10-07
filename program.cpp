@@ -49,6 +49,9 @@ void Program::Init()
 	ResourceManager::LoadShader("boxOverflowHidden.vert", "boxOverflowHidden.frag", nullptr, "boxOverflowHidden");
 	ResourceManager::LoadShader("content.vert", "content.frag", nullptr, "contentshader");
 	ResourceManager::LoadShader("contentBoxOverflowHidden.vert", "contentBoxOverflowHidden.frag", nullptr, "contentBoxOverflowHidden");
+	ResourceManager::LoadShader("border.vert", "border.frag", nullptr, "bordershader");
+	ResourceManager::LoadShader("borderOverflowHidden.vert", "borderOverflowHidden.frag", nullptr, "borderOverflowHidden");
+	//ResourceManager::LoadShader("borderOverflowHidden.vert", "borderOverflowHidden.frag", nullptr, "borderOverflowHidden");
 	// configure shaders
 	ResourceManager::GetShader("boxshader").Use().SetInteger("image", 0);
 	ResourceManager::GetShader("boxshader").SetMatrix4("projection", this->projection);
@@ -66,6 +69,14 @@ void Program::Init()
 	ResourceManager::GetShader("contentBoxOverflowHidden").SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("contentBoxOverflowHidden").SetMatrix4("view", this->view);
 
+	ResourceManager::GetShader("bordershader").Use().SetInteger("image", 0);
+	ResourceManager::GetShader("bordershader").SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("bordershader").SetMatrix4("view", this->view);
+
+	ResourceManager::GetShader("borderOverflowHidden").Use().SetInteger("image", 0);
+	ResourceManager::GetShader("borderOverflowHidden").SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("borderOverflowHidden").SetMatrix4("view", this->view);
+
 	/*
 	glm::vec2 screenSize(this->screenWidth, this->screenHeight);
 	ResourceManager::GetShader("boxshader").Use().SetVector2f("screenSize", screenSize);
@@ -81,6 +92,7 @@ void Program::Init()
 	// initialize renderers
 	this->renderers = new Renderers();
 	this->renderers->boxRenderer = new BoxRenderer(ResourceManager::GetShader("boxshader"), ResourceManager::GetShader("boxOverflowHidden"));
+	this->renderers->borderRenderer = new BorderRenderer(ResourceManager::GetShader("bordershader"), ResourceManager::GetShader("borderOverflowHidden"));
 	this->renderers->contentBoxRenderer = new ContentBoxRenderer(ResourceManager::GetShader("contentshader"), ResourceManager::GetShader("contentBoxOverflowHidden"));
 	this->renderers->textureRenderer = new TextureRenderer(ResourceManager::GetShader("contentshader"));
 	this->renderers->SetScreenSize(this->screenWidth, this->screenHeight);
@@ -91,80 +103,97 @@ void Program::Init()
 
 	// Styles
 	testStyle = new Style("testStyle", "testClass");
-	testStyle->PrintStyle();
+	//testStyle->PrintStyle();
 
 	// Elements
 	container1 = this->Doc.AddElement("container1");
 	container1->SetBoxWidthMode(PERCENTAGE);
 	container1->SetBoxHeightMode(PERCENTAGE);
-	container1->boxModel.SetSize(100, 100 / 4 - 1);
+	container1->boxModel.SetSize(90, 100 / 4 - 1);
 	container1->boxModel.SetPaddingAll(30);
 	container1->SetRadius(25);
+	container1->SetBorderRadius();
 	container1->alignment = HORIZONTAL;
+	container1->alignContent = SPACE_AROUND;
 	container1->alignItems = CENTER_ITEMS;
-	container1->alignContent = CENTER_CONTENT;
+	container1->overflow = HIDDEN;
+	//container1->alignContent = CENTER_CONTENT;
 
 	container2 = this->Doc.AddElement("container2");
 	container2->SetBoxWidthMode(PERCENTAGE);
 	container2->SetBoxHeightMode(PERCENTAGE);
-	container2->boxModel.SetSize(100, 100 / 4 - 1);
+	container2->boxModel.SetSize(80, 100 / 4 - 1);
 	container2->boxModel.SetPaddingAll(30);
 	container2->SetRadius(25);
+	container2->boxModel.SetBorderAll(10);
+	container2->SetBorderRadius();
 
 	container3 = this->Doc.AddElement("container3");
 	container3->SetBoxWidthMode(PERCENTAGE);
 	container3->SetBoxHeightMode(PERCENTAGE);
-	container3->boxModel.SetSize(100, 100 / 4 - 1);
+	container3->boxModel.SetSize(70, 100 / 4 - 1);
 	container3->boxModel.SetPaddingAll(30);
 	container3->SetRadius(25);
+	container3->SetBorderRadius();
 
 	container4 = this->Doc.AddElement("container4");
 	container4->SetBoxWidthMode(PERCENTAGE);
 	container4->SetBoxHeightMode(PERCENTAGE);
-	container4->boxModel.SetSize(100, 100 / 4 - 1);
+	container4->boxModel.SetSize(60, 100 / 4 - 1);
 	container4->boxModel.SetPaddingAll(30);
 	container4->SetRadius(25);
+	container4->SetBorderRadius();
 
 	c1Box1 = this->Doc.AddElement("c1Box1");
 	c1Box1->boxModel.SetSize(100, 100);
 	c1Box1->boxModel.SetPaddingAll(15);
 	c1Box1->SetRadius(0);
+	c1Box1->SetBorderRadius();
 	c1Box1->boxModel.SetMarginAll(30);
 
 	c1Box2 = this->Doc.AddElement("c1Box2");
 	c1Box2->boxModel.SetSize(100, 100);
 	c1Box2->boxModel.SetPaddingAll(15);
 	c1Box2->SetRadius(10);
+	c1Box2->SetBorderRadius();
 	c1Box2->boxModel.SetMarginAll(30);
 
 	c1Box3 = this->Doc.AddElement("c1Box3");
 	c1Box3->boxModel.SetSize(100, 100);
 	c1Box3->boxModel.SetPaddingAll(15);
 	c1Box3->SetRadius(20);
+	c1Box3->boxModel.SetBorderAll(5);
+	c1Box3->SetBorderRadius();
 	c1Box3->boxModel.SetMarginAll(30);
+	//c1Box3->boxModel.SetBorderAll(5);
 
 	c1Box4 = this->Doc.AddElement("c1Box4");
 	c1Box4->boxModel.SetSize(100, 100);
 	c1Box4->boxModel.SetPaddingAll(15);
 	c1Box4->SetRadius(30);
+	c1Box4->SetBorderRadius();
 	c1Box4->boxModel.SetMarginAll(30);
 
 	c1Box5 = this->Doc.AddElement("c1Box5");
 	c1Box5->boxModel.SetSize(100, 100);
 	c1Box5->boxModel.SetPaddingAll(15);
 	c1Box5->SetRadius(50);
+	c1Box5->SetBorderRadius();
 	c1Box5->boxModel.SetMarginAll(30);
 	
 	
 	// below here create doc tree maybe
 	this->Doc.Init();
 	this->Doc.root->boxModel.SetPaddingAll(50);
+	// TODO: test that margin and border don't affect root
+	//this->Doc.root->boxModel.SetMarginAll(5);
 	this->Doc.root->AddChild(container1);
 	this->Doc.root->AddChild(container2);
 	this->Doc.root->AddChild(container3);
 	this->Doc.root->AddChild(container4);
 	this->Doc.root->alignment = VERTICAL;
-	this->Doc.root->alignContent = SPACE_BETWEEN;
+	this->Doc.root->alignContent = SPACE_AROUND;
+	this->Doc.root->alignItems = END_ITEMS;
 	this->Doc.root->overflow = HIDDEN;
 
 	container1->AddChild(c1Box1);
@@ -188,7 +217,7 @@ void Program::Init()
 
 	//container->PrintInfo();
 	//firstBox->FindRealContentBorders();
-	//this->Doc.root->PrintInfo();
+	this->Doc.root->PrintInfo();
 	//container->PrintInfo();
 	//firstBox->CalculateCornerCoords();
 	//container->PrintCornerCoords();
@@ -197,6 +226,9 @@ void Program::Init()
 	//this->Doc.root->PrintPositioning();
 	//this->Doc.root->PrintChildrenWidthAndHeight();
 	//container1->PrintInfo();
+	c1Box3->PrintInfo();
+	//this->Doc.root->PrintCornerCoords();
+	//this->Doc.root->PrintBorderCornerCoords();
 
 }
 
@@ -226,6 +258,8 @@ void Program::UpdateScreenSize(int width, int height) {
 	ResourceManager::GetShader("boxOverflowHidden").Use().SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("contentshader").Use().SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("contentBoxOverflowHidden").Use().SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("bordershader").Use().SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("borderOverflowHidden").Use().SetMatrix4("projection", this->projection);
 
 	/*
 	glm::vec2 screenSize(width, height);
@@ -277,9 +311,22 @@ void Program::SampleBoxBuffer(double x, double y) {
 	Element* clickedElement = this->GetElement(colorId);
 	if (clickedElement != nullptr) {
 		std::cout << clickedElement->name << std::endl;
+		//clickedElement->PrintInfo();
 	}
 	
 }
+
+void Program::SampleBoxBufferRightClick(double x, double y) {
+	std::string colorId = this->boxBuffer->Sample(x, y);
+	//std::cout << colorId << std::endl;
+	Element* clickedElement = this->GetElement(colorId);
+	if (clickedElement != nullptr) {
+		//std::cout << clickedElement->name << std::endl;
+		clickedElement->PrintInfo();
+	}
+
+}
+
 
 Element* Program::GetElement(std::string colorId) {
 	if (this->Doc.colorIdMap.count(colorId) != 0) {

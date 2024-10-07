@@ -186,5 +186,30 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
         PathFindingVisualizer.SampleBoxBuffer(xPosInPixels, yPosInPixels);
     }
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+        int framebufferWidth, framebufferHeight;
+        glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+
+        double xPos, yPos;
+        glfwGetCursorPos(window, &xPos, &yPos);
+        //std::cout << xpos << " " << ypos << std::endl;
+
+        // Convert GLFW's screen coordinates to pixel coordinates using the ratio between the window size and the framebuffer size
+        double xPosInPixels = xPos * static_cast<double>(framebufferWidth) / windowWidth;
+        double yPosInPixels = yPos * static_cast<double>(framebufferHeight) / windowHeight;
+
+        // Shift to use OpenGL's convention of pixel centers being at half-integers
+        xPosInPixels += 0.5;
+        yPosInPixels += 0.5;
+
+        // Invert along the y-axis
+        yPosInPixels = framebufferHeight - yPosInPixels;
+
+
+        PathFindingVisualizer.SampleBoxBufferRightClick(xPosInPixels, yPosInPixels);
+    }
         
 }

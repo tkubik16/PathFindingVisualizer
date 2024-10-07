@@ -11,6 +11,7 @@
 #include "box_model.h"
 #include "box_renderer.h"
 #include "content_box_renderer.h"
+#include "border_renderer.h"
 
 
 
@@ -228,10 +229,15 @@ public:
 	Positioning positioning;
 	// corner radius
 	int radius;
+	int borderRadius;
 	glm::vec2 topLeft;
 	glm::vec2 topRight;
 	glm::vec2 bottomLeft;
 	glm::vec2 bottomRight;
+	glm::vec2 borderTopLeft;
+	glm::vec2 borderTopRight;
+	glm::vec2 borderBottomLeft;
+	glm::vec2 borderBottomRight;
 	
 
 	Element();
@@ -242,6 +248,7 @@ public:
 	void PrintBorders();
 	void PrintRealBorders();
 	void PrintCornerCoords();
+	void PrintBorderCornerCoords();
 	void PrintPositioning();
 	void PrintChildrenWidthAndHeight();
 
@@ -249,12 +256,18 @@ public:
 	void SetChildrensParentDimensions();
 	void SetParentDimensions(int width, int height);
 	void CalculatePositions();
+	void CalculateBorderPosition();
+	void CalculateBorderPositionRoot();
+	void CalculateBorderPositionHorizontal();
+	void CalculateBorderPositionVertical();
+	void CalculateBoxPositionBasedOnBorderPosition();
 	void CalculateBoxPosition();
 	void CalculateBoxPositionRoot();
 	void CalculateBoxPositionHorizontal();
 	void CalculateBoxPositionVertical();
 	void CalculateContentPosition();
 	
+	void CalculateBordersSize();
 	void CalculateContentSize();
 	void CalculateBoxSize();
 	// to be used for space between and space around adn space evenly
@@ -269,6 +282,7 @@ public:
 	void AddChild(Element* child);
 	void AddChildToVector(Element* child);
 	void RenderBox(BoxRenderer* boxRenderer);
+	void RenderBorder(BorderRenderer* borderRenderer);
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer);
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe);
 	void PrintChildren();
@@ -295,6 +309,12 @@ public:
 	void CalculateCornerCoords();
 	float GetRadius();
 
+	// border corner radius methods
+	void SetBorderRadius();
+	void SetBorderRadius(int radius);
+	void CalculateBorderCornerCoords();
+	float GetBorderRadius();
+
 	// methods for Setting Mode
 	void SetBoxWidthMode(Mode mode);
 	void SetBoxHeightMode(Mode mode);
@@ -308,6 +328,12 @@ public:
 	// methods for Getting pixel equivalents when Mode is PERCENTAGE 
 	int GetBoxWidth();
 	int GetBoxHeight();
+
+	// methods for Getting pixel equivalents when Mode is PERCENTAGE 
+	int GetBorderTop();
+	int GetBorderBottom();
+	int GetBorderLeft();
+	int GetBorderRight();
 
 	// methods for Getting pixel equivalents when Mode is PERCENTAGE 
 
