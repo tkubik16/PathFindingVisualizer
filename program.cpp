@@ -8,6 +8,7 @@
 #include "element.h"
 #include "style.h"
 
+
 BoxRenderer* boxRenderer;
 ContentBoxRenderer* contentBoxRenderer;
 //TextureRenderer* textureRenderer;
@@ -23,7 +24,7 @@ Element* c1Box3;
 Element* c1Box4;
 Element* c1Box5;
 Element* fixedElement;
-Style* testStyle;
+StyleSheet* styleSheet;
 
 //Framebuffer* boxBuffer;
 
@@ -101,9 +102,10 @@ void Program::Init()
 	this->boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
 	this->boxBuffer->Init();
 
-	// Styles
-	testStyle = new Style("testStyle", "testClass");
-	//testStyle->PrintStyle();
+	// StyleSheet
+	styleSheet = new StyleSheet();
+	styleSheet->Init();
+	styleSheet->Print("estStyle");
 
 	// Elements
 	container1 = this->Doc.AddElement("container1");
@@ -221,7 +223,7 @@ void Program::Init()
 
 	//container->PrintInfo();
 	//firstBox->FindRealContentBorders();
-	this->Doc.root->PrintInfo();
+	//this->Doc.root->PrintInfo();
 	//container->PrintInfo();
 	//firstBox->CalculateCornerCoords();
 	//container->PrintCornerCoords();
@@ -230,7 +232,7 @@ void Program::Init()
 	//this->Doc.root->PrintPositioning();
 	//this->Doc.root->PrintChildrenWidthAndHeight();
 	//container1->PrintInfo();
-	c1Box3->PrintInfo();
+	//c1Box3->PrintInfo();
 	//this->Doc.root->PrintCornerCoords();
 	//this->Doc.root->PrintBorderCornerCoords();
 

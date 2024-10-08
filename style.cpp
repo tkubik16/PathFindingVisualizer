@@ -1,6 +1,22 @@
 
 #include "style.h"
 
+Style::Style(std::string styleName) :
+	styleName(styleName),
+	className(""),
+	zIndex(1),
+	rotation(0),
+	alignContent(START),
+	alignItems(START_ITEMS),
+	alignment(VERTICAL),
+	overflow(HIDDEN),
+	hideableViaOverflow(true),
+	radius(0),
+	borderRadius(0)
+{
+
+}
+
 Style::Style(std::string styleName, std::string className) :
 	styleName(styleName),
 	className(className),
@@ -11,7 +27,8 @@ Style::Style(std::string styleName, std::string className) :
 	alignment(VERTICAL),
 	overflow(HIDDEN),
 	hideableViaOverflow(true),
-	radius(0)
+	radius(0),
+	borderRadius(0)
 {
 
 }

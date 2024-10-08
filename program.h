@@ -7,6 +7,7 @@
 #include "document.h"
 #include "renderers.h"
 #include "framebuffer.h"
+#include "style_sheet.h"
 
 class Program
 {

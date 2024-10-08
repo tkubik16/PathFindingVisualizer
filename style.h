@@ -15,7 +15,7 @@ class Style
 public:
 	
 	
-
+	Style(std::string styleName);
 	Style(std::string styleName, std::string className);
 	~Style();
 
