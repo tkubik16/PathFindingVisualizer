@@ -267,6 +267,7 @@ void Document::AdjustElementsIfNonStatic() {
 		if (curr->positioning.positioningType != STATIC) {
 			curr->AdjustIfNonStatic();
 		}
+		curr->CalculateBoxPositionBasedOnBorderPosition();
 		curr->CalculateContentPosition();
 		elQueue.pop();
 		Element* currChild = curr->headChild;

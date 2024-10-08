@@ -1600,55 +1600,55 @@ void Element::AdjustIfNonStatic() {
 
 void Element::CalculatePositionRelative() {
 	// yes they will interfere with eachother
-	this->boxPosition.x += this->GetLeft();
-	this->boxPosition.x -= this->GetRight();
-	this->boxPosition.y += this->GetTop();
-	this->boxPosition.y -= this->GetBottom();
+	this->borderPosition.x += this->GetLeft();
+	this->borderPosition.x -= this->GetRight();
+	this->borderPosition.y += this->GetTop();
+	this->borderPosition.y -= this->GetBottom();
 }
 
 void Element::CalculatePositionAbsolute() {
 	Element* relativeOrAbsoluteParent = this->FindParentRelativeOrAbsolute();
-
+	//std::cout << relativeOrAbsoluteParent->name << std::endl;
 	glm::vec2 centeringOffsets = this->GetParentCenteringOffsets(relativeOrAbsoluteParent);
-
+	std::cout << centeringOffsets.x << " " << centeringOffsets.y << std::endl;
 	if (this->positioning.centerHorizontally == true) {
-		this->boxPosition.x = centeringOffsets.x;
+		this->borderPosition.x = centeringOffsets.x;
 	}
 	if (this->positioning.centerVertically == true) {
-		this->boxPosition.y = centeringOffsets.y;
+		this->borderPosition.y = centeringOffsets.y;
 	}
 	// the 4 positional movements which is distance from that edge
 	if (this->positioning.left > -1) {
 		int leftPixels = this->GetLeft(relativeOrAbsoluteParent);
-		int width = this->boxSize.x;
+		int width = this->borderSize.x;
 
 		int parentLeftEdge = relativeOrAbsoluteParent->boxPosition.x;
-		this->boxPosition.x = parentLeftEdge;
-		this->boxPosition.x += leftPixels;
+		this->borderPosition.x = parentLeftEdge;
+		this->borderPosition.x += leftPixels;
 	}
 	if (this->positioning.right > -1) {
 		int rightPixels = this->GetRight(relativeOrAbsoluteParent);
-		int width = this->boxSize.x;
+		int width = this->borderSize.x;
 
 		int parentRightEdge = relativeOrAbsoluteParent->boxPosition.x + relativeOrAbsoluteParent->boxSize.x;
-		this->boxPosition.x = parentRightEdge - width;
-		this->boxPosition.x -= rightPixels;
+		this->borderPosition.x = parentRightEdge - width;
+		this->borderPosition.x -= rightPixels;
 	}
 	if (this->positioning.top > -1) {
 		int topPixels = this->GetTop(relativeOrAbsoluteParent);
-		int height = this->boxSize.y;
+		int height = this->borderSize.y;
 
 		int parentTopEdge = relativeOrAbsoluteParent->boxPosition.y;
-		this->boxPosition.y = parentTopEdge;
-		this->boxPosition.y += topPixels;
+		this->borderPosition.y = parentTopEdge;
+		this->borderPosition.y += topPixels;
 	}
 	if (this->positioning.bottom > -1) {
 		int bottomPixels = this->GetBottom(relativeOrAbsoluteParent);
-		int height = this->boxSize.y;
+		int height = this->borderSize.y;
 
 		int parentBottomEdge = relativeOrAbsoluteParent->boxPosition.y + relativeOrAbsoluteParent->boxSize.y;
-		this->boxPosition.y = parentBottomEdge - height;
-		this->boxPosition.y -= bottomPixels;
+		this->borderPosition.y = parentBottomEdge - height;
+		this->borderPosition.y -= bottomPixels;
 	}
 	
 	
@@ -1673,47 +1673,47 @@ void Element::CalculatePositionFixed() {
 	glm::vec2 centeringOffsets = this->GetCenteringOffsets();
 
 	if (this->positioning.centerHorizontally == true) {
-		this->boxPosition.x = centeringOffsets.x;
+		this->borderPosition.x = centeringOffsets.x;
 	}
 	if (this->positioning.centerVertically == true) {
-		this->boxPosition.y = centeringOffsets.y;
+		this->borderPosition.y = centeringOffsets.y;
 	}
 	
 	// the 4 positional movements which is distance from that edge
 	if (this->positioning.left > -1) {
 		int leftPixels = this->GetLeft();
-		int width = this->boxSize.x;
+		int width = this->borderSize.x;
 		
 
 		int parentLeftEdge = 0;
-		this->boxPosition.x = parentLeftEdge;
-		this->boxPosition.x += leftPixels;
+		this->borderPosition.x = parentLeftEdge;
+		this->borderPosition.x += leftPixels;
 	}
 	if (this->positioning.right > -1) {
 		int rightPixels = this->GetRight();
-		int width = this->boxSize.x;
+		int width = this->borderSize.x;
 		int screenWidth = this->screenWidth;
 
 		int parentRightEdge = screenWidth;
-		this->boxPosition.x = parentRightEdge - width;
-		this->boxPosition.x -= rightPixels;
+		this->borderPosition.x = parentRightEdge - width;
+		this->borderPosition.x -= rightPixels;
 	}
 	if (this->positioning.top > -1) {
 		int topPixels = this->GetTop();
-		int height = this->boxSize.y;
+		int height = this->borderSize.y;
 
 		int parentTopEdge = 0;
-		this->boxPosition.y = parentTopEdge;
-		this->boxPosition.y += topPixels;
+		this->borderPosition.y = parentTopEdge;
+		this->borderPosition.y += topPixels;
 	}
 	if (this->positioning.bottom > -1) {
 		int bottomPixels = this->GetBottom();
-		int height = this->boxSize.y;
+		int height = this->borderSize.y;
 		int screenHeight = this->screenHeight;
 
 		int parentBottomEdge = screenHeight;
-		this->boxPosition.y = parentBottomEdge - height;
-		this->boxPosition.y -= bottomPixels;
+		this->borderPosition.y = parentBottomEdge - height;
+		this->borderPosition.y -= bottomPixels;
 	}
 }
 
@@ -1724,8 +1724,8 @@ glm::vec2 Element::GetCenteringOffsets() {
 
 		int halfWidth = screenWidth / 2;
 		int halfHeight = screenHeight / 2;
-		int posX = halfWidth - (this->boxSize.x / 2);
-		int posY = halfHeight - (this->boxSize.y / 2);
+		int posX = halfWidth - (this->borderSize.x / 2);
+		int posY = halfHeight - (this->borderSize.y / 2);
 		return glm::vec2(posX, posY);
 	}
 
@@ -1744,8 +1744,8 @@ glm::vec2 Element::GetParentCenteringOffsets(Element* parent) {
 	int centerX = halfWidth + parentPosX;
 	int centerY = halfHeight + parentPosY;
 
-	int posX = centerX - (this->boxSize.x / 2);
-	int posY = centerY - (this->boxSize.y / 2);
+	int posX = centerX - (this->borderSize.x / 2);
+	int posY = centerY - (this->borderSize.y / 2);
 	return glm::vec2(posX, posY);
 	
 }
@@ -1755,7 +1755,7 @@ Element* Element::FindParentRelativeOrAbsolute() {
 
 	Element* curr = this->parent;
 	if (curr->parent == nullptr) return curr;
-	while (curr != nullptr || curr->parent != nullptr ) {
+	while (curr != nullptr && curr->parent != nullptr ) {
 		if (curr->positioning.positioningType == RELATIVE || curr->positioning.positioningType == ABSOLUTE) {
 			return curr;
 		}

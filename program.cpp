@@ -165,7 +165,11 @@ void Program::Init()
 	c1Box3->boxModel.SetBorderAll(5);
 	c1Box3->SetBorderRadius();
 	c1Box3->boxModel.SetMarginAll(30);
-	//c1Box3->boxModel.SetBorderAll(5);
+	c1Box3->SetPositioningType(STATIC);
+	c1Box3->hideableViaOverflow = false;
+	//c1Box3->positioning.right = 25;
+	c1Box3->positioning.centerHorizontally = true;
+	c1Box3->positioning.centerVertically = true;
 
 	c1Box4 = this->Doc.AddElement("c1Box4");
 	c1Box4->boxModel.SetSize(100, 100);
