@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="border_renderer.cpp" />
     <ClCompile Include="box_model.cpp" />
     <ClCompile Include="box_renderer.cpp" />
     <ClCompile Include="content_box_renderer.cpp" />
@@ -160,11 +161,13 @@
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="style.cpp" />
+    <ClCompile Include="style_sheet.cpp" />
     <ClCompile Include="T:\downloads\glad (1)\src\glad.c" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texture_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="border_renderer.h" />
     <ClInclude Include="box_model.h" />
     <ClInclude Include="box_renderer.h" />
     <ClInclude Include="content_box_renderer.h" />
@@ -174,6 +177,7 @@
     <ClInclude Include="program.h" />
     <ClInclude Include="renderers.h" />
     <ClInclude Include="style.h" />
+    <ClInclude Include="style_sheet.h" />
     <ClInclude Include="texture_renderer.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
@@ -181,6 +185,10 @@
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="border.frag" />
+    <None Include="border.vert" />
+    <None Include="borderOverflowHidden.frag" />
+    <None Include="borderOverflowHidden.vert" />
     <None Include="box.frag" />
     <None Include="box.vert" />
     <None Include="boxOverflowHidden.frag" />

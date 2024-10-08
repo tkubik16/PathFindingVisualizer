@@ -15,7 +15,7 @@ class Style
 public:
 	
 	
-
+	Style(std::string styleName);
 	Style(std::string styleName, std::string className);
 	~Style();
 
@@ -34,6 +34,27 @@ public:
 	void SetBorder(int top, int bottom, int left, int right);
 	void SetMargin(int border);
 	void SetMargin(int top, int bottom, int left, int right);
+	void SetZIndex(int zIndex);
+	void SetRotation(float rotation);
+	void SetRadius(int radius);
+	void SetBorderRadius(int borderRadius);
+	void SetAlignContent(AlignContent alignContent);
+	void SetAlignItems(AlignItems alignItems);
+	void SetAlignment(Alignment alignment);
+	void SetOverflow(Overflow overflow);
+	void SetOverflowHideable(bool value);
+	void SetPositioning(PositioningType positioningType, int top, int bottom, int left, int right, bool centerVertically, bool centerHorizontally, Mode mode);
+
+	/*
+	PositioningType positioningType;
+	int top;
+	int bottom;
+	int left;
+	int right;
+	bool centerVertically;
+	bool centerHorizontally;
+	Mode mode;
+	*/
 
 
 private:
@@ -47,6 +68,7 @@ private:
 	float rotation;
 	// corner radius
 	int radius;
+	int borderRadius;
 	// for center, left, or right aligning of elements in the parent content
 	AlignContent alignContent;
 	AlignItems alignItems;

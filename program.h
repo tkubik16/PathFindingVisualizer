@@ -7,6 +7,7 @@
 #include "document.h"
 #include "renderers.h"
 #include "framebuffer.h"
+#include "style_sheet.h"
 
 class Program
 {
@@ -32,6 +33,7 @@ public:
 	void Render();
 	void UpdateScreenSize(int width, int height);
 	void SampleBoxBuffer(double x, double y);
+	void SampleBoxBufferRightClick(double x, double y);
 	Element* GetElement(std::string colorId);
 	
 
