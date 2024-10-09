@@ -289,16 +289,16 @@ void Element::PrintInfo() {
 
 void Element::PrintPositioning() {
 	std::cout << "PositionType: " << std::endl;
-	if (this->positioning.positioningType == STATIC) {
+	if (this->positioning.positioningType == STATIC_POSITION) {
 		std::cout << "STATIC" << std::endl;
 	}
-	else if (this->positioning.positioningType == RELATIVE) {
+	else if (this->positioning.positioningType == RELATIVE_POSITION) {
 		std::cout << "RELATIVE" << std::endl;
 	}
-	else if (this->positioning.positioningType == ABSOLUTE) {
+	else if (this->positioning.positioningType == ABSOLUTE_POSITION) {
 		std::cout << "ABSOLUTE" << std::endl;
 	}
-	else if (this->positioning.positioningType == FIXED) {
+	else if (this->positioning.positioningType == FIXED_POSITION) {
 		std::cout << "FIXED" << std::endl;
 	}
 }
@@ -417,7 +417,7 @@ bool FirstInlineChildToParent(Element* element) {
 	Element* curr = parent->headChild;
 	while (curr != nullptr) {
 
-		if (curr->positioning.positioningType == STATIC || curr->positioning.positioningType == RELATIVE) {
+		if (curr->positioning.positioningType == STATIC_POSITION || curr->positioning.positioningType == RELATIVE_POSITION) {
 			if (curr == element) return true;
 			else break;
 		}
@@ -432,7 +432,7 @@ Element* GetInlineChildBefore(Element* element) {
 		return nullptr;
 	}
 	Element* curr = element->childBefore;
-	while (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) {
+	while (curr->positioning.positioningType == FIXED_POSITION || curr->positioning.positioningType == ABSOLUTE_POSITION) {
 		if (curr->childBefore == nullptr) {
 			std::cout << "ERROR::ELEMENT GetInlineChildBefore(): Somehow no element before this one is STATIC or RELATIVE." << std::endl;
 			return nullptr;
@@ -447,7 +447,7 @@ int Element::GetNumInlineChildren() {
 	int num = 0;
 	Element* curr = this->headChild;
 	while (curr != nullptr) {
-		if (curr->positioning.positioningType == STATIC || curr->positioning.positioningType == RELATIVE) {
+		if (curr->positioning.positioningType == STATIC_POSITION || curr->positioning.positioningType == RELATIVE_POSITION) {
 			num++;
 		}
 		curr = curr->childAfter;
@@ -492,7 +492,7 @@ void Element::CalculateBorderPositionRoot()
 // TODO: switch this over to work for the BorderPosition instead of BoxPosition
 void Element::CalculateBorderPositionHorizontal()
 {
-	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+	if (this->positioning.positioningType == ABSOLUTE_POSITION || this->positioning.positioningType == FIXED_POSITION) {
 		return;
 	}
 	//std::cout << "Element::CalculateBoxPositionHorizontal():" << std::endl;
@@ -663,7 +663,7 @@ void Element::CalculateBorderPositionHorizontal()
 
 void Element::CalculateBorderPositionVertical()
 {
-	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+	if (this->positioning.positioningType == ABSOLUTE_POSITION || this->positioning.positioningType == FIXED_POSITION) {
 		return;
 	}
 
@@ -865,7 +865,7 @@ void Element::CalculateBoxPositionRoot() {
 }
 
 void Element::CalculateBoxPositionHorizontal() {
-	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+	if (this->positioning.positioningType == ABSOLUTE_POSITION || this->positioning.positioningType == FIXED_POSITION) {
 		return;
 	}
 	//std::cout << "Element::CalculateBoxPositionHorizontal():" << std::endl;
@@ -1036,7 +1036,7 @@ void Element::CalculateBoxPositionHorizontal() {
 }
 
 void Element::CalculateBoxPositionVertical() {
-	if (this->positioning.positioningType == ABSOLUTE || this->positioning.positioningType == FIXED) {
+	if (this->positioning.positioningType == ABSOLUTE_POSITION || this->positioning.positioningType == FIXED_POSITION) {
 		return;
 	}
 
@@ -1587,13 +1587,13 @@ void Element::CalculateBoxPositionVertical() {
 */
 // TODO: make the adjustments for RELATIVE, FIXED, ABSOLUTE
 void Element::AdjustIfNonStatic() {
-	if (this->positioning.positioningType == FIXED) {
+	if (this->positioning.positioningType == FIXED_POSITION) {
 		this->CalculatePositionFixed();
 	}
-	else if (this->positioning.positioningType == RELATIVE) {
+	else if (this->positioning.positioningType == RELATIVE_POSITION) {
 		this->CalculatePositionRelative();
 	}
-	else if (this->positioning.positioningType == ABSOLUTE) {
+	else if (this->positioning.positioningType == ABSOLUTE_POSITION) {
 		this->CalculatePositionAbsolute();
 	}
 }
@@ -1718,7 +1718,7 @@ void Element::CalculatePositionFixed() {
 }
 
 glm::vec2 Element::GetCenteringOffsets() {
-	if (this->positioning.positioningType == FIXED) {
+	if (this->positioning.positioningType == FIXED_POSITION) {
 		int screenWidth = this->screenWidth;
 		int screenHeight = this->screenHeight;
 
@@ -1756,7 +1756,7 @@ Element* Element::FindParentRelativeOrAbsolute() {
 	Element* curr = this->parent;
 	if (curr->parent == nullptr) return curr;
 	while (curr != nullptr && curr->parent != nullptr ) {
-		if (curr->positioning.positioningType == RELATIVE || curr->positioning.positioningType == ABSOLUTE) {
+		if (curr->positioning.positioningType == RELATIVE_POSITION || curr->positioning.positioningType == ABSOLUTE_POSITION) {
 			return curr;
 		}
 		curr = curr->parent;
@@ -1767,25 +1767,25 @@ Element* Element::FindParentRelativeOrAbsolute() {
 
 void Element::SetPositioningType(PositioningType type)
 {
-	if (type == ABSOLUTE) {
-		this->positioning.positioningType = ABSOLUTE;
+	if (type == ABSOLUTE_POSITION) {
+		this->positioning.positioningType = ABSOLUTE_POSITION;
 		this->positioning.left = -1;
 		this->positioning.right = -1;
 		this->positioning.top = -1;
 		this->positioning.bottom = -1;
 	}
-	else if (type == RELATIVE) {
-		this->positioning.positioningType = RELATIVE;
+	else if (type == RELATIVE_POSITION) {
+		this->positioning.positioningType = RELATIVE_POSITION;
 	}
-	else if (type == FIXED) {
-		this->positioning.positioningType = FIXED;
+	else if (type == FIXED_POSITION) {
+		this->positioning.positioningType = FIXED_POSITION;
 		this->positioning.left = -1;
 		this->positioning.right = -1;
 		this->positioning.top = -1;
 		this->positioning.bottom = -1;
 	}
-	else if (type == STATIC) {
-		this->positioning.positioningType = STATIC;
+	else if (type == STATIC_POSITION) {
+		this->positioning.positioningType = STATIC_POSITION;
 	}
 }
 
@@ -2034,7 +2034,7 @@ void Element::CalculateChildrenWidthWithMargins() {
 	if (this->alignment == HORIZONTAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
-			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+			if (curr->positioning.positioningType == FIXED_POSITION || curr->positioning.positioningType == ABSOLUTE_POSITION) { // these are not taken into account for the width and height
 				curr = curr->childAfter;
 				continue; 
 			}
@@ -2054,7 +2054,7 @@ void Element::CalculateChildrenWidthWithMargins() {
 	else if (this->alignment == VERTICAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
-			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+			if (curr->positioning.positioningType == FIXED_POSITION || curr->positioning.positioningType == ABSOLUTE_POSITION) { // these are not taken into account for the width and height
 				curr = curr->childAfter;
 				continue;
 			}			
@@ -2110,7 +2110,7 @@ void Element::CalculateChildrenHeight() {
 	if (this->alignment == HORIZONTAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
-			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+			if (curr->positioning.positioningType == FIXED_POSITION || curr->positioning.positioningType == ABSOLUTE_POSITION) { // these are not taken into account for the width and height
 				curr = curr->childAfter;
 				continue;
 			}
@@ -2124,7 +2124,7 @@ void Element::CalculateChildrenHeight() {
 	else if (this->alignment == VERTICAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
-			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+			if (curr->positioning.positioningType == FIXED_POSITION || curr->positioning.positioningType == ABSOLUTE_POSITION) { // these are not taken into account for the width and height
 				curr = curr->childAfter;
 				continue;
 			}
@@ -2143,7 +2143,7 @@ void Element::CalculateChildrenWidth() {
 	if (this->alignment == HORIZONTAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
-			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+			if (curr->positioning.positioningType == FIXED_POSITION || curr->positioning.positioningType == ABSOLUTE_POSITION) { // these are not taken into account for the width and height
 				curr = curr->childAfter;
 				continue;
 			}
@@ -2155,7 +2155,7 @@ void Element::CalculateChildrenWidth() {
 	else if (this->alignment == VERTICAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
-			if (curr->positioning.positioningType == FIXED || curr->positioning.positioningType == ABSOLUTE) { // these are not taken into account for the width and height
+			if (curr->positioning.positioningType == FIXED_POSITION || curr->positioning.positioningType == ABSOLUTE_POSITION) { // these are not taken into account for the width and height
 				curr = curr->childAfter;
 				continue;
 			}

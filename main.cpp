@@ -1,5 +1,7 @@
+#include <Windows.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 
 #include <iostream>
 
@@ -24,6 +26,18 @@ Program PathFindingVisualizer(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main(int argc, char* argv[])
 {
+
+    HDC hdc = GetDC(NULL);
+    int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
+    int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
+    ReleaseDC(NULL, hdc);
+
+    double devicePixelRatioX = dpiX / 96.0;
+    double devicePixelRatioY = dpiY / 96.0;
+
+    std::cout << "DevicePixelRatio:\n";
+    std::cout << devicePixelRatioX << " " << devicePixelRatioY << std::endl;
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

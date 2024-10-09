@@ -264,7 +264,7 @@ void Document::AdjustElementsIfNonStatic() {
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
 
-		if (curr->positioning.positioningType != STATIC) {
+		if (curr->positioning.positioningType != STATIC_POSITION) {
 			curr->AdjustIfNonStatic();
 		}
 		curr->CalculateBoxPositionBasedOnBorderPosition();

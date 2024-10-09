@@ -19,6 +19,7 @@ public:
 	~StyleSheet();
 	void Init();
 	void AddStyle(std::string name);
+	Style* GetStyle(std::string name);
 	void SetStyle(std::string name, Element* element);
 	void Print(std::string name);
 };

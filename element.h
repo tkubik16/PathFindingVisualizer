@@ -69,10 +69,10 @@ enum Spacing {
 
 // FIXED and ABSOLUTE will be placed in the FreeElement list for a render pass after the Document Tree
 enum PositioningType {
-	STATIC,
-	RELATIVE,
-	FIXED,	
-	ABSOLUTE
+	STATIC_POSITION,
+	RELATIVE_POSITION,
+	FIXED_POSITION,
+	ABSOLUTE_POSITION
 };
 
 /*
@@ -126,7 +126,7 @@ inaccessible. The trick is having enough space to avoid that, and tricks like th
 
 struct Positioning {
 
-	Positioning() : positioningType(STATIC), top(0), bottom(0), left(0), right(0), centerHorizontally(false), centerVertically(false), mode(PIXELS)
+	Positioning() : positioningType(STATIC_POSITION), top(0), bottom(0), left(0), right(0), centerHorizontally(false), centerVertically(false), mode(PIXELS)
 	{
 
 	}
@@ -147,17 +147,17 @@ struct Positioning {
 	void PrintPositioning() {
 		std::cout << "Positioning:\n";
 		std::cout << "    PositioningType: ";
-		if (this->positioningType == STATIC) {
-			std::cout << "STATIC" << std::endl;
+		if (this->positioningType == STATIC_POSITION) {
+			std::cout << "STATIC_POSITION" << std::endl;
 		}
-		else if (this->positioningType == RELATIVE) {
-			std::cout << "RELATIVE" << std::endl;
+		else if (this->positioningType == RELATIVE_POSITION) {
+			std::cout << "RELATIVE_POSITION" << std::endl;
 		}
-		else if (this->positioningType == ABSOLUTE) {
-			std::cout << "ABSOLUTE" << std::endl;
+		else if (this->positioningType == ABSOLUTE_POSITION) {
+			std::cout << "ABSOLUTE_POSITION" << std::endl;
 		}
-		else if (this->positioningType == FIXED) {
-			std::cout << "FIXED" << std::endl;
+		else if (this->positioningType == FIXED_POSITION) {
+			std::cout << "FIXED_POSITION" << std::endl;
 		}
 		else {
 			std::cout << "ERROR: enum " << this->positioningType << " does not exist." << std::endl;

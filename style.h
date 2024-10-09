@@ -21,6 +21,7 @@ public:
 
 	void PrintStyle();
 
+	// Setters
 	void SetStyleName(std::string name);
 	void SetClassName(std::string name);
 	// boxmodel setters
@@ -28,12 +29,16 @@ public:
 	void SetHeight(int height);
 	void SetBoxWidthMode(Mode mode);
 	void SetBoxHeightMode(Mode mode);
+	void SetPaddingMode(Mode mode);
 	void SetPadding(int padding);
 	void SetPadding(int top, int bottom, int left, int right);
+	void SetBorderMode(Mode mode);
 	void SetBorder(int border);
 	void SetBorder(int top, int bottom, int left, int right);
+	void SetMarginMode(Mode mode);
 	void SetMargin(int border);
 	void SetMargin(int top, int bottom, int left, int right);
+
 	void SetZIndex(int zIndex);
 	void SetRotation(float rotation);
 	void SetRadius(int radius);
@@ -44,6 +49,8 @@ public:
 	void SetOverflow(Overflow overflow);
 	void SetOverflowHideable(bool value);
 	void SetPositioning(PositioningType positioningType, int top, int bottom, int left, int right, bool centerVertically, bool centerHorizontally, Mode mode);
+
+	
 
 	/*
 	PositioningType positioningType;

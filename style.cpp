@@ -144,3 +144,119 @@ void Style::PrintStyle() {
 	this->positioning.PrintPositioning();
 }
 
+void Style::SetStyleName(std::string name)
+{
+	this->styleName = name;
+}
+
+void Style::SetClassName(std::string name) {
+	this->className = name;
+}
+
+void Style::SetWidth(int width) {
+	this->boxModel.width = width;
+}
+
+void Style::SetHeight(int height) {
+	this->boxModel.height = height;
+}
+
+void Style::SetBoxWidthMode(Mode mode) {
+	this->boxModel.boxWidthMode = mode;
+}
+
+void Style::SetBoxHeightMode(Mode mode) {
+	this->boxModel.boxHeightMode = mode;
+}
+
+void Style::SetPaddingMode(Mode mode) {
+	this->boxModel.padding.mode = mode;
+}
+
+void Style::SetPadding(int padding) {
+	this->boxModel.SetPaddingAll(padding);
+}
+
+void Style::SetPadding(int top, int bottom, int left, int right) {
+	this->boxModel.padding.top = top;
+	this->boxModel.padding.bottom = bottom;
+	this->boxModel.padding.left = left;
+	this->boxModel.padding.right = right;
+}
+
+void Style::SetBorderMode(Mode mode) {
+	this->boxModel.border.mode = mode;
+}
+
+void Style::SetBorder(int border) {
+	this->boxModel.SetBorderAll(border);
+}
+
+void Style::SetBorder(int top, int bottom, int left, int right) {
+	this->boxModel.border.top = top;
+	this->boxModel.border.bottom = bottom;
+	this->boxModel.border.left = left;
+	this->boxModel.border.right = right;
+}
+
+void Style::SetMarginMode(Mode mode) {
+	this->boxModel.margin.mode = mode;
+}
+
+void Style::SetMargin(int margin) {
+	this->boxModel.SetMarginAll(margin);
+}
+
+void Style::SetMargin(int top, int bottom, int left, int right) {
+	this->boxModel.margin.top = top;
+	this->boxModel.margin.bottom = bottom;
+	this->boxModel.margin.left = left;
+	this->boxModel.margin.right = right;
+}
+
+void Style::SetZIndex(int zIndex) {
+	this->zIndex = zIndex;
+}
+
+void Style::SetRotation(float rotation) {
+	this->rotation = rotation;
+}
+
+void Style::SetRadius(int radius) {
+	this->radius = radius;
+}
+
+void Style::SetBorderRadius(int borderRadius) {
+	this->borderRadius = borderRadius;
+}
+
+void Style::SetAlignContent(AlignContent alignContent) {
+	this->alignContent = alignContent;
+}
+
+void Style::SetAlignItems(AlignItems alignItems) {
+	this->alignItems = alignItems;
+}
+
+void Style::SetAlignment(Alignment alignment) {
+	this->alignment = alignment;
+}
+
+void Style::SetOverflow(Overflow overflow) {
+	this->overflow = overflow;
+}
+
+void Style::SetOverflowHideable(bool value) {
+	this->hideableViaOverflow = value;
+}
+
+void Style::SetPositioning(PositioningType positioningType, int top, int bottom, int left, int right, bool centerVertically, bool centerHorizontally, Mode mode) {
+	this->positioning.positioningType = positioningType;
+	this->positioning.top = top;
+	this->positioning.bottom = bottom;
+	this->positioning.left = left;
+	this->positioning.right = right;
+	this->positioning.centerVertically = centerVertically;
+	this->positioning.centerHorizontally = centerHorizontally;
+	this->positioning.mode = mode;
+}

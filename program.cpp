@@ -105,7 +105,7 @@ void Program::Init()
 	// StyleSheet
 	styleSheet = new StyleSheet();
 	styleSheet->Init();
-	styleSheet->Print("estStyle");
+	styleSheet->Print("testStyle");
 
 	// Elements
 	container1 = this->Doc.AddElement("container1");
@@ -167,7 +167,7 @@ void Program::Init()
 	c1Box3->boxModel.SetBorderAll(5);
 	c1Box3->SetBorderRadius();
 	c1Box3->boxModel.SetMarginAll(30);
-	c1Box3->SetPositioningType(STATIC);
+	c1Box3->SetPositioningType(STATIC_POSITION);
 	c1Box3->hideableViaOverflow = false;
 	//c1Box3->positioning.right = 25;
 	c1Box3->positioning.centerHorizontally = true;
