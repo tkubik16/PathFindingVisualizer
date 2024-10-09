@@ -18,6 +18,7 @@ Document::Document(int width, int height) : randomColors(false), screenWidth(wid
 	this->root->parentHeight = height;
 	this->root->boxModel.SetSize(width, height);
 
+
 }
 
 Document::~Document()
