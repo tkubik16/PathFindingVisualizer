@@ -25,7 +25,7 @@ unsigned int SCREEN_HEIGHT = 800;
 float xscale , yscale;
 
 
-Program PathFindingVisualizer(SCREEN_WIDTH, SCREEN_HEIGHT);
+Program* PathFindingVisualizer;
 GLFWmonitor* currentMonitor = NULL;
 
 
@@ -58,15 +58,14 @@ int main(int argc, char* argv[])
     std::cout << "ContentScale: " << std::endl;
     std::cout << xscale << " " << yscale << std::endl;
     //PathFindingVisualizer.UpdateContentScale(xscale, yscale);
-    xscale = 1.25;
-    yscale = 1.25;
-    PathFindingVisualizer.screenWidth = SCREEN_WIDTH * xscale;
-    PathFindingVisualizer.screenHeight = SCREEN_HEIGHT * yscale;
-    PathFindingVisualizer.UpdateContentScale(xscale, yscale);
-    std::cout << "BeforeWindowCreation: " << PathFindingVisualizer.screenWidth << " " << PathFindingVisualizer.screenHeight << std::endl;
+    //xscale = 1.25;
+    //yscale = 1.25;
+    PathFindingVisualizer = new Program(SCREEN_WIDTH * xscale, SCREEN_HEIGHT * yscale);
+    PathFindingVisualizer->UpdateContentScale(xscale, yscale);
+    std::cout << "BeforeWindowCreation: " << PathFindingVisualizer->screenWidth << " " << PathFindingVisualizer->screenHeight << std::endl;
     
 
-    GLFWwindow* window = glfwCreateWindow(PathFindingVisualizer.screenWidth, PathFindingVisualizer.screenHeight, "Path Finding Visualizer", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(PathFindingVisualizer->screenWidth, PathFindingVisualizer->screenHeight, "Path Finding Visualizer", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     
@@ -90,13 +89,13 @@ int main(int argc, char* argv[])
 
     // OpenGL configuration
     // --------------------
-    glViewport(0, 0, PathFindingVisualizer.screenWidth, PathFindingVisualizer.screenHeight);
+    glViewport(0, 0, PathFindingVisualizer->screenWidth, PathFindingVisualizer->screenHeight);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // initialize program
     // ---------------
-    PathFindingVisualizer.Init();
+    PathFindingVisualizer->Init();
 
     // deltaTime variables
     // -------------------
@@ -136,8 +135,8 @@ int main(int argc, char* argv[])
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        PathFindingVisualizer.Update(deltaTime);
-        PathFindingVisualizer.Render();
+        PathFindingVisualizer->Update(deltaTime);
+        PathFindingVisualizer->Render();
 
 
         glfwSwapBuffers(window);
@@ -157,11 +156,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
-            PathFindingVisualizer.Keys[key] = true;
+            PathFindingVisualizer->Keys[key] = true;
         else if (action == GLFW_RELEASE)
         {
-            PathFindingVisualizer.Keys[key] = false;
-            PathFindingVisualizer.KeysProcessed[key] = false;
+            PathFindingVisualizer->Keys[key] = false;
+            PathFindingVisualizer->KeysProcessed[key] = false;
         }
     }
 }
@@ -184,8 +183,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     //PathFindingVisualizer.Update();
-    PathFindingVisualizer.UpdateScreenSize(width, height);
-    PathFindingVisualizer.Render();
+    PathFindingVisualizer->UpdateScreenSize(width, height);
+    PathFindingVisualizer->Render();
 
 
     glfwSwapBuffers(window);
@@ -223,7 +222,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         yPosInPixels = framebufferHeight - yPosInPixels;
 
 
-        PathFindingVisualizer.SampleBoxBuffer(xPosInPixels, yPosInPixels);
+        PathFindingVisualizer->SampleBoxBuffer(xPosInPixels, yPosInPixels);
     }
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
         int windowWidth, windowHeight;
@@ -248,7 +247,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         yPosInPixels = framebufferHeight - yPosInPixels;
 
 
-        PathFindingVisualizer.SampleBoxBufferRightClick(xPosInPixels, yPosInPixels);
+        PathFindingVisualizer->SampleBoxBufferRightClick(xPosInPixels, yPosInPixels);
     }
         
 }
