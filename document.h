@@ -35,6 +35,7 @@ public:
 	std::vector<FixedElement> fixedElements;
 	int screenWidth;
 	int screenHeight;
+	float xscale, yscale;
 	bool randomColors;
 
 	// constructor/destructor

@@ -52,6 +52,7 @@ int Element::GetBoxWidth() {
 	}
 	else {
 		return boxModelWidth;
+		//return boxModelWidth * this->xscale;
 	}
 }
 
@@ -62,6 +63,7 @@ int Element::GetBoxHeight() {
 	}
 	else {
 		return boxModelHeight;
+		//return boxModelHeight * this->yscale;
 	}
 }
 
@@ -2197,6 +2199,12 @@ void Element::SetChildrensParentContentBorders(glm::vec4 borders) {
 void Element::SetScreenSize(int width, int height) {
 	this->screenWidth = width;
 	this->screenHeight = height;
+}
+
+void Element::SetContentScale(float xscale, float yscale)
+{
+	this->xscale = xscale;
+	this->yscale = yscale;
 }
 
 void Element::FindRealContentBorders() {

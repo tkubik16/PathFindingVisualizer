@@ -57,11 +57,16 @@ int main(int argc, char* argv[])
     glfwGetMonitorContentScale(monitors[0], &xscale, &yscale);
     std::cout << "ContentScale: " << std::endl;
     std::cout << xscale << " " << yscale << std::endl;
+    //PathFindingVisualizer.UpdateContentScale(xscale, yscale);
+    xscale = 1.25;
+    yscale = 1.25;
+    PathFindingVisualizer.screenWidth = SCREEN_WIDTH * xscale;
+    PathFindingVisualizer.screenHeight = SCREEN_HEIGHT * yscale;
     PathFindingVisualizer.UpdateContentScale(xscale, yscale);
-    
+    std::cout << "BeforeWindowCreation: " << PathFindingVisualizer.screenWidth << " " << PathFindingVisualizer.screenHeight << std::endl;
     
 
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH * xscale, SCREEN_HEIGHT * yscale, "Path Finding Visualizer", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(PathFindingVisualizer.screenWidth, PathFindingVisualizer.screenHeight, "Path Finding Visualizer", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     
@@ -85,7 +90,7 @@ int main(int argc, char* argv[])
 
     // OpenGL configuration
     // --------------------
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glViewport(0, 0, PathFindingVisualizer.screenWidth, PathFindingVisualizer.screenHeight);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -256,5 +261,5 @@ void window_content_scale_callback(GLFWwindow* window, float xscale, float yscal
 {
     std::cout << "window_content_scale_callback" << std::endl;
     std::cout << xscale << " " << yscale << std::endl;
-    PathFindingVisualizer.UpdateContentScale(xscale, yscale);
+    //PathFindingVisualizer.UpdateContentScale(xscale, yscale);
 }

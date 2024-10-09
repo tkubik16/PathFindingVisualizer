@@ -30,7 +30,7 @@ StyleSheet* styleSheet;
 
 Program::Program(int width, int height) : Doc(width, height), screenWidth(width), screenHeight(height), Keys(), KeysProcessed(), scrollDist(0.0f), renderers()
 {
-
+	std::cout << "ProgramConstructor " << width << " " << height << std::endl;
 }
 
 Program::~Program()
@@ -40,6 +40,14 @@ Program::~Program()
 
 void Program::Init()
 {
+	std::cout << "Init ScreenSize: " << this->screenWidth << " " << this->screenHeight << std::endl;
+	this->Doc.screenWidth = this->screenWidth;
+	this->Doc.screenHeight = this->screenHeight;
+	this->Doc.xscale = this->xscale;
+	this->Doc.yscale = this->yscale;
+
+	std::cout << "InitAfterDocUpdate DocScreenSize: " << this->Doc.screenWidth << " " << this->Doc.screenHeight << std::endl;
+
 	//configure projection and view
 	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
 	glm::vec2 midOffset = glm::vec2(this->Doc.screenWidth * 0.5f, this->Doc.screenHeight * 0.5f);
@@ -97,6 +105,7 @@ void Program::Init()
 	this->renderers->contentBoxRenderer = new ContentBoxRenderer(ResourceManager::GetShader("contentshader"), ResourceManager::GetShader("contentBoxOverflowHidden"));
 	this->renderers->textureRenderer = new TextureRenderer(ResourceManager::GetShader("contentshader"));
 	this->renderers->SetScreenSize(this->screenWidth, this->screenHeight);
+	std::cout << "RenderersScreenSize: " << this->renderers->screenWidth << " " << this->renderers->screenHeight << std::endl;
 
 	// Initialize buffers
 	this->boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
@@ -105,7 +114,7 @@ void Program::Init()
 	// StyleSheet
 	styleSheet = new StyleSheet();
 	styleSheet->Init();
-	styleSheet->Print("testStyle");
+	//styleSheet->Print("testStyle");
 
 	// Elements
 	container1 = this->Doc.AddElement("container1");
@@ -257,7 +266,7 @@ void Program::Update(float dt)
 void Program::UpdateScreenSize(int width, int height) {
 	this->screenWidth = width;
 	this->screenHeight = height;
-
+	std::cout << width << " " << height << std::endl;
 	// need to make sure projection matrix is updated in code and in shader
 	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
 	ResourceManager::GetShader("boxshader").Use().SetMatrix4("projection", this->projection);
@@ -298,6 +307,8 @@ void Program::UpdateContentScale(float xscale, float yscale)
 {
 	this->xscale = xscale;
 	this->yscale = yscale;
+	this->Doc.xscale = xscale;
+	this->Doc.yscale = yscale;
 }
 
 void Program::Render()

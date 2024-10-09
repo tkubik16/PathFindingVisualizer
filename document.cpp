@@ -306,6 +306,7 @@ void Document::SetAllElementsScreenSizes(int width, int height) {
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
 		curr->SetScreenSize(width, height);
+		curr->SetContentScale(this->xscale, this->yscale);
 		elQueue.pop();
 		Element* currChild = curr->headChild;
 		while (currChild != nullptr) {

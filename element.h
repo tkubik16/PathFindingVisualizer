@@ -198,6 +198,7 @@ public:
 	int parentHeight;
 	int screenWidth;
 	int screenHeight;
+	float xscale, yscale;
 	glm::vec4 parentContentBorders;
 	glm::vec4 theRealContentBorders;
 	std::vector<Element*> children;
@@ -291,6 +292,7 @@ public:
 	void SetChildrensParentContentBorders(glm::vec4 borders);
 
 	void SetScreenSize(int width, int height);
+	void SetContentScale(float xscale, float yscale);
 
 	// methods for RELATIVE, FIXED, ABSOLUTE
 	void AdjustIfNonStatic();
