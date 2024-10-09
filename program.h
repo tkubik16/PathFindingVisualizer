@@ -16,6 +16,7 @@ public:
 	bool Keys[1024];
 	bool KeysProcessed[1024];
 	int screenWidth, screenHeight;
+	float xscale, yscale;
 	glm::mat4 projection;
 	glm::mat4 view;
 	float scrollDist;
@@ -32,6 +33,7 @@ public:
 	void Update();
 	void Render();
 	void UpdateScreenSize(int width, int height);
+	void UpdateContentScale(float xscale, float yscale);
 	void SampleBoxBuffer(double x, double y);
 	void SampleBoxBufferRightClick(double x, double y);
 	Element* GetElement(std::string colorId);

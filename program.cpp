@@ -294,6 +294,12 @@ void Program::UpdateScreenSize(int width, int height) {
 	this->boxBuffer->UpdateScreenSize(width, height);
 }
 
+void Program::UpdateContentScale(float xscale, float yscale)
+{
+	this->xscale = xscale;
+	this->yscale = yscale;
+}
+
 void Program::Render()
 {
 	

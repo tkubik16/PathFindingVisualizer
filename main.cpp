@@ -15,28 +15,22 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void window_pos_callback(GLFWwindow* window, int xpos, int ypos);
+void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale);
 
 // The Width of the screen
 unsigned int SCREEN_WIDTH = 1000;
 // The height of the screen
 unsigned int SCREEN_HEIGHT = 800;
+float xscale , yscale;
+
 
 Program PathFindingVisualizer(SCREEN_WIDTH, SCREEN_HEIGHT);
+GLFWmonitor* currentMonitor = NULL;
 
 
 int main(int argc, char* argv[])
 {
-
-    HDC hdc = GetDC(NULL);
-    int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
-    int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
-    ReleaseDC(NULL, hdc);
-
-    double devicePixelRatioX = dpiX / 96.0;
-    double devicePixelRatioY = dpiY / 96.0;
-
-    std::cout << "DevicePixelRatio:\n";
-    std::cout << devicePixelRatioX << " " << devicePixelRatioY << std::endl;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -47,8 +41,32 @@ int main(int argc, char* argv[])
 #endif
     glfwWindowHint(GLFW_RESIZABLE, true);
 
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Path Finding Visualizer", nullptr, nullptr);
+    int monitorCount;
+    GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+
+    xscale = 1.0;
+    yscale = 1.0;
+
+
+    /*
+    for (int i = 0; i < monitorCount; i++) {
+        glfwGetMonitorContentScale(monitors[i], &xscale, &yscale);
+        //std::cout << xscale << " " << yscale << std::endl;
+    }
+    */
+    glfwGetMonitorContentScale(monitors[0], &xscale, &yscale);
+    std::cout << "ContentScale: " << std::endl;
+    std::cout << xscale << " " << yscale << std::endl;
+    PathFindingVisualizer.UpdateContentScale(xscale, yscale);
+    
+    
+
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH * xscale, SCREEN_HEIGHT * yscale, "Path Finding Visualizer", nullptr, nullptr);
     glfwMakeContextCurrent(window);
+
+    
+
+    
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -62,6 +80,8 @@ int main(int argc, char* argv[])
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetWindowPosCallback(window, window_pos_callback);
+    glfwSetWindowContentScaleCallback(window, window_content_scale_callback);
 
     // OpenGL configuration
     // --------------------
@@ -226,4 +246,15 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         PathFindingVisualizer.SampleBoxBufferRightClick(xPosInPixels, yPosInPixels);
     }
         
+}
+
+void window_pos_callback(GLFWwindow* window, int xpos, int ypos) {
+    
+}
+
+void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
+{
+    std::cout << "window_content_scale_callback" << std::endl;
+    std::cout << xscale << " " << yscale << std::endl;
+    PathFindingVisualizer.UpdateContentScale(xscale, yscale);
 }
