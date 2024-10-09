@@ -51,8 +51,8 @@ int Element::GetBoxWidth() {
 		return this->parent->GetContentWidth() * (boxModelWidth / 100.0);
 	}
 	else {
-		//return boxModelWidth;
-		return boxModelWidth * this->xscale;
+		return boxModelWidth;
+		//return boxModelWidth * this->xscale;
 	}
 }
 
@@ -62,8 +62,8 @@ int Element::GetBoxHeight() {
 		return this->parent->GetContentHeight() * (boxModelHeight / 100.0);
 	}
 	else {
-		//return boxModelHeight;
-		return boxModelHeight * this->yscale;
+		return boxModelHeight;
+		//return boxModelHeight * this->yscale;
 	}
 }
 
