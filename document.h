@@ -56,6 +56,7 @@ public:
 	void SetAllElementsParentsContentBorders();
 	void SetAllElementsRealContentBorders();
 	void SetAllElementsCornerCoords();
+	void SetAllElementsOverflowCornerCoords();
 	void RenderDocumentFromVectors(Renderers* renderers);
 	void RenderDocument(Renderers* renderers);
 	void RenderDocument(BoxRenderer* boxRenderer);

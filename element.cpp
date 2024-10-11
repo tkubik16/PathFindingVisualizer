@@ -30,7 +30,12 @@ Element::Element(std::string name) :
 	theRealContentBorders(glm::vec4(1, -1, -1, 1)),
 	radius(0),
 	borderRadius(0),
-	hideableViaOverflow(true)
+	hideableViaOverflow(true),
+	overflowRadius(0),
+	overflowTopLeft(-1, 1),
+	overflowTopRight(1, 1),
+	overflowBottomLeft(-1, -1),
+	overflowBottomRight(1, -1)
 
 {
 
@@ -1972,7 +1977,7 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
-		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, this->theRealContentBorders, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -1991,7 +1996,7 @@ void Element::RenderBorder(BorderRenderer* borderRenderer) {
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
-		borderRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->parent->contentPosition, this->parent->contentSize, this->theRealContentBorders, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		borderRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
 		//borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
 	}
 	else {
@@ -2008,7 +2013,7 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer) {
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
-		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize,   this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -2026,7 +2031,7 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wire
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
-		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, this->theRealContentBorders, wireframe, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, glm::vec2(this->screenWidth, this->screenHeight), wireframe, this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -2306,6 +2311,51 @@ void Element::SetBorderRadius()
 
 void Element::SetBorderRadius(int radius) {
 	this->borderRadius = radius;
+}
+
+void Element::SetChildrensParentCornerCoords()
+{
+	if (this->parent == nullptr) return;
+	this->overflowRadius = this->parent->GetRadius();
+	this->overflowTopLeft = this->parent->topLeft;
+	this->overflowTopRight = this->parent->topRight;
+	this->overflowBottomLeft = this->parent->bottomLeft;
+	this->overflowBottomRight = this->parent->bottomRight;
+}
+
+void Element::FindRealCornerCoords()
+{
+	Element* curr = this;
+	this->theRealContentBorders = this->parentContentBorders;
+	//borders(topY, bottomY, leftX, rightX);
+	while (curr != nullptr) {
+		if (curr->parentContentBorders.x < this->theRealContentBorders.x) {
+			this->theRealContentBorders.x = curr->parentContentBorders.x;
+			this->borderRadius = curr->borderRadius;
+			this->overflowTopLeft = curr->topLeft;
+			this->overflowTopRight = curr->topRight;
+		}
+		if (curr->parentContentBorders.y > this->theRealContentBorders.y) {
+			this->theRealContentBorders.y = curr->parentContentBorders.y;
+			this->overflowBottomLeft = curr->bottomLeft;
+			this->overflowBottomRight = curr->bottomRight;
+		}
+		if (curr->parentContentBorders.z > this->theRealContentBorders.z) {
+			this->theRealContentBorders.z = curr->parentContentBorders.z;
+			this->overflowTopLeft = curr->topLeft;
+			this->overflowBottomLeft = curr->bottomLeft;
+		}
+		if (curr->parentContentBorders.w < this->theRealContentBorders.w) {
+			this->theRealContentBorders.w = curr->parentContentBorders.w;
+			this->overflowTopRight = curr->topRight;
+			this->overflowBottomRight = curr->bottomRight;
+		}
+
+		//std::cout << curr->name << std::endl;
+		//curr->PrintRealBorders();
+		curr = curr->parent;
+	}
+	//std::cout << std::endl;
 }
 
 void Element::CalculateBorderCornerCoords() {

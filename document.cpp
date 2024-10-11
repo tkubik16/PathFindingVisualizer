@@ -368,3 +368,21 @@ void Document::SetAllElementsCornerCoords() {
 		}
 	}
 }
+
+void Document::SetAllElementsOverflowCornerCoords() {
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+
+		curr->SetChildrensParentCornerCoords();
+		curr->FindRealCornerCoords();
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}

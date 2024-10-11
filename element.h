@@ -239,6 +239,14 @@ public:
 	glm::vec2 borderTopRight;
 	glm::vec2 borderBottomLeft;
 	glm::vec2 borderBottomRight;
+
+	// TODO: use these to hide overflow when it overflows radiused corners. Retrieve these in the SetAllElementsParentsContentBorders() and SetAllElementsRealContentBorders();
+	int overflowRadius;
+	glm::vec2 overflowTopLeft;
+	glm::vec2 overflowTopRight;
+	glm::vec2 overflowBottomLeft;
+	glm::vec2 overflowBottomRight;
+
 	
 
 	Element();
@@ -310,6 +318,8 @@ public:
 	void SetRadius(int radius);
 	void CalculateCornerCoords();
 	float GetRadius();
+	void SetChildrensParentCornerCoords();
+	void FindRealCornerCoords();
 
 	// border corner radius methods
 	void SetBorderRadius();

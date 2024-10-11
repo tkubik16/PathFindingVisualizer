@@ -56,7 +56,7 @@ void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size
     glBindVertexArray(0);
 }
 
-void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, glm::vec4 borders, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, float rotate, glm::vec3 color)
+void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, float overflowRadius, glm::vec4 overflowTopCorners, glm::vec4 overflowBottomCorners, glm::vec4 borders, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, float rotate, glm::vec3 color)
 {
     // prepare transformations
     this->boxOverflowHiddenShader.Use();
@@ -109,6 +109,10 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
     */
     //glm::vec4 boundaries(topY, bottomY, leftX, rightX);
     this->boxOverflowHiddenShader.SetVector4f("boundaries", borders);
+    this->boxOverflowHiddenShader.SetVector4f("overflowTopCorners", overflowTopCorners);
+    this->boxOverflowHiddenShader.SetVector4f("overflowBottomCorners", overflowBottomCorners);
+    this->boxOverflowHiddenShader.SetFloat("overflowRadius", overflowRadius);
+
 
 
     glActiveTexture(GL_TEXTURE0);

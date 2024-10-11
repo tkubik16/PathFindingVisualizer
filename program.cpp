@@ -24,13 +24,14 @@ Element* c1Box3;
 Element* c1Box4;
 Element* c1Box5;
 Element* fixedElement;
+Element* c2Box1;
 StyleSheet* styleSheet;
 
 //Framebuffer* boxBuffer;
 
 Program::Program(int width, int height) : Doc(width, height), screenWidth(width), screenHeight(height), Keys(), KeysProcessed(), scrollDist(0.0f), renderers()
 {
-	std::cout << "ProgramConstructor " << width << " " << height << std::endl;
+	//std::cout << "ProgramConstructor " << width << " " << height << std::endl;
 }
 
 Program::~Program()
@@ -40,13 +41,13 @@ Program::~Program()
 
 void Program::Init()
 {
-	std::cout << "Init ScreenSize: " << this->screenWidth << " " << this->screenHeight << std::endl;
+	//std::cout << "Init ScreenSize: " << this->screenWidth << " " << this->screenHeight << std::endl;
 	this->Doc.screenWidth = this->screenWidth;
 	this->Doc.screenHeight = this->screenHeight;
 	this->Doc.xscale = this->xscale;
 	this->Doc.yscale = this->yscale;
 
-	std::cout << "InitAfterDocUpdate DocScreenSize: " << this->Doc.screenWidth << " " << this->Doc.screenHeight << std::endl;
+	//std::cout << "InitAfterDocUpdate DocScreenSize: " << this->Doc.screenWidth << " " << this->Doc.screenHeight << std::endl;
 
 	//configure projection and view
 	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
@@ -105,7 +106,7 @@ void Program::Init()
 	this->renderers->contentBoxRenderer = new ContentBoxRenderer(ResourceManager::GetShader("contentshader"), ResourceManager::GetShader("contentBoxOverflowHidden"));
 	this->renderers->textureRenderer = new TextureRenderer(ResourceManager::GetShader("contentshader"));
 	this->renderers->SetScreenSize(this->screenWidth, this->screenHeight);
-	std::cout << "RenderersScreenSize: " << this->renderers->screenWidth << " " << this->renderers->screenHeight << std::endl;
+	//std::cout << "RenderersScreenSize: " << this->renderers->screenWidth << " " << this->renderers->screenHeight << std::endl;
 
 	// Initialize buffers
 	this->boxBuffer = new Framebuffer(this->screenWidth, this->screenHeight);
@@ -118,9 +119,9 @@ void Program::Init()
 
 	// Elements
 	container1 = this->Doc.AddElement("container1");
-	container1->SetBoxWidthMode(PERCENTAGE);
+	//container1->SetBoxWidthMode(PERCENTAGE);
 	container1->SetBoxHeightMode(PERCENTAGE);
-	container1->boxModel.SetSize(90, 100 / 4 - 1);
+	container1->boxModel.SetSize(900, 100 / 4 - 1);
 	container1->boxModel.SetPaddingAll(30);
 	container1->SetRadius(25);
 	container1->SetBorderRadius();
@@ -134,10 +135,12 @@ void Program::Init()
 	container2->SetBoxWidthMode(PERCENTAGE);
 	container2->SetBoxHeightMode(PERCENTAGE);
 	container2->boxModel.SetSize(80, 100 / 4 - 1);
-	container2->boxModel.SetPaddingAll(30);
+	//container2->boxModel.SetPaddingAll(30);
 	container2->SetRadius(25);
 	container2->boxModel.SetBorderAll(10);
 	container2->SetBorderRadius();
+	container2->alignContent = CENTER_CONTENT;
+	container2->alignItems = CENTER_ITEMS;
 
 	container3 = this->Doc.AddElement("container3");
 	container3->SetBoxWidthMode(PERCENTAGE);
@@ -195,11 +198,20 @@ void Program::Init()
 	c1Box5->SetRadius(50);
 	c1Box5->SetBorderRadius();
 	c1Box5->boxModel.SetMarginAll(30);
+
+	c2Box1 = this->Doc.AddElement("c2Box1");
+	c2Box1->boxModel.SetSize(600, 100);
+	//c2Box1->SetBoxWidthMode(PERCENTAGE);
+	c2Box1->SetBoxHeightMode(PERCENTAGE);
+	c2Box1->boxModel.SetPaddingAll(1);
+	c2Box1->SetRadius(0);
+	c2Box1->SetBorderRadius();
+	c2Box1->boxModel.SetMarginAll(30);
 	
 	
 	// below here create doc tree maybe
 	this->Doc.Init();
-	this->Doc.root->boxModel.SetPaddingAll(50);
+	//this->Doc.root->boxModel.SetPaddingAll(50);
 	// TODO: test that margin and border don't affect root
 	//this->Doc.root->boxModel.SetMarginAll(5);
 	this->Doc.root->AddChild(container1);
@@ -208,7 +220,7 @@ void Program::Init()
 	this->Doc.root->AddChild(container4);
 	this->Doc.root->alignment = VERTICAL;
 	this->Doc.root->alignContent = SPACE_AROUND;
-	this->Doc.root->alignItems = END_ITEMS;
+	this->Doc.root->alignItems = START_ITEMS;
 	this->Doc.root->overflow = HIDDEN;
 
 	container1->AddChild(c1Box1);
@@ -216,6 +228,8 @@ void Program::Init()
 	container1->AddChild(c1Box3);
 	container1->AddChild(c1Box4);
 	container1->AddChild(c1Box5);
+
+	container2->AddChild(c2Box1);
 
 	
 	
@@ -229,6 +243,7 @@ void Program::Init()
 	this->Doc.SetAllElementsParentsContentBorders();
 	this->Doc.SetAllElementsRealContentBorders();
 	this->Doc.SetAllElementsCornerCoords();
+	this->Doc.SetAllElementsOverflowCornerCoords();
 
 	//container->PrintInfo();
 	//firstBox->FindRealContentBorders();
@@ -266,7 +281,7 @@ void Program::Update(float dt)
 void Program::UpdateScreenSize(int width, int height) {
 	this->screenWidth = width;
 	this->screenHeight = height;
-	std::cout << width << " " << height << std::endl;
+	//std::cout << width << " " << height << std::endl;
 	// need to make sure projection matrix is updated in code and in shader
 	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
 	ResourceManager::GetShader("boxshader").Use().SetMatrix4("projection", this->projection);
@@ -295,6 +310,7 @@ void Program::UpdateScreenSize(int width, int height) {
 	this->Doc.SetAllElementsParentsContentBorders();
 	this->Doc.SetAllElementsRealContentBorders();
 	this->Doc.SetAllElementsCornerCoords();
+	this->Doc.SetAllElementsOverflowCornerCoords();
 
 	//firstBox->PrintRealBorders();
 	//container->PrintRealBorders();

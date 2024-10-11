@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     //yscale = 1.25;
     PathFindingVisualizer = new Program(SCREEN_WIDTH * xscale, SCREEN_HEIGHT * yscale);
     PathFindingVisualizer->UpdateContentScale(xscale, yscale);
-    std::cout << "BeforeWindowCreation: " << PathFindingVisualizer->screenWidth << " " << PathFindingVisualizer->screenHeight << std::endl;
+    //std::cout << "BeforeWindowCreation: " << PathFindingVisualizer->screenWidth << " " << PathFindingVisualizer->screenHeight << std::endl;
     
 
     GLFWwindow* window = glfwCreateWindow(PathFindingVisualizer->screenWidth, PathFindingVisualizer->screenHeight, "Path Finding Visualizer", nullptr, nullptr);
