@@ -150,28 +150,28 @@ int Element::GetPaddingTop() {
 	if (this->boxModel.padding.mode == PERCENTAGE) {
 		return this->GetBoxHeight() * (boxModelTopPadding / 100.0);
 	}
-	return boxModelTopPadding;
+	return boxModelTopPadding * this->yscale;
 }
 int Element::GetPaddingBottom() {
 	int boxModelBottomPadding = this->boxModel.padding.bottom;
 	if (this->boxModel.padding.mode == PERCENTAGE) {
 		return this->GetBoxHeight() * (boxModelBottomPadding / 100.0);
 	}
-	return boxModelBottomPadding;
+	return boxModelBottomPadding * this->yscale;
 }
 int Element::GetPaddingLeft() {
 	int boxModelLeftPadding = this->boxModel.padding.left;
 	if (this->boxModel.padding.mode == PERCENTAGE) {
 		return this->GetBoxWidth() * (boxModelLeftPadding / 100.0);
 	}
-	return boxModelLeftPadding;
+	return boxModelLeftPadding * this->xscale;
 }
 int Element::GetPaddingRight() {
 	int boxModelRightPadding = this->boxModel.padding.right;
 	if (this->boxModel.padding.mode == PERCENTAGE) {
 		return this->GetBoxWidth() * (boxModelRightPadding / 100.0);
 	}
-	return boxModelRightPadding;
+	return boxModelRightPadding * this->xscale;
 }
 
 // Get methods for margin to hide the PERCENTAGE vs PIXELS 
