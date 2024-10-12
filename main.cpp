@@ -58,8 +58,8 @@ int main(int argc, char* argv[])
     std::cout << "ContentScale: " << std::endl;
     std::cout << xscale << " " << yscale << std::endl;
     //PathFindingVisualizer.UpdateContentScale(xscale, yscale);
-    //xscale = 1.25;
-    //yscale = 1.25;
+    xscale = 1.25;
+    yscale = 1.25;
     PathFindingVisualizer = new Program(SCREEN_WIDTH * xscale, SCREEN_HEIGHT * yscale);
     PathFindingVisualizer->UpdateContentScale(xscale, yscale);
     //std::cout << "BeforeWindowCreation: " << PathFindingVisualizer->screenWidth << " " << PathFindingVisualizer->screenHeight << std::endl;

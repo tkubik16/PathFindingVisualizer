@@ -2295,8 +2295,8 @@ float Element::GetRadius() {
 
 	int smallSide = (width < height) ? width : height;
 	
-	int maxRadius = this->radius * xscale;
-	if (this->radius * xscale > smallSide / 2) {
+	int maxRadius = this->radius;
+	if ((this->radius) > smallSide / 2) {
 		maxRadius = smallSide / 2;
 	}
 	//std::cout << maxRadius << std::endl;
@@ -2310,7 +2310,7 @@ void Element::SetBorderRadius()
 	//std::cout << this->boxSize.x << " " << this->boxSize.y << std::endl;
 	//std::cout << "radius: " << this->radius << std::endl;
 	//std::cout << "GetRadius: " << this->GetRadius() << std::endl;
-	this->borderRadius = this->GetRadius() * this->xscale + this->GetBorderLeft();
+	this->borderRadius = this->GetRadius() + this->GetBorderLeft();
 }
 
 void Element::SetBorderRadius(int radius) {
