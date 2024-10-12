@@ -357,7 +357,7 @@ void Document::SetAllElementsCornerCoords() {
 
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
-
+		curr->SetBorderRadius();
 		curr->CalculateCornerCoords();
 		curr->CalculateBorderCornerCoords();
 		elQueue.pop();

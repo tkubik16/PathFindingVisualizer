@@ -1934,7 +1934,7 @@ void Element::SetParentDimensions(int width, int height) {
 	this->parentWidth = width;
 	this->parentHeight = height;
 }
-
+/*
 void Element::SetFillWidth() {
 	if (this->parent == nullptr)
 		return;
@@ -1948,7 +1948,7 @@ void Element::SetFillHeight() {
 
 	this->boxModel.height = this->parentHeight;
 }
-
+*/
 void Element::AddChildToVector(Element* child) {
 	this->children.push_back(child);
 }
@@ -2294,19 +2294,23 @@ float Element::GetRadius() {
 	int height = this->boxSize.y;
 
 	int smallSide = (width < height) ? width : height;
-
-	int maxRadius = this->radius;
-	if (this->radius > smallSide / 2) {
+	
+	int maxRadius = this->radius * xscale;
+	if (this->radius * xscale > smallSide / 2) {
 		maxRadius = smallSide / 2;
 	}
 	//std::cout << maxRadius << std::endl;
 	//return (float)((maxRadius / this->screenWidth) * 2 - 1);
+	//std::cout << this->name << " " << maxRadius << std::endl;
 	return (float)maxRadius;
 }
 
 void Element::SetBorderRadius()
 {
-	this->borderRadius = this->radius + this->boxModel.border.left;
+	//std::cout << this->boxSize.x << " " << this->boxSize.y << std::endl;
+	//std::cout << "radius: " << this->radius << std::endl;
+	//std::cout << "GetRadius: " << this->GetRadius() << std::endl;
+	this->borderRadius = this->GetRadius() * this->xscale + this->GetBorderLeft();
 }
 
 void Element::SetBorderRadius(int radius) {
