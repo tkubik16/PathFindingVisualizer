@@ -92,7 +92,7 @@ int Element::GetBorderTop() {
 		return this->GetBoxHeight() * (topBorder / 100.0);
 	}
 	else {
-		return topBorder;
+		return topBorder * this->yscale;
 	}
 }
 
@@ -102,7 +102,7 @@ int Element::GetBorderBottom() {
 		return this->GetBoxHeight() * (bottomBorder / 100.0);
 	}
 	else {
-		return bottomBorder;
+		return bottomBorder * this->yscale;
 	}
 }
 
@@ -112,7 +112,7 @@ int Element::GetBorderLeft() {
 		return this->GetBoxWidth() * (leftBorder / 100.0);
 	}
 	else {
-		return leftBorder;
+		return leftBorder * this->xscale;
 	}
 }
 
@@ -122,7 +122,7 @@ int Element::GetBorderRight() {
 		return this->GetBoxWidth() * (rightBorder / 100.0);
 	}
 	else {
-		return rightBorder;
+		return rightBorder * this->xscale;
 	}
 }
 
