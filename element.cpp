@@ -2031,7 +2031,7 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wire
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
-		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, glm::vec2(this->screenWidth, this->screenHeight), wireframe, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), wireframe, this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -2253,8 +2253,8 @@ void Element::CalculateCornerCoords() {
 	
 	int smallSide = (width < height) ? width : height;
 
-	int maxRadius = this->radius;
-	if (this->radius > smallSide / 2) {
+	int maxRadius = this->radius * xscale;
+	if ((this->radius * xscale) > smallSide / 2) {
 		maxRadius = smallSide / 2;
 	}
 	// set top left coord currently not screen coords
@@ -2295,8 +2295,8 @@ float Element::GetRadius() {
 
 	int smallSide = (width < height) ? width : height;
 	
-	int maxRadius = this->radius;
-	if ((this->radius) > smallSide / 2) {
+	int maxRadius = this->radius * xscale;
+	if ((this->radius * xscale) > smallSide / 2) {
 		maxRadius = smallSide / 2;
 	}
 	//std::cout << maxRadius << std::endl;

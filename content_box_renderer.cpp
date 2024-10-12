@@ -153,7 +153,7 @@ void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::v
     glBindVertexArray(0);
 }
 
-void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, float overflowRadius, glm::vec4 overflowTopCorners, glm::vec4 overflowBottomCorners, glm::vec4 borders, glm::vec2 screenSize, bool wireframe, float rotate, glm::vec3 color)
+void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, float overflowRadius, glm::vec4 overflowTopCorners, glm::vec4 overflowBottomCorners, glm::vec4 borders, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, bool wireframe, float rotate, glm::vec3 color)
 {
     glm::vec3 contentBoxColor = glm::vec3(1.0, 1.0, 1.0);
     contentBoxColor.x = color.x - 0.2;
@@ -181,7 +181,8 @@ void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::v
     //this->contentBoxOverflowHiddenShader.SetVector2f("parentContentPosition", parentContentPosition);
     //this->contentBoxOverflowHiddenShader.SetVector2f("parentContentSize", parentContentSize);
     // render textured quad
-    this->contentBoxOverflowHiddenShader.SetVector3f("boxColor", contentBoxColor);
+    //this->contentBoxOverflowHiddenShader.SetVector3f("boxColor", contentBoxColor);
+    this->contentBoxOverflowHiddenShader.SetVector3f("boxColor", glm::vec4(0.0,0.0,0.0,1.0));
 
     // TODO:: try to calculate these then send them to the shader to see if that helps
     /*
@@ -200,8 +201,15 @@ void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::v
     std::cout << parentContentPosition.x << " " << parentContentPosition.y << std::endl;
     std::cout << parentContentSize.x << " " << parentContentSize.y << std::endl;
     */
-    //glm::vec4 boundaries(topY, bottomY, leftX, rightX);
+
+    this->contentBoxOverflowHiddenShader.SetVector2f("topLeft", topLeft);
+    this->contentBoxOverflowHiddenShader.SetVector2f("topRight", topRight);
+    this->contentBoxOverflowHiddenShader.SetVector2f("bottomLeft", bottomLeft);
+    this->contentBoxOverflowHiddenShader.SetVector2f("bottomRight", bottomRight);
     this->contentBoxOverflowHiddenShader.SetVector2f("screenSize", screenSize);
+    this->contentBoxOverflowHiddenShader.SetFloat("radius", radius);
+    //glm::vec4 boundaries(topY, bottomY, leftX, rightX);
+
     this->contentBoxOverflowHiddenShader.SetVector4f("boundaries", borders);
     this->contentBoxOverflowHiddenShader.SetVector4f("overflowTopCorners", overflowTopCorners);
     this->contentBoxOverflowHiddenShader.SetVector4f("overflowBottomCorners", overflowBottomCorners);

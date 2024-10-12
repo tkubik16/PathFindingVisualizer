@@ -137,7 +137,7 @@ void Program::Init()
 	container2->boxModel.SetSize(80, 100 / 4 - 1);
 	//container2->boxModel.SetPaddingAll(30);
 	container2->SetRadius(25);
-	container2->boxModel.SetBorderAll(10);
+	container2->boxModel.SetBorderAll(5);
 	container2->SetBorderRadius();
 	container2->alignContent = CENTER_CONTENT;
 	container2->alignItems = CENTER_ITEMS;
