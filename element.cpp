@@ -733,6 +733,11 @@ void Element::CalculateBorderPositionVertical()
 			int childrenHeight = this->parent->childrenHeight;
 			int parentContentHeight = this->parent->GetContentHeight();
 			int numInlineChildren = this->parent->GetNumInlineChildren();
+			//place the one at the start then for every other one there isnt so return
+			if (numInlineChildren == 1) {
+				this->borderPosition.y = parentContentY;
+				return;
+			}
 			int spacing = (parentContentHeight - childrenHeight) / (numInlineChildren - 1);
 			if (spacing < 0) {
 				spacing = 0;
@@ -1954,6 +1959,10 @@ void Element::AddChildToVector(Element* child) {
 }
 
 void Element::AddChild(Element* child) {
+	if (child == nullptr) {
+		std::cout << "ERROR::Element::AddChild(Element* child): child element is nullptr. Might not have been initialized by being added to the Document." << std::endl;
+		return;
+	}
 	child->parent = this;
 	if (this->headChild == nullptr) {
 		this->headChild = child;

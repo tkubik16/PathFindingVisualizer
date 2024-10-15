@@ -10,6 +10,7 @@
 #include "renderers.h"
 #include "box_renderer.h"
 #include "content_box_renderer.h"
+#include "style.h"
 
 struct FixedElement {
 	FixedElement(Element* el, int ind) : element(el), zIndex(ind)
@@ -31,6 +32,7 @@ class Document
 public:
 	// map of color Ids to element pointers to know what element the mouse pointer is interacting with based on color of pixel in special frame buffer
 	std::map<std::string, Element*> colorIdMap;
+	std::map<std::string, Element*> nameMap;
 	Element* root;
 	std::vector<FixedElement> fixedElements;
 	int screenWidth;
@@ -64,6 +66,10 @@ public:
 	void UpdateRootToScreenSize(int screenWidth, int screenHeight);
 	void Update();
 
+	// methods to get elements by name or className from the Document tree or map
+	Element* GetElementByName(std::string elementName);
+	Element* GetElementFromDocTree(std::string elementName);
+	void StyleElementsWithClassNameInDocTree(std::string className, Style* style); // could make a classMap<std::string, Element*[]> 
 };
 
 

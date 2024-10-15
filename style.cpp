@@ -161,6 +161,12 @@ void Style::SetHeight(int height) {
 	this->boxModel.height = height;
 }
 
+void Style::SetWidthHeight(int width, int height)
+{
+	this->boxModel.width = width;
+	this->boxModel.height = height;
+}
+
 void Style::SetBoxWidthMode(Mode mode) {
 	this->boxModel.boxWidthMode = mode;
 }
@@ -260,3 +266,64 @@ void Style::SetPositioning(PositioningType positioningType, int top, int bottom,
 	this->positioning.centerHorizontally = centerHorizontally;
 	this->positioning.mode = mode;
 }
+
+void Style::StyleElementBoxModel(Element* element) {
+	element->boxModel.width = this->boxModel.width;
+	element->boxModel.height = this->boxModel.height;
+	element->boxModel.boxWidthMode = this->boxModel.boxWidthMode;
+	element->boxModel.boxHeightMode = this->boxModel.boxHeightMode;
+	//padding
+	element->boxModel.padding.top = this->boxModel.padding.top;
+	element->boxModel.padding.bottom = this->boxModel.padding.bottom;
+	element->boxModel.padding.left = this->boxModel.padding.left;
+	element->boxModel.padding.right = this->boxModel.padding.right;
+	element->boxModel.padding.mode = this->boxModel.padding.mode;
+	//margin
+	element->boxModel.margin.top = this->boxModel.margin.top;
+	element->boxModel.margin.bottom = this->boxModel.margin.bottom;
+	element->boxModel.margin.left = this->boxModel.margin.left;
+	element->boxModel.margin.right = this->boxModel.margin.right;
+	element->boxModel.margin.mode = this->boxModel.margin.mode;
+	//border
+	element->boxModel.border.top = this->boxModel.border.top;
+	element->boxModel.border.bottom = this->boxModel.border.bottom;
+	element->boxModel.border.left = this->boxModel.border.left;
+	element->boxModel.border.right = this->boxModel.border.right;
+	element->boxModel.border.mode = this->boxModel.border.mode;
+
+}
+
+void Style::StyleElementPositioning(Element* element)
+{
+	element->positioning.positioningType = this->positioning.positioningType;
+	element->positioning.top = this->positioning.top;
+	element->positioning.bottom = this->positioning.bottom;
+	element->positioning.left = this->positioning.left;
+	element->positioning.right = this->positioning.right;
+	element->positioning.centerHorizontally = this->positioning.centerHorizontally;
+	element->positioning.centerVertically = this->positioning.centerVertically;
+	element->positioning.mode = this->positioning.mode;
+}
+
+void Style::StyleElement(Element* element)
+{
+	//std::cout << "styling: " << element->name << " " << element->className << " " << this->styleName << std::endl;
+	element->className = this->className;
+	element->zIndex = this->zIndex;
+	element->rotation = this->rotation;
+	element->radius = this->radius;
+	element->borderRadius = this->borderRadius;
+	element->alignContent = this->alignContent;
+	element->alignItems = this->alignItems;
+	element->alignment = this->alignment;
+	element->overflow = this->overflow;
+	element->hideableViaOverflow = this->hideableViaOverflow;
+
+	//BoxModel
+	this->StyleElementBoxModel(element);
+	//Positioning
+	this->StyleElementPositioning(element);
+
+}
+
+

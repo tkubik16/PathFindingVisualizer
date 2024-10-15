@@ -27,6 +27,12 @@ Element* fixedElement;
 Element* c2Box1;
 StyleSheet* styleSheet;
 
+Element* c3Box1;
+Element* c3Box2;
+Element* c3Box3;
+Element* c3Box4;
+Element* c3Box5;
+
 //Framebuffer* boxBuffer;
 
 Program::Program(int width, int height) : Doc(width, height), screenWidth(width), screenHeight(height), Keys(), KeysProcessed(), scrollDist(0.0f), renderers()
@@ -117,6 +123,22 @@ void Program::Init()
 	styleSheet->Init();
 	//styleSheet->Print("testStyle");
 
+	c3Box1 = this->Doc.AddElement("c3Box1");
+	c3Box2 = this->Doc.AddElement("c3Box2");
+	c3Box3 = this->Doc.AddElement("c3Box3");
+	c3Box4 = this->Doc.AddElement("c3Box4");
+	c3Box5 = this->Doc.AddElement("c3Box5");
+
+	
+	c3Box1->className = ("testStylingClass");
+	c3Box2->className = ("testStylingClass");
+	c3Box3->className = ("testStylingClass");
+	c3Box4->className = ("testStylingClass");
+	c3Box5->className = ("testStylingClass");
+
+	
+
+
 	// Elements
 	container1 = this->Doc.AddElement("container1");
 	//container1->SetBoxWidthMode(PERCENTAGE);
@@ -137,9 +159,10 @@ void Program::Init()
 	container2->boxModel.SetSize(80, 100 / 4 - 1);
 	//container2->boxModel.SetPaddingAll(30);
 	container2->SetRadius(25);
-	container2->boxModel.SetBorderAll(5);
+	//container2->boxModel.SetBorderAll(5);
+	container2->boxModel.SetBorder(5, 5, 5, 5);
 	container2->SetBorderRadius();
-	container2->alignContent = CENTER_CONTENT;
+	container2->alignContent = SPACE_BETWEEN;
 	container2->alignItems = CENTER_ITEMS;
 
 	container3 = this->Doc.AddElement("container3");
@@ -149,6 +172,7 @@ void Program::Init()
 	container3->boxModel.SetPaddingAll(30);
 	container3->SetRadius(25);
 	container3->SetBorderRadius();
+	container3->alignment = HORIZONTAL;
 
 	container4 = this->Doc.AddElement("container4");
 	container4->SetBoxWidthMode(PERCENTAGE);
@@ -196,6 +220,7 @@ void Program::Init()
 	c1Box5->boxModel.SetSize(100, 100);
 	c1Box5->boxModel.SetPaddingAll(15);
 	c1Box5->SetRadius(50);
+	c1Box5->boxModel.SetBorder(5, 0, 0, 5);
 	c1Box5->SetBorderRadius();
 	c1Box5->boxModel.SetMarginAll(30);
 
@@ -211,7 +236,7 @@ void Program::Init()
 	
 	// below here create doc tree maybe
 	this->Doc.Init();
-	//this->Doc.root->boxModel.SetPaddingAll(50);
+	this->Doc.root->boxModel.SetPaddingAll(10);
 	// TODO: test that margin and border don't affect root
 	//this->Doc.root->boxModel.SetMarginAll(5);
 	this->Doc.root->AddChild(container1);
@@ -219,7 +244,7 @@ void Program::Init()
 	this->Doc.root->AddChild(container3);
 	this->Doc.root->AddChild(container4);
 	this->Doc.root->alignment = VERTICAL;
-	this->Doc.root->alignContent = SPACE_AROUND;
+	this->Doc.root->alignContent = SPACE_BETWEEN;
 	this->Doc.root->alignItems = START_ITEMS;
 	this->Doc.root->overflow = HIDDEN;
 
@@ -230,6 +255,14 @@ void Program::Init()
 	container1->AddChild(c1Box5);
 
 	container2->AddChild(c2Box1);
+
+	container3->AddChild(this->Doc.GetElementByName("c3Box1"));
+	container3->AddChild(c3Box2);
+	container3->AddChild(c3Box3);
+	container3->AddChild(c3Box4);
+	container3->AddChild(c3Box5);
+
+	this->Doc.StyleElementsWithClassNameInDocTree("testStylingClass", styleSheet->GetStyle("testStyle"));
 
 	
 	

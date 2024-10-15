@@ -100,7 +100,7 @@ struct Margin {
 	int left;
 	int right;
 	Mode mode;
-	PercentageOf percentageOf;
+	//PercentageOf percentageOf;
 };
 
 class BoxModel

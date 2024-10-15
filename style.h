@@ -27,6 +27,7 @@ public:
 	// boxmodel setters
 	void SetWidth(int width);
 	void SetHeight(int height);
+	void SetWidthHeight(int width, int height);
 	void SetBoxWidthMode(Mode mode);
 	void SetBoxHeightMode(Mode mode);
 	void SetPaddingMode(Mode mode);
@@ -50,7 +51,10 @@ public:
 	void SetOverflowHideable(bool value);
 	void SetPositioning(PositioningType positioningType, int top, int bottom, int left, int right, bool centerVertically, bool centerHorizontally, Mode mode);
 
-	
+	//methods that act on element
+	void StyleElement(Element* element);
+	void StyleElementBoxModel(Element* element);
+	void StyleElementPositioning(Element* element);
 
 	/*
 	PositioningType positioningType;

@@ -60,6 +60,7 @@ Element* Document::AddElement(std::string name) {
 	ss << newElement->idColor.x << "," << newElement->idColor.y << "," << newElement->idColor.z;
 	std::string s(ss.str());
 	this->colorIdMap[s] = newElement;
+	this->nameMap[newElement->name] = newElement;
 	//std::cout << "Map size: " << this->colorIdMap.size() << std::endl;
 	//std::cout << std::endl;
 	//std::cout << s << std::endl;
@@ -385,4 +386,57 @@ void Document::SetAllElementsOverflowCornerCoords() {
 			currChild = currChild->childAfter;
 		}
 	}
+}
+
+Element* Document::GetElementByName(std::string elementName)
+{
+	if (this->nameMap.count(elementName) < 1) {
+		std::cout << "ERROR::Document::GetElementByName(std::string elementName): Element with name " << "\"" << elementName << "\" does not exist." << std::endl;
+		return nullptr;
+	}
+	return this->nameMap[elementName];
+}
+
+Element* Document::GetElementFromDocTree(std::string elementName)
+{
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+
+		if (curr->name == elementName) {
+			return curr;
+		}
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+	return nullptr;
+}
+
+// Elements must be added as children to be able to style them because it looks through the document to 
+// find children with this className
+void Document::StyleElementsWithClassNameInDocTree(std::string className, Style* style)
+{
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+
+		if (curr->className == className) {
+			style->StyleElement(curr);
+		}
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+
 }
