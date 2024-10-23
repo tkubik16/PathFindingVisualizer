@@ -19,6 +19,7 @@ void main()
 	float pixelX = ((ourPos.x + 1) / 2) * screenSize.x;
 	float pixelY = ((ourPos.y + 1) / 2) * screenSize.y;
 
+
 	
 
 	// borders(topY, bottomY, leftX, rightX);

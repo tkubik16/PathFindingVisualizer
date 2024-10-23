@@ -35,7 +35,8 @@ Element::Element(std::string name) :
 	overflowTopLeft(-1, 1),
 	overflowTopRight(1, 1),
 	overflowBottomLeft(-1, -1),
-	overflowBottomRight(1, -1)
+	overflowBottomRight(1, -1),
+	scrolledDistance(0, 0)
 
 {
 
@@ -1986,7 +1987,7 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
-		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		boxRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
@@ -2005,7 +2006,7 @@ void Element::RenderBorder(BorderRenderer* borderRenderer) {
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->rotation, this->idColor);
-		borderRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		borderRenderer->DrawBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->GetScrolledDistance(), this->rotation, this->idColor);
 		//borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
 	}
 	else {
@@ -2060,15 +2061,15 @@ void Element::CalculateChildrenWidthWithMargins() {
 				curr = curr->childAfter;
 				continue; 
 			}
-			width += curr->boxSize.x;
+			width += curr->boxSize.x + curr->GetBorderLeft() + curr->GetBorderRight();
 			if (curr->childAfter != nullptr) {
 				// get both margins
 				int nextMargin = curr->childAfter->GetMarginLeft();
 				int currMargin = curr->GetMarginRight();
-				int currRightBorder = curr->GetBorderRight();
-				int nextLeftBorder = curr->childAfter->GetBorderLeft();
+				//int currRightBorder = curr->GetBorderRight();
+				//int nextLeftBorder = curr->childAfter->GetBorderLeft();
 				width += (currMargin > nextMargin) ? currMargin : nextMargin;
-				width += currRightBorder + nextLeftBorder;
+				//width += currRightBorder + nextLeftBorder;
 			}
 			curr = curr->childAfter;
 		}
@@ -2108,15 +2109,15 @@ void Element::CalculateChildrenHeightWithMargins() {
 	else if (this->alignment == VERTICAL) {
 		Element* curr = this->headChild;
 		while (curr != nullptr) {
-			height += curr->boxSize.y;
+			height += curr->boxSize.y + curr->GetBorderTop() + curr->GetBorderBottom();
 			if (curr->childAfter != nullptr) {
 				// get both margins
 				int currMargin = curr->childAfter->GetMarginBottom();
 				int nextMargin = curr->GetMarginTop();
-				int currBorderBottom = curr->GetBorderBottom();
-				int nextBorderTop = curr->childAfter->GetBorderTop();
+				//int currBorderBottom = curr->GetBorderBottom();
+				//int nextBorderTop = curr->childAfter->GetBorderTop();
 				height += (currMargin > nextMargin) ? currMargin : nextMargin;
-				height += currBorderBottom + nextBorderTop;
+				//height += currBorderBottom + nextBorderTop;
 			}
 			curr = curr->childAfter;
 		}
@@ -2196,6 +2197,20 @@ void Element::CalculateChildrenWidth() {
 // borders being boundaries for HIDDEN visibility
 glm::vec4 Element::CalculateBorders() {
 
+	float xPos = this->contentPosition.x + this->GetScrolledDistance().x;
+	float yPos = this->contentPosition.y + this->GetScrolledDistance().y;
+
+	//std::cout << this->name << " " << this->GetScrolledDistance().x << " " << this->GetScrolledDistance().y << std::endl;
+
+	glm::vec2 screenSize(this->screenWidth, this->screenHeight);
+	float topY = (((screenSize.y - yPos) / screenSize.y) * 2.0) - 1.0;
+	float bottomY = (((screenSize.y - (yPos + this->contentSize.y)) / screenSize.y) * 2.0) - 1.0;
+	float leftX = ((xPos / screenSize.x) * 2.0) - 1.0;
+	float rightX = (((xPos + this->contentSize.x) / screenSize.x) * 2.0) - 1.0;
+
+	return glm::vec4(topY, bottomY, leftX, rightX);
+
+	/*
 	glm::vec2 screenSize(this->screenWidth, this->screenHeight);
 	float topY = (((screenSize.y - this->contentPosition.y) / screenSize.y) * 2.0) - 1.0;
 	float bottomY = (((screenSize.y - (this->contentPosition.y + this->contentSize.y)) / screenSize.y) * 2.0) - 1.0;
@@ -2203,6 +2218,7 @@ glm::vec4 Element::CalculateBorders() {
 	float rightX = (((this->contentPosition.x + this->contentSize.x) / screenSize.x) * 2.0) - 1.0;
 
 	return glm::vec4(topY, bottomY, leftX, rightX);
+	*/
 }
 
 void Element::SetChildrensParentContentBorders(glm::vec4 borders) {
@@ -2282,11 +2298,25 @@ void Element::CalculateCornerCoords() {
 	this->bottomRight.x = this->boxPosition.x + width - maxRadius;
 	this->bottomRight.y = this->boxPosition.y + height - maxRadius;
 
+	// shift based on scrolledDistance
+	
+	glm::vec2 totalScrolledDistance = this->GetScrolledDistance();
+
+	this->topLeft.x += totalScrolledDistance.x;
+	this->topRight.x += totalScrolledDistance.x;
+	this->bottomLeft.x += totalScrolledDistance.x;
+	this->bottomRight.x += totalScrolledDistance.x;
+
+	this->topLeft.y += totalScrolledDistance.y;
+	this->topRight.y += totalScrolledDistance.y;
+	this->bottomLeft.y += totalScrolledDistance.y;
+	this->bottomRight.y += totalScrolledDistance.y;
+	
 	// convert to screen coords
 	this->topLeft.x = (this->topLeft.x / this->screenWidth) * 2 - 1;
 	this->topLeft.y = ((this->screenHeight - this->topLeft.y ) / this->screenHeight) * 2 - 1;
 
-	// TODO: Fix these screen coord calculations
+	
 	this->topRight.x = (this->topRight.x / this->screenWidth) * 2 - 1;
 	this->topRight.y = ((this->screenHeight - this->topRight.y) / this->screenHeight) * 2 - 1;
 
@@ -2320,16 +2350,69 @@ void Element::SetBorderRadius()
 	//std::cout << "radius: " << this->radius << std::endl;
 	//std::cout << "GetRadius: " << this->GetRadius() << std::endl;
 	this->borderRadius = this->GetRadius() + this->GetBorderLeft();
+
 }
 
 void Element::SetBorderRadius(int radius) {
 	this->borderRadius = radius;
 }
-
+/*
 void Element::SetChildrensParentCornerCoords()
 {
 	if (this->parent == nullptr) return;
 	this->overflowRadius = this->parent->GetRadius();
+	this->overflowTopLeft = this->parent->GetTopLeft();
+	this->overflowTopRight = this->parent->GetTopRight();
+	this->overflowBottomLeft = this->parent->GetBottomLeft();
+	this->overflowBottomRight = this->parent->GetBottomRight();
+}
+
+void Element::FindRealCornerCoords()
+{
+	Element* curr = this;
+	this->theRealContentBorders = this->parentContentBorders;
+	//borders(topY, bottomY, leftX, rightX);
+	while (curr != nullptr) {
+		if (curr->parentContentBorders.x < this->theRealContentBorders.x) {
+			this->theRealContentBorders.x = curr->parentContentBorders.x;
+			this->borderRadius = curr->borderRadius;
+			this->overflowTopLeft = curr->GetTopLeft();
+			this->overflowTopRight = curr->GetTopRight();
+		}
+		if (curr->parentContentBorders.y > this->theRealContentBorders.y) {
+			this->theRealContentBorders.y = curr->parentContentBorders.y;
+			this->overflowBottomLeft = curr->GetBottomLeft();
+			this->overflowBottomRight = curr->GetBottomRight();
+		}
+		if (curr->parentContentBorders.z > this->theRealContentBorders.z) {
+			this->theRealContentBorders.z = curr->parentContentBorders.z;
+			this->overflowTopLeft = curr->GetTopLeft();
+			this->overflowBottomLeft = curr->GetBottomLeft();
+		}
+		if (curr->parentContentBorders.w < this->theRealContentBorders.w) {
+			this->theRealContentBorders.w = curr->parentContentBorders.w;
+			this->overflowTopRight = curr->GetTopRight();
+			this->overflowBottomRight = curr->GetBottomRight();
+		}
+
+		//std::cout << curr->name << std::endl;
+		//curr->PrintRealBorders();
+		curr = curr->parent;
+	}
+	//std::cout << std::endl;
+}
+*/ 
+
+void Element::SetChildrensParentCornerCoords()
+{
+	if (this->parent == nullptr) return;
+	if (this->name == "c2Box1") {
+		//std::cout << this->overflowRadius << std::endl;
+	}
+	this->overflowRadius = this->parent->GetRadius();
+	if (this->name == "c2Box1") {
+		//std::cout << this->overflowRadius << std::endl;
+	}
 	this->overflowTopLeft = this->parent->topLeft;
 	this->overflowTopRight = this->parent->topRight;
 	this->overflowBottomLeft = this->parent->bottomLeft;
@@ -2344,22 +2427,26 @@ void Element::FindRealCornerCoords()
 	while (curr != nullptr) {
 		if (curr->parentContentBorders.x < this->theRealContentBorders.x) {
 			this->theRealContentBorders.x = curr->parentContentBorders.x;
-			this->borderRadius = curr->borderRadius;
+			// annoying bug: line below was setting borderRadius instead of overflow radius for some reason
+			this->overflowRadius = curr->GetRadius(); // this->borderRadius = curr->borderRadius;
 			this->overflowTopLeft = curr->topLeft;
 			this->overflowTopRight = curr->topRight;
 		}
 		if (curr->parentContentBorders.y > this->theRealContentBorders.y) {
 			this->theRealContentBorders.y = curr->parentContentBorders.y;
+			this->overflowRadius = curr->GetRadius();
 			this->overflowBottomLeft = curr->bottomLeft;
 			this->overflowBottomRight = curr->bottomRight;
 		}
 		if (curr->parentContentBorders.z > this->theRealContentBorders.z) {
 			this->theRealContentBorders.z = curr->parentContentBorders.z;
+			this->overflowRadius = curr->GetRadius();
 			this->overflowTopLeft = curr->topLeft;
 			this->overflowBottomLeft = curr->bottomLeft;
 		}
 		if (curr->parentContentBorders.w < this->theRealContentBorders.w) {
 			this->theRealContentBorders.w = curr->parentContentBorders.w;
+			this->overflowRadius = curr->GetRadius();
 			this->overflowTopRight = curr->topRight;
 			this->overflowBottomRight = curr->bottomRight;
 		}
@@ -2397,6 +2484,20 @@ void Element::CalculateBorderCornerCoords() {
 	this->borderBottomRight.x = this->borderPosition.x + width - maxRadius;
 	this->borderBottomRight.y = this->borderPosition.y + height - maxRadius;
 
+	// shift based on scrolledDistance
+
+	glm::vec2 totalScrolledDistance = this->GetScrolledDistance();
+
+	this->borderTopLeft.x += totalScrolledDistance.x;
+	this->borderTopRight.x += totalScrolledDistance.x;
+	this->borderBottomLeft.x += totalScrolledDistance.x;
+	this->borderBottomRight.x += totalScrolledDistance.x;
+
+	this->borderTopLeft.y += totalScrolledDistance.y;
+	this->borderTopRight.y += totalScrolledDistance.y;
+	this->borderBottomLeft.y += totalScrolledDistance.y;
+	this->borderBottomRight.y += totalScrolledDistance.y;
+
 	// convert to screen coords
 	this->borderTopLeft.x = (this->borderTopLeft.x / this->screenWidth) * 2 - 1;
 	this->borderTopLeft.y = ((this->screenHeight - this->borderTopLeft.y) / this->screenHeight) * 2 - 1;
@@ -2426,4 +2527,57 @@ float Element::GetBorderRadius() {
 	//std::cout << maxRadius << std::endl;
 	//return (float)((maxRadius / this->screenWidth) * 2 - 1);
 	return (float)maxRadius;
+}
+
+glm::vec2 Element::GetScrolledDistance()
+{
+	glm::vec2 totalScrolledDistance(0,0);
+	Element* curr = this;
+	curr = curr->parent;
+	while (curr != nullptr) {
+
+		totalScrolledDistance.x += curr->scrolledDistance.x;
+		totalScrolledDistance.y += curr->scrolledDistance.y;
+
+		curr = curr->parent;
+	}
+
+
+	return totalScrolledDistance;
+}
+
+glm::vec2 Element::GetTopLeft()
+{
+	glm::vec2 adjustedTopLeft = this->topLeft;
+	adjustedTopLeft.x += this->GetScrolledDistance().x;
+	adjustedTopLeft.y += this->GetScrolledDistance().y;
+
+	return adjustedTopLeft;
+}
+
+glm::vec2 Element::GetTopRight()
+{
+	glm::vec2 adjustedTopRight = this->topRight;
+	adjustedTopRight.x += this->GetScrolledDistance().x;
+	adjustedTopRight.y += this->GetScrolledDistance().y;
+
+	return adjustedTopRight;
+}
+
+glm::vec2 Element::GetBottomLeft()
+{
+	glm::vec2 adjustedBottomLeft = this->bottomLeft;
+	adjustedBottomLeft.x += this->GetScrolledDistance().x;
+	adjustedBottomLeft.y += this->GetScrolledDistance().y;
+
+	return adjustedBottomLeft;
+}
+
+glm::vec2 Element::GetBottomRight()
+{
+	glm::vec2 adjustedBottomRight = this->bottomRight;
+	adjustedBottomRight.x += this->GetScrolledDistance().x;
+	adjustedBottomRight.y += this->GetScrolledDistance().y;
+
+	return adjustedBottomRight;
 }

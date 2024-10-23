@@ -247,6 +247,8 @@ public:
 	glm::vec2 overflowBottomLeft;
 	glm::vec2 overflowBottomRight;
 
+	// members for updating info based on parents scrolled distance
+	glm::vec2 scrolledDistance;
 	
 
 	Element();
@@ -370,6 +372,16 @@ public:
 	int GetBottom(Element* parent);
 	int GetLeft(Element* parent);
 	int GetRight(Element* parent);
+
+	// scrolling methods
+	glm::vec2 GetScrolledDistance();
+
+	//get methods for corner coords but takes into account scrolled distance
+	glm::vec2 GetTopLeft();
+	glm::vec2 GetTopRight();
+	glm::vec2 GetBottomLeft();
+	glm::vec2 GetBottomRight();
+
 
 
 private:

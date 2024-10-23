@@ -13,7 +13,7 @@ void StyleSheet::Init() {
 	testStyle->SetClassName("testStylingClass");
 	testStyle->SetWidthHeight(50, 50);
 	testStyle->SetPadding(10);
-	testStyle->SetBorder(1);
+	testStyle->SetBorder(5);
 	testStyle->SetMargin(5);
 	testStyle->SetRadius(5);
 	

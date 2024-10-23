@@ -55,10 +55,11 @@ void Program::Init()
 
 	//std::cout << "InitAfterDocUpdate DocScreenSize: " << this->Doc.screenWidth << " " << this->Doc.screenHeight << std::endl;
 
+	this->scrollDist = 0;
 	//configure projection and view
 	this->projection = glm::ortho(0.0f, static_cast<float>(this->screenWidth), static_cast<float>(this->screenHeight), 0.0f, -1.0f, 1.0f);
-	glm::vec2 midOffset = glm::vec2(this->Doc.screenWidth * 0.5f, this->Doc.screenHeight * 0.5f);
-	view = glm::translate(view, glm::vec3(0.0f, scrollDist, 0.0f));
+	//glm::vec2 midOffset = glm::vec2(this->Doc.screenWidth * 0.5f, this->Doc.screenHeight * 0.5f);
+	this->view = glm::translate(view, glm::vec3(0.0f, this->scrollDist, 0.0f));
 
 	// load shaders
 	ResourceManager::LoadShader("box.vert", "box.frag", nullptr, "boxshader");
@@ -142,42 +143,44 @@ void Program::Init()
 	// Elements
 	container1 = this->Doc.AddElement("container1");
 	//container1->SetBoxWidthMode(PERCENTAGE);
-	container1->SetBoxHeightMode(PERCENTAGE);
-	container1->boxModel.SetSize(900, 100 / 4 - 1);
+	//container1->SetBoxHeightMode(PERCENTAGE);
+	container1->boxModel.SetSize(900, 200 );
 	container1->boxModel.SetPaddingAll(30);
 	container1->SetRadius(25);
 	container1->SetBorderRadius();
 	container1->alignment = HORIZONTAL;
-	container1->alignContent = SPACE_AROUND;
+	container1->alignContent = END;
 	container1->alignItems = CENTER_ITEMS;
-	container1->overflow = HIDDEN;
+	//container1->overflow = VISIBLE;
 	//container1->alignContent = CENTER_CONTENT;
 
 	container2 = this->Doc.AddElement("container2");
 	container2->SetBoxWidthMode(PERCENTAGE);
-	container2->SetBoxHeightMode(PERCENTAGE);
-	container2->boxModel.SetSize(80, 100 / 4 - 1);
+	//container2->SetBoxHeightMode(PERCENTAGE);
+	container2->boxModel.SetSize(80, 100 );
 	//container2->boxModel.SetPaddingAll(30);
 	container2->SetRadius(25);
 	//container2->boxModel.SetBorderAll(5);
-	container2->boxModel.SetBorder(5, 5, 5, 5);
+	//container2->boxModel.SetBorder(5, 5, 5, 5);
+	container2->boxModel.SetBorderAll(5);
 	container2->SetBorderRadius();
-	container2->alignContent = SPACE_BETWEEN;
+	container2->alignContent = START;
 	container2->alignItems = CENTER_ITEMS;
 
 	container3 = this->Doc.AddElement("container3");
 	container3->SetBoxWidthMode(PERCENTAGE);
-	container3->SetBoxHeightMode(PERCENTAGE);
-	container3->boxModel.SetSize(70, 100 / 4 - 1);
+	//container3->SetBoxHeightMode(PERCENTAGE);
+	container3->boxModel.SetSize(70, 200 );
 	container3->boxModel.SetPaddingAll(30);
 	container3->SetRadius(25);
 	container3->SetBorderRadius();
 	container3->alignment = HORIZONTAL;
+	container3->alignContent = END;
 
 	container4 = this->Doc.AddElement("container4");
 	container4->SetBoxWidthMode(PERCENTAGE);
-	container4->SetBoxHeightMode(PERCENTAGE);
-	container4->boxModel.SetSize(60, 100 / 4 - 1);
+	//container4->SetBoxHeightMode(PERCENTAGE);
+	container4->boxModel.SetSize(60, 200 );
 	container4->boxModel.SetPaddingAll(30);
 	container4->SetRadius(25);
 	container4->SetBorderRadius();
@@ -194,17 +197,18 @@ void Program::Init()
 	c1Box2->boxModel.SetPaddingAll(15);
 	c1Box2->SetRadius(10);
 	c1Box2->SetBorderRadius();
+	//c1Box2->hideableViaOverflow = false;
 	c1Box2->boxModel.SetMarginAll(30);
 
 	c1Box3 = this->Doc.AddElement("c1Box3");
 	c1Box3->boxModel.SetSize(100, 100);
 	c1Box3->boxModel.SetPaddingAll(15);
-	c1Box3->SetRadius(20);
+	c1Box3->SetRadius(50);
 	c1Box3->boxModel.SetBorderAll(5);
 	c1Box3->SetBorderRadius();
 	c1Box3->boxModel.SetMarginAll(30);
 	c1Box3->SetPositioningType(STATIC_POSITION);
-	c1Box3->hideableViaOverflow = false;
+	//c1Box3->hideableViaOverflow = false;
 	//c1Box3->positioning.right = 25;
 	c1Box3->positioning.centerHorizontally = true;
 	c1Box3->positioning.centerVertically = true;
@@ -219,8 +223,10 @@ void Program::Init()
 	c1Box5 = this->Doc.AddElement("c1Box5");
 	c1Box5->boxModel.SetSize(100, 100);
 	c1Box5->boxModel.SetPaddingAll(15);
+	//c1Box5->SetRadius(20);
 	c1Box5->SetRadius(50);
-	c1Box5->boxModel.SetBorder(5, 0, 0, 5);
+	c1Box5->boxModel.SetBorderAll(5);
+	//c1Box5->boxModel.SetBorder(5, 0, 0, 5);
 	c1Box5->SetBorderRadius();
 	c1Box5->boxModel.SetMarginAll(30);
 
@@ -244,9 +250,10 @@ void Program::Init()
 	this->Doc.root->AddChild(container3);
 	this->Doc.root->AddChild(container4);
 	this->Doc.root->alignment = VERTICAL;
-	this->Doc.root->alignContent = SPACE_BETWEEN;
-	this->Doc.root->alignItems = START_ITEMS;
+	this->Doc.root->alignContent = END;
+	this->Doc.root->alignItems = END_ITEMS;
 	this->Doc.root->overflow = HIDDEN;
+	this->Doc.root->scrolledDistance.y += 0;
 
 	container1->AddChild(c1Box1);
 	container1->AddChild(c1Box2);
@@ -292,6 +299,7 @@ void Program::Init()
 	//c1Box3->PrintInfo();
 	//this->Doc.root->PrintCornerCoords();
 	//this->Doc.root->PrintBorderCornerCoords();
+	this->Doc.root->PrintCornerCoords();
 
 }
 
@@ -323,6 +331,7 @@ void Program::UpdateScreenSize(int width, int height) {
 	ResourceManager::GetShader("contentBoxOverflowHidden").Use().SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("bordershader").Use().SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("borderOverflowHidden").Use().SetMatrix4("projection", this->projection);
+
 
 	/*
 	glm::vec2 screenSize(width, height);
@@ -394,7 +403,14 @@ void Program::SampleBoxBufferRightClick(double x, double y) {
 	Element* clickedElement = this->GetElement(colorId);
 	if (clickedElement != nullptr) {
 		//std::cout << clickedElement->name << std::endl;
-		clickedElement->PrintInfo();
+		//clickedElement->PrintInfo();
+		//clickedElement->PrintBorderCornerCoords();
+		std::cout << "borderRadius: " << clickedElement->borderRadius << std::endl;
+		std::cout << "radius: " << clickedElement->radius << std::endl;
+		std::cout << "overflowRadius: " << clickedElement->overflowRadius << std::endl;
+		//std::cout << "overflowBottomLeft and parentBottomLeft" << clickedElement->overflowBottomLeft.x << " " << clickedElement->overflowBottomLeft.y << std::endl;
+		//std::cout << "parentBottomLeft" << clickedElement->parent->bottomLeft.x << " " << clickedElement->parent->bottomLeft.y << std::endl;
+
 	}
 
 }
