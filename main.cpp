@@ -17,6 +17,7 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void window_pos_callback(GLFWwindow* window, int xpos, int ypos);
 void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // The Width of the screen
 unsigned int SCREEN_WIDTH = 1000;
@@ -86,6 +87,7 @@ int main(int argc, char* argv[])
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetWindowPosCallback(window, window_pos_callback);
     glfwSetWindowContentScaleCallback(window, window_content_scale_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // OpenGL configuration
     // --------------------
@@ -146,6 +148,32 @@ int main(int argc, char* argv[])
     
     glfwTerminate();
     return 0;
+}
+
+void GetMousePosition(GLFWwindow* window, double &xPosResult, double & yPosResult) {
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+    int framebufferWidth, framebufferHeight;
+    glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+
+    double xPos, yPos;
+    glfwGetCursorPos(window, &xPos, &yPos);
+    //std::cout << xpos << " " << ypos << std::endl;
+
+    // Convert GLFW's screen coordinates to pixel coordinates using the ratio between the window size and the framebuffer size
+    double xPosInPixels = xPos * static_cast<double>(framebufferWidth) / windowWidth;
+    double yPosInPixels = yPos * static_cast<double>(framebufferHeight) / windowHeight;
+
+    // Shift to use OpenGL's convention of pixel centers being at half-integers
+    xPosInPixels += 0.5;
+    yPosInPixels += 0.5;
+
+    // Invert along the y-axis
+    yPosInPixels = framebufferHeight - yPosInPixels;
+
+    xPosResult = xPosInPixels;
+    yPosResult = yPosInPixels;
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -261,4 +289,13 @@ void window_content_scale_callback(GLFWwindow* window, float xscale, float yscal
     std::cout << "window_content_scale_callback" << std::endl;
     std::cout << xscale << " " << yscale << std::endl;
     //PathFindingVisualizer.UpdateContentScale(xscale, yscale);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    double xPos = 0;
+    double yPos = 0;
+    GetMousePosition(window, xPos, yPos);
+    double scale = 16;
+    PathFindingVisualizer->SampleBoxBufferScroll(xPos, yPos, xoffset * scale, -yoffset * scale);
 }

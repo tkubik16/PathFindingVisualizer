@@ -14,8 +14,8 @@ void StyleSheet::Init() {
 	testStyle->SetWidthHeight(50, 50);
 	testStyle->SetPadding(10);
 	testStyle->SetBorder(5);
-	testStyle->SetMargin(5);
-	testStyle->SetRadius(5);
+	testStyle->SetMargin(10);
+	testStyle->SetRadius(50);
 	
 }
 

@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\OpenGl\glad.c" />
     <ClCompile Include="border_renderer.cpp" />
     <ClCompile Include="box_model.cpp" />
     <ClCompile Include="box_renderer.cpp" />
@@ -154,11 +155,11 @@
     <ClCompile Include="document.cpp" />
     <ClCompile Include="element.cpp" />
     <ClCompile Include="framebuffer.cpp" />
-    <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="program.cpp" />
     <ClCompile Include="renderers.cpp" />
     <ClCompile Include="resource_manager.cpp" />
+    <ClCompile Include="scrollable_view.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="style.cpp" />

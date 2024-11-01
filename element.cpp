@@ -36,7 +36,9 @@ Element::Element(std::string name) :
 	overflowTopRight(1, 1),
 	overflowBottomLeft(-1, -1),
 	overflowBottomRight(1, -1),
-	scrolledDistance(0, 0)
+	scrolledDistance(0, 0),
+	scrollableX(false),
+	scrollableY(false)
 
 {
 
@@ -2301,7 +2303,7 @@ void Element::CalculateCornerCoords() {
 	// shift based on scrolledDistance
 	
 	glm::vec2 totalScrolledDistance = this->GetScrolledDistance();
-
+	//std::cout << "totalScrolledDistance: " << totalScrolledDistance.x << ", " << totalScrolledDistance.y << std::endl;
 	this->topLeft.x += totalScrolledDistance.x;
 	this->topRight.x += totalScrolledDistance.x;
 	this->bottomLeft.x += totalScrolledDistance.x;

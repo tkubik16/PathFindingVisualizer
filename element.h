@@ -249,6 +249,8 @@ public:
 
 	// members for updating info based on parents scrolled distance
 	glm::vec2 scrolledDistance;
+	bool scrollableX;
+	bool scrollableY;
 	
 
 	Element();

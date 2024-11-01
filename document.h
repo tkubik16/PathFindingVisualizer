@@ -7,10 +7,12 @@
 #include <map>
 
 #include "element.h"
+#include "scrollable_view.h"
 #include "renderers.h"
 #include "box_renderer.h"
 #include "content_box_renderer.h"
 #include "style.h"
+
 
 struct FixedElement {
 	FixedElement(Element* el, int ind) : element(el), zIndex(ind)

@@ -36,6 +36,7 @@ public:
 	void UpdateContentScale(float xscale, float yscale);
 	void SampleBoxBuffer(double x, double y);
 	void SampleBoxBufferRightClick(double x, double y);
+	void SampleBoxBufferScroll(double x, double y, double xoffset, double yoffset);
 	Element* GetElement(std::string colorId);
 	
 

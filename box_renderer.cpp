@@ -90,7 +90,6 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
     this->boxOverflowHiddenShader.SetMatrix4("view", view);
 
     
-    
 
     //std::cout << radius << std::endl;
     //std::cout << "bottomRight" << std::endl;

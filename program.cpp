@@ -17,7 +17,7 @@ Element* firstBox;
 Element* container1;
 Element* container2;
 Element* container3;
-Element* container4;
+Element* scrollableView;
 Element* c1Box1;
 Element* c1Box2;
 Element* c1Box3;
@@ -154,18 +154,36 @@ void Program::Init()
 	//container1->overflow = VISIBLE;
 	//container1->alignContent = CENTER_CONTENT;
 
+	
 	container2 = this->Doc.AddElement("container2");
 	container2->SetBoxWidthMode(PERCENTAGE);
 	//container2->SetBoxHeightMode(PERCENTAGE);
-	container2->boxModel.SetSize(80, 100 );
+	container2->boxModel.SetSize(80, 200 );
 	//container2->boxModel.SetPaddingAll(30);
 	container2->SetRadius(25);
 	//container2->boxModel.SetBorderAll(5);
 	//container2->boxModel.SetBorder(5, 5, 5, 5);
-	container2->boxModel.SetBorderAll(5);
+	//container2->boxModel.SetBorderAll(5);
 	container2->SetBorderRadius();
-	container2->alignContent = START;
+	container1->alignment = HORIZONTAL;
+	container2->alignContent = CENTER_CONTENT;
 	container2->alignItems = CENTER_ITEMS;
+	
+
+	/*
+	container2 = this->Doc.AddElement("container2");
+	//container1->SetBoxWidthMode(PERCENTAGE);
+	//container1->SetBoxHeightMode(PERCENTAGE);
+	container2->boxModel.SetSize(900, 200);
+	container2->boxModel.SetPaddingAll(30);
+	container2->SetRadius(25);
+	container2->SetBorderRadius();
+	container2->alignment = HORIZONTAL;
+	container2->alignContent = END;
+	container2->alignItems = CENTER_ITEMS;
+	//container1->overflow = VISIBLE;
+	//container1->alignContent = CENTER_CONTENT;
+	*/
 
 	container3 = this->Doc.AddElement("container3");
 	container3->SetBoxWidthMode(PERCENTAGE);
@@ -176,14 +194,17 @@ void Program::Init()
 	container3->SetBorderRadius();
 	container3->alignment = HORIZONTAL;
 	container3->alignContent = END;
+	container3->scrollableY = true;
 
-	container4 = this->Doc.AddElement("container4");
-	container4->SetBoxWidthMode(PERCENTAGE);
+	scrollableView = this->Doc.AddElement("container4");
+	scrollableView->SetBoxWidthMode(PERCENTAGE);
 	//container4->SetBoxHeightMode(PERCENTAGE);
-	container4->boxModel.SetSize(60, 200 );
-	container4->boxModel.SetPaddingAll(30);
-	container4->SetRadius(25);
-	container4->SetBorderRadius();
+	scrollableView->boxModel.SetSize(60, 200 );
+	scrollableView->boxModel.SetPaddingAll(30);
+	scrollableView->SetRadius(25);
+	scrollableView->SetBorderRadius();
+	scrollableView->scrollableX = true;
+	scrollableView->scrollableY = true;
 
 	c1Box1 = this->Doc.AddElement("c1Box1");
 	c1Box1->boxModel.SetSize(100, 100);
@@ -203,7 +224,7 @@ void Program::Init()
 	c1Box3 = this->Doc.AddElement("c1Box3");
 	c1Box3->boxModel.SetSize(100, 100);
 	c1Box3->boxModel.SetPaddingAll(15);
-	c1Box3->SetRadius(50);
+	c1Box3->SetRadius(20);
 	c1Box3->boxModel.SetBorderAll(5);
 	c1Box3->SetBorderRadius();
 	c1Box3->boxModel.SetMarginAll(30);
@@ -234,7 +255,7 @@ void Program::Init()
 	c2Box1->boxModel.SetSize(600, 100);
 	//c2Box1->SetBoxWidthMode(PERCENTAGE);
 	c2Box1->SetBoxHeightMode(PERCENTAGE);
-	c2Box1->boxModel.SetPaddingAll(1);
+	c2Box1->boxModel.SetPaddingAll(0);
 	c2Box1->SetRadius(0);
 	c2Box1->SetBorderRadius();
 	c2Box1->boxModel.SetMarginAll(30);
@@ -248,20 +269,21 @@ void Program::Init()
 	this->Doc.root->AddChild(container1);
 	this->Doc.root->AddChild(container2);
 	this->Doc.root->AddChild(container3);
-	this->Doc.root->AddChild(container4);
+	this->Doc.root->AddChild(scrollableView);
 	this->Doc.root->alignment = VERTICAL;
 	this->Doc.root->alignContent = END;
 	this->Doc.root->alignItems = END_ITEMS;
 	this->Doc.root->overflow = HIDDEN;
 	this->Doc.root->scrolledDistance.y += 0;
+	this->Doc.root->scrollableY = true;
 
-	container1->AddChild(c1Box1);
+	//container1->AddChild(c1Box1);
 	container1->AddChild(c1Box2);
 	container1->AddChild(c1Box3);
 	container1->AddChild(c1Box4);
 	container1->AddChild(c1Box5);
 
-	container2->AddChild(c2Box1);
+	container2->AddChild(c1Box1);
 
 	container3->AddChild(this->Doc.GetElementByName("c3Box1"));
 	container3->AddChild(c3Box2);
@@ -299,7 +321,7 @@ void Program::Init()
 	//c1Box3->PrintInfo();
 	//this->Doc.root->PrintCornerCoords();
 	//this->Doc.root->PrintBorderCornerCoords();
-	this->Doc.root->PrintCornerCoords();
+
 
 }
 
@@ -318,6 +340,8 @@ void Program::Update(float dt)
 {
 	
 }
+
+
 
 void Program::UpdateScreenSize(int width, int height) {
 	this->screenWidth = width;
@@ -392,7 +416,7 @@ void Program::SampleBoxBuffer(double x, double y) {
 	Element* clickedElement = this->GetElement(colorId);
 	if (clickedElement != nullptr) {
 		std::cout << clickedElement->name << std::endl;
-		//clickedElement->PrintInfo();
+		clickedElement->PrintInfo();
 	}
 	
 }
@@ -405,14 +429,46 @@ void Program::SampleBoxBufferRightClick(double x, double y) {
 		//std::cout << clickedElement->name << std::endl;
 		//clickedElement->PrintInfo();
 		//clickedElement->PrintBorderCornerCoords();
-		std::cout << "borderRadius: " << clickedElement->borderRadius << std::endl;
-		std::cout << "radius: " << clickedElement->radius << std::endl;
-		std::cout << "overflowRadius: " << clickedElement->overflowRadius << std::endl;
+		//std::cout << "borderRadius: " << clickedElement->borderRadius << std::endl;
+		//std::cout << "radius: " << clickedElement->radius << std::endl;
+		//std::cout << "overflowRadius: " << clickedElement->overflowRadius << std::endl;
 		//std::cout << "overflowBottomLeft and parentBottomLeft" << clickedElement->overflowBottomLeft.x << " " << clickedElement->overflowBottomLeft.y << std::endl;
 		//std::cout << "parentBottomLeft" << clickedElement->parent->bottomLeft.x << " " << clickedElement->parent->bottomLeft.y << std::endl;
-
+		/*
+		std::cout << "scrollableY: ";
+		if (clickedElement->scrollableY == true) {
+			std::cout << "true" << std::endl;
+		}
+		else {
+			std::cout << "false" << std::endl;
+		}
+		*/
+		//clickedElement->PrintCornerCoords();
+		std::cout << "scrolledDistY: " << clickedElement->GetScrolledDistance().y << std::endl;
 	}
 
+}
+
+void Program::SampleBoxBufferScroll(double x, double y, double xoffset, double yoffset)
+{
+	
+	std::string colorId = this->boxBuffer->Sample(x, y);
+	
+	//std::cout << colorId << std::endl;
+	Element* scrolledElement = this->GetElement(colorId);
+	if (scrolledElement == nullptr) {
+		std::cout << "ERROR::Program::SampleBoxBufferScroll: scrolledElement == nullptr" << std::endl;
+		return;
+	}
+	if (!scrolledElement->scrollableY  && !scrolledElement->scrollableX ) {
+		std::cout << "ERROR::Program::SampleBoxBufferScroll: Element not scrollable" << std::endl;
+		return;
+	}
+	std::cout << scrolledElement->name << std::endl;
+	scrolledElement->scrolledDistance.x += xoffset;
+	scrolledElement->scrolledDistance.y += yoffset;
+	std::cout << "scrolledDistance: " << scrolledElement->scrolledDistance.x << ", " << scrolledElement->scrolledDistance.y << std::endl;
+	this->Doc.SetAllElementsCornerCoords();
 }
 
 
