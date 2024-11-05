@@ -2602,13 +2602,23 @@ glm::vec2 Element::GetBottomRight()
 
 void Element::SetScrollbarToParent()
 {
-	int parentHeight = this->GetBoxHeight();
-	int parentWidth = this->GetBoxWidth();
+	int parentHeight = this->GetContentHeight();
+	int parentWidth = this->GetContentWidth();
 
 	this->yScrollbarHeight = parentHeight;
 	this->yScrollbarWidth = this->scrollbarThickness;
 	this->xScrollbarHeight = this->scrollbarThickness;
 	this->xScrollbarWidth = parentWidth;
+
+	if ( this->childrenEndY - this->childrenStartY > parentHeight) {
+		this->yScrollbarPercent = (float)parentHeight / (float)(this->childrenEndY - this->childrenStartY);
+	}
+	this->yScrollbarHeight = parentHeight * this->yScrollbarPercent;
+	//std::cout << this->name << std::endl;
+	//std::cout << "diff: " << this->childrenEndY - this->childrenStartY << std::endl;
+	//std::cout << "parentHeight: " << parentHeight << std::endl;
+	//std::cout << "yScrollbarPercent: " << this->yScrollbarPercent << std::endl;
+	// TODO: for horizontal scrollbar
 }
 
 void Element::SetChildrensStartAndEndPositions()
@@ -2623,7 +2633,14 @@ void Element::SetChildrensStartAndEndPositions()
 	if (this->childrenStartY < this->contentPosition.y) {
 		this->maxScrollUp = this->contentPosition.y - this->childrenStartY;
 	}
-	if (this->childrenEndY > this->contentPosition.y + this->contentSize.y) {
-		this->maxScrollDown = this->contentPosition.y + this->contentSize.y - this->childrenEndY;
+	else {
+		this->maxScrollUp = 0;
 	}
+	if (this->childrenEndY > this->contentPosition.y + this->GetContentHeight()) {
+		this->maxScrollDown = this->contentPosition.y + this->GetContentHeight() - this->childrenEndY;
+	}
+	else {
+		this->maxScrollDown = 0;
+	}
+	this->SetScrollbarToParent();
 }

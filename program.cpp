@@ -457,6 +457,10 @@ void Program::SampleBoxBufferRightClick(double x, double y) {
 		std::cout << "childrenEnd: " << clickedElement->childrenEndX << ", " << clickedElement->childrenEndY << std::endl;
 		std::cout << "maxScrollDown: " << clickedElement->maxScrollDown << std::endl;
 		std::cout << "maxScrollUp: " << clickedElement->maxScrollUp << std::endl;
+		std::cout << "yScrollbarPercent: " << clickedElement->yScrollbarPercent << std::endl;
+		std::cout << "yScrollbarHeight: " << clickedElement->yScrollbarHeight << std::endl;
+		std::cout << "contentHeight: " << clickedElement->GetContentHeight() << std::endl;
+
 	}
 
 }

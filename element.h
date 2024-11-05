@@ -259,6 +259,8 @@ public:
 	// scrollbar member variables
 	glm::vec2 yScrollbarPosition;
 	glm::vec2 xScrollbarPosition;
+	float yScrollbarPercent;
+	float xScrollbarPercent;
 	int yScrollbarHeight;
 	int yScrollbarWidth;
 	int xScrollbarHeight;
