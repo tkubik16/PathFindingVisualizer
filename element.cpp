@@ -616,6 +616,7 @@ void Element::CalculateBorderPositionHorizontal()
 			this->borderPosition.y = parentContentY;
 		}
 
+		
 
 	}
 	// if the element is not the first child take into account the position of the child before it and use the largest margin between the two
@@ -2077,6 +2078,7 @@ void Element::CalculateChildrenWidthWithMargins() {
 				continue; 
 			}
 			width += curr->boxSize.x + curr->GetBorderLeft() + curr->GetBorderRight();
+
 			if (curr->childAfter != nullptr) {
 				// get both margins
 				int nextMargin = curr->childAfter->GetMarginLeft();
@@ -2097,6 +2099,7 @@ void Element::CalculateChildrenWidthWithMargins() {
 				continue;
 			}			
 			int currWidth = curr->boxSize.x + curr->GetBorderLeft() + curr->GetBorderRight();
+
 			if (currWidth > width) {
 				width = currWidth;
 			}
@@ -2606,4 +2609,21 @@ void Element::SetScrollbarToParent()
 	this->yScrollbarWidth = this->scrollbarThickness;
 	this->xScrollbarHeight = this->scrollbarThickness;
 	this->xScrollbarWidth = parentWidth;
+}
+
+void Element::SetChildrensStartAndEndPositions()
+{
+	if (this->headChild == nullptr) return;
+
+	this->childrenStartX = this->headChild->borderPosition.x;
+	this->childrenStartY = this->headChild->borderPosition.y;
+	this->childrenEndX = this->tailChild->borderPosition.x + this->tailChild->borderSize.x;
+	this->childrenEndY = this->tailChild->borderPosition.y + this->tailChild->borderSize.y;
+
+	if (this->childrenStartY < this->contentPosition.y) {
+		this->maxScrollUp = this->contentPosition.y - this->childrenStartY;
+	}
+	if (this->childrenEndY > this->contentPosition.y + this->contentSize.y) {
+		this->maxScrollDown = this->contentPosition.y + this->contentSize.y - this->childrenEndY;
+	}
 }

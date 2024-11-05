@@ -223,6 +223,10 @@ public:
 	int childrenHeight;
 	int childrenWidthWithMargins;
 	int childrenHeightWithMargins;
+	int childrenStartX;
+	int childrenStartY;
+	int childrenEndX;
+	int childrenEndY;
 	// children overflow hidden or not 
 	Overflow overflow;
 	bool hideableViaOverflow;
@@ -262,6 +266,10 @@ public:
 	int scrollbarRadius;
 	bool scrollbarOutside;
 	int scrollbarThickness;
+	int maxScrollUp;
+	int maxScrollDown;
+	int maxScrollLeft;
+	int maxScrollRight;
 	
 
 	Element();
@@ -387,6 +395,7 @@ public:
 	int GetRight(Element* parent);
 
 	// scrolling methods
+	void SetChildrensStartAndEndPositions();
 	glm::vec2 GetScrolledDistance();
 	void SetScrollbarToParent();
 

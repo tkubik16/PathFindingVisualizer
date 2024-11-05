@@ -192,8 +192,8 @@ void Program::Init()
 	container3->boxModel.SetPaddingAll(30);
 	container3->SetRadius(25);
 	container3->SetBorderRadius();
-	container3->alignment = HORIZONTAL;
-	container3->alignContent = END;
+	container3->alignment = VERTICAL;
+	container3->alignContent = START;
 	container3->scrollableY = true;
 	//container3->overflow = VISIBLE;
 
@@ -273,7 +273,7 @@ void Program::Init()
 	this->Doc.root->AddChild(container3);
 	this->Doc.root->AddChild(scrollableView);
 	this->Doc.root->alignment = VERTICAL;
-	this->Doc.root->alignContent = END;
+	this->Doc.root->alignContent = START;
 	this->Doc.root->alignItems = END_ITEMS;
 	this->Doc.root->overflow = HIDDEN;
 	this->Doc.root->scrolledDistance.y += 0;
@@ -303,6 +303,7 @@ void Program::Init()
 	this->Doc.SetAllElementsSizes();
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
 	this->Doc.SetAllElementsPositions();
+	this->Doc.SetAllElementsChildrenStartAndEndPositions();
 	this->Doc.AdjustElementsIfNonStatic();
 	this->Doc.SetAllElementsParentsContentBorders();
 	this->Doc.SetAllElementsRealContentBorders();
@@ -374,6 +375,7 @@ void Program::UpdateScreenSize(int width, int height) {
 	this->Doc.SetAllElementsSizes();
 	this->Doc.SetAllElementsChildrenWidthAndHeight();
 	this->Doc.SetAllElementsPositions();
+	this->Doc.SetAllElementsChildrenStartAndEndPositions();
 	this->Doc.AdjustElementsIfNonStatic();
 	this->Doc.SetAllElementsParentsContentBorders();
 	this->Doc.SetAllElementsRealContentBorders();
@@ -448,7 +450,13 @@ void Program::SampleBoxBufferRightClick(double x, double y) {
 		//clickedElement->PrintCornerCoords();
 		//std::cout << "scrolledDistY: " << clickedElement->GetScrolledDistance().y << std::endl;
 		//clickedElement->PrintInfo();
-		clickedElement->PrintRealBorders();
+		//clickedElement->PrintRealBorders();
+		std::cout << "parentStart: " << clickedElement->contentPosition.x << ", " << clickedElement->contentPosition.y << std::endl;
+		std::cout << "parentEnd: " << clickedElement->contentPosition.x + clickedElement->contentSize.x << ", " << clickedElement->contentPosition.y + clickedElement->contentSize.y << std::endl;
+		std::cout << "childrenStart: " << clickedElement->childrenStartX << ", " << clickedElement->childrenStartY << std::endl;
+		std::cout << "childrenEnd: " << clickedElement->childrenEndX << ", " << clickedElement->childrenEndY << std::endl;
+		std::cout << "maxScrollDown: " << clickedElement->maxScrollDown << std::endl;
+		std::cout << "maxScrollUp: " << clickedElement->maxScrollUp << std::endl;
 	}
 
 }
@@ -487,6 +495,12 @@ void Program::SampleBoxBufferScroll(double x, double y, double xoffset, double y
 	std::cout << scrollableElement->name << std::endl;
 	scrollableElement->scrolledDistance.x += xoffset;
 	scrollableElement->scrolledDistance.y += yoffset;
+	if (scrollableElement->scrolledDistance.y < scrollableElement->maxScrollDown) {
+		scrollableElement->scrolledDistance.y = scrollableElement->maxScrollDown;
+	}
+	if (scrollableElement->scrolledDistance.y > scrollableElement->maxScrollUp) {
+		scrollableElement->scrolledDistance.y = scrollableElement->maxScrollUp;
+	}
 	std::cout << "scrolledDistance: " << scrollableElement->scrolledDistance.x << ", " << scrollableElement->scrolledDistance.y << std::endl;
 	this->Doc.SetAllElementsCornerCoords();
 	this->Doc.SetAllElementsParentsContentBorders();

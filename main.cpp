@@ -297,5 +297,5 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     double yPos = 0;
     GetMousePosition(window, xPos, yPos);
     double scale = 16;
-    PathFindingVisualizer->SampleBoxBufferScroll(xPos, yPos, xoffset * scale, -yoffset * scale);
+    PathFindingVisualizer->SampleBoxBufferScroll(xPos, yPos, xoffset * scale, yoffset * scale);
 }

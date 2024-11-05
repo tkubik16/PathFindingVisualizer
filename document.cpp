@@ -243,13 +243,33 @@ void Document::SetAllElementsPositions() {
 
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
-		
+
 		//std::cout << curr->name << std::endl;
 		//curr->CalculatePositions();
 		curr->CalculateBorderPosition();
 		curr->CalculateBoxPositionBasedOnBorderPosition();
 		//curr->CalculateBoxPosition();
 		curr->CalculateContentPosition();
+		elQueue.pop();
+		Element* currChild = curr->headChild;
+		while (currChild != nullptr) {
+			elQueue.push(currChild);
+			currChild = currChild->childAfter;
+		}
+	}
+}
+
+void Document::SetAllElementsChildrenStartAndEndPositions()
+{
+	std::queue<Element*> elQueue;
+	elQueue.push(this->root);
+
+	while (!elQueue.empty()) {
+		Element* curr = elQueue.front();
+
+		//std::cout << curr->name << std::endl;
+		//curr->CalculatePositions();
+		curr->SetChildrensStartAndEndPositions();
 		elQueue.pop();
 		Element* currChild = curr->headChild;
 		while (currChild != nullptr) {
