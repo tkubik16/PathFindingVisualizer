@@ -130,7 +130,7 @@ void Document::RenderDocumentFromVectors(Renderers* renderers) {
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
 		curr->RenderBox(renderers->boxRenderer);
-		curr->RenderContentBox(renderers->contentBoxRenderer);
+		curr->RenderContentBox(renderers->contentBoxRenderer, true);
 		elQueue.pop();
 		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
 			elQueue.push(*it);
@@ -161,7 +161,7 @@ void Document::RenderDocument(ContentBoxRenderer* contentBoxRenderer) {
 
 	while (!elQueue.empty()) {
 		Element* curr = elQueue.front();
-		curr->RenderContentBox(contentBoxRenderer);
+		curr->RenderContentBox(contentBoxRenderer, true);
 		elQueue.pop();
 		for (std::vector<Element*>::iterator it = curr->children.begin(); it != curr->children.end(); ++it) {
 			elQueue.push(*it);

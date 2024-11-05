@@ -1,4 +1,5 @@
 #include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 #include "content_box_renderer.h"
 
@@ -52,7 +53,7 @@ void ContentBoxRenderer::DrawContentBox(Texture2D& texture, glm::vec2 position, 
     glBindVertexArray(0);
 }
 
-void ContentBoxRenderer::DrawContentBox(Texture2D& texture, glm::vec2 position, bool wireframe, glm::vec2 size, float rotate, glm::vec3 color)
+void ContentBoxRenderer::DrawContentBox(std::string name, Texture2D& texture, glm::vec2 position, bool wireframe, glm::vec2 size, glm::vec2 scrolledDistance, float rotate, glm::vec3 color)
 {
     glm::vec3 contentBoxColor = glm::vec3(1.0, 1.0, 1.0);
     contentBoxColor.x = color.x - 0.2;
@@ -68,7 +69,7 @@ void ContentBoxRenderer::DrawContentBox(Texture2D& texture, glm::vec2 position, 
     // prepare transformations
     this->contentBoxShader.Use();
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
+    model = glm::translate(model, glm::vec3(position + scrolledDistance, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
 
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // move origin of rotation to center of quad
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
@@ -81,6 +82,11 @@ void ContentBoxRenderer::DrawContentBox(Texture2D& texture, glm::vec2 position, 
     // render textured quad
     this->contentBoxShader.SetVector3f("boxColor", contentBoxColor);
     //this->shader.SetVector3f("boxColor", color);
+
+    
+    
+    
+    
 
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
@@ -153,7 +159,7 @@ void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::v
     glBindVertexArray(0);
 }
 
-void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, float overflowRadius, glm::vec4 overflowTopCorners, glm::vec4 overflowBottomCorners, glm::vec4 borders, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, bool wireframe, float rotate, glm::vec3 color)
+void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 parentContentPosition, glm::vec2 parentContentSize, float overflowRadius, glm::vec4 overflowTopCorners, glm::vec4 overflowBottomCorners, glm::vec4 borders, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, bool wireframe, glm::vec2 scrolledDistance, float rotate, glm::vec3 color)
 {
     glm::vec3 contentBoxColor = glm::vec3(1.0, 1.0, 1.0);
     contentBoxColor.x = color.x - 0.2;
@@ -214,6 +220,11 @@ void ContentBoxRenderer::DrawContentBoxOverflowHidden(Texture2D& texture, glm::v
     this->contentBoxOverflowHiddenShader.SetVector4f("overflowTopCorners", overflowTopCorners);
     this->contentBoxOverflowHiddenShader.SetVector4f("overflowBottomCorners", overflowBottomCorners);
     this->contentBoxOverflowHiddenShader.SetFloat("overflowRadius", overflowRadius);
+
+    glm::mat4 view;
+
+    view = glm::translate(view, glm::vec3(scrolledDistance, 0.0f));
+    this->contentBoxOverflowHiddenShader.SetMatrix4("view", view);
 
 
     glActiveTexture(GL_TEXTURE0);

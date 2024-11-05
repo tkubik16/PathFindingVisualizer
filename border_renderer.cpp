@@ -21,7 +21,7 @@ void BorderRenderer::SetScreenHeight(int height) {
     this->screenHeight = height;
 }
 
-void BorderRenderer::DrawBox(Texture2D& texture, glm::vec2 borderPosition, glm::vec2 borderSize, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, float rotate, glm::vec3 color)
+void BorderRenderer::DrawBox(Texture2D& texture, glm::vec2 borderPosition, glm::vec2 borderSize, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, glm::vec2 scrolledDistance, float rotate, glm::vec3 color)
 {
     glm::vec3 borderColor = glm::vec3(1.0, 1.0, 1.0);
     borderColor.x = color.x - 0.2;
@@ -37,7 +37,7 @@ void BorderRenderer::DrawBox(Texture2D& texture, glm::vec2 borderPosition, glm::
     // prepare transformations
     this->borderShader.Use();
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(borderPosition, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
+    model = glm::translate(model, glm::vec3(borderPosition + scrolledDistance, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
 
     model = glm::translate(model, glm::vec3(0.5f * borderSize.x, 0.5f * borderSize.y, 0.0f)); // move origin of rotation to center of quad
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
@@ -57,9 +57,12 @@ void BorderRenderer::DrawBox(Texture2D& texture, glm::vec2 borderPosition, glm::
     this->borderShader.SetVector2f("bottomRight", bottomRight);
     this->borderShader.SetVector2f("screenSize", screenSize);
     this->borderShader.SetFloat("radius", radius);
+    /*
+    glm::mat4 view;
 
-
-
+    view = glm::translate(view, glm::vec3(scrolledDistance, 0.0f));
+    this->borderShader.SetMatrix4("view", view);
+    */
 
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
@@ -84,7 +87,7 @@ void BorderRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 positio
     // prepare transformations
     this->borderOverflowHiddenShader.Use();
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
+    model = glm::translate(model, glm::vec3(position + scrolledDistance, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
 
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // move origin of rotation to center of quad
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
@@ -97,12 +100,12 @@ void BorderRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 positio
     //this->boxOverflowHiddenShader.SetVector2f("parentContentSize", parentContentSize);
     // render textured quad
     this->borderOverflowHiddenShader.SetVector3f("borderColor", borderColor);
-
+    /*
     glm::mat4 view;
 
     view = glm::translate(view, glm::vec3(scrolledDistance, 0.0f));
     this->borderOverflowHiddenShader.SetMatrix4("view", view);
-
+    */
 
     this->borderOverflowHiddenShader.SetVector2f("topLeft", topLeft);
     this->borderOverflowHiddenShader.SetVector2f("topRight", topRight);

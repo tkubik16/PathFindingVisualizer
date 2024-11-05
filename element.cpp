@@ -38,7 +38,15 @@ Element::Element(std::string name) :
 	overflowBottomRight(1, -1),
 	scrolledDistance(0, 0),
 	scrollableX(false),
-	scrollableY(false)
+	scrollableY(false),
+	yScrollbarHeight(0),
+	yScrollbarWidth(0),
+	xScrollbarHeight(0),
+	xScrollbarWidth(0),
+	scrollbarOutside(true),
+	scrollbarThickness(10),
+	yScrollbarPosition(0, 0),
+	xScrollbarPosition(0, 0)
 
 {
 
@@ -1981,10 +1989,10 @@ void Element::AddChild(Element* child) {
 
 void Element::RenderBox(BoxRenderer* boxRenderer) {
 	if (this->parent == nullptr) {
-		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	else if ( !this->hideableViaOverflow ) {
-		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
@@ -1993,17 +2001,17 @@ void Element::RenderBox(BoxRenderer* boxRenderer) {
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
-		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		boxRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->boxPosition, this->boxSize, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	
 }
 
 void Element::RenderBorder(BorderRenderer* borderRenderer) {
 	if (this->parent == nullptr) {
-		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	else if (!this->hideableViaOverflow) {
-		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
@@ -2013,11 +2021,11 @@ void Element::RenderBorder(BorderRenderer* borderRenderer) {
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
-		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->rotation, this->idColor);
+		borderRenderer->DrawBox(ResourceManager::GetTexture("no_tex"), this->borderPosition, this->borderSize, this->borderTopLeft, this->borderTopRight, this->borderBottomLeft, this->borderBottomRight, this->GetBorderRadius(), glm::vec2(this->screenWidth, this->screenHeight), this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 
 }
-
+/*
 void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer) {
 	if (this->parent == nullptr) {
 		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->rotation, this->idColor);
@@ -2032,22 +2040,27 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer) {
 		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->rotation, this->idColor);
 	}
 }
+*/
 
 void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe) {
 	if (this->parent == nullptr) {
-		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
+		if (this->name == "root") {
+			//std::cout << this->GetScrolledDistance().y << std::endl;
+			//this->PrintInfo();
+		}
+		contentBoxRenderer->DrawContentBox(this->name, ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	else if (!this->hideableViaOverflow) {
-		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBox(this->name, ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	else if (this->parent->overflow == HIDDEN) {
 		//std::cout << "HIDDEN" << std::endl;
 		//contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
-		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), wireframe, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBoxOverflowHidden(ResourceManager::GetTexture("no_tex"), this->contentPosition, this->contentSize, this->parent->contentPosition, this->parent->contentSize, (float)this->overflowRadius, glm::vec4(this->overflowTopLeft, this->overflowTopRight), glm::vec4(this->overflowBottomLeft, this->overflowBottomRight), this->theRealContentBorders, this->topLeft, this->topRight, this->bottomLeft, this->bottomRight, this->GetRadius(), glm::vec2(this->screenWidth, this->screenHeight), wireframe, this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 	else {
 		//std::cout << "VISIBLE" << std::endl;
-		contentBoxRenderer->DrawContentBox(ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->rotation, this->idColor);
+		contentBoxRenderer->DrawContentBox(this->name, ResourceManager::GetTexture("no_tex"), this->contentPosition, wireframe, this->contentSize, this->GetScrolledDistance(), this->rotation, this->idColor);
 	}
 }
 
@@ -2582,4 +2595,15 @@ glm::vec2 Element::GetBottomRight()
 	adjustedBottomRight.y += this->GetScrolledDistance().y;
 
 	return adjustedBottomRight;
+}
+
+void Element::SetScrollbarToParent()
+{
+	int parentHeight = this->GetBoxHeight();
+	int parentWidth = this->GetBoxWidth();
+
+	this->yScrollbarHeight = parentHeight;
+	this->yScrollbarWidth = this->scrollbarThickness;
+	this->xScrollbarHeight = this->scrollbarThickness;
+	this->xScrollbarWidth = parentWidth;
 }

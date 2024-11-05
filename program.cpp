@@ -195,6 +195,7 @@ void Program::Init()
 	container3->alignment = HORIZONTAL;
 	container3->alignContent = END;
 	container3->scrollableY = true;
+	//container3->overflow = VISIBLE;
 
 	scrollableView = this->Doc.AddElement("container4");
 	scrollableView->SetBoxWidthMode(PERCENTAGE);
@@ -259,6 +260,7 @@ void Program::Init()
 	c2Box1->SetRadius(0);
 	c2Box1->SetBorderRadius();
 	c2Box1->boxModel.SetMarginAll(30);
+	c2Box1->hideableViaOverflow = false;
 	
 	
 	// below here create doc tree maybe
@@ -283,7 +285,7 @@ void Program::Init()
 	container1->AddChild(c1Box4);
 	container1->AddChild(c1Box5);
 
-	container2->AddChild(c1Box1);
+	container2->AddChild(c2Box1);
 
 	container3->AddChild(this->Doc.GetElementByName("c3Box1"));
 	container3->AddChild(c3Box2);
@@ -444,9 +446,25 @@ void Program::SampleBoxBufferRightClick(double x, double y) {
 		}
 		*/
 		//clickedElement->PrintCornerCoords();
-		std::cout << "scrolledDistY: " << clickedElement->GetScrolledDistance().y << std::endl;
+		//std::cout << "scrolledDistY: " << clickedElement->GetScrolledDistance().y << std::endl;
+		//clickedElement->PrintInfo();
+		clickedElement->PrintRealBorders();
 	}
 
+}
+
+Element* Program::FindFirstScrollableParent(Element* element)
+{
+	Element* curr = element;
+	while (curr != nullptr) {
+		if (curr->scrollableX == true || curr->scrollableY == true) {
+			return curr;
+		}
+		else {
+			curr = curr->parent;
+		}
+	}
+	return curr;
 }
 
 void Program::SampleBoxBufferScroll(double x, double y, double xoffset, double yoffset)
@@ -456,19 +474,23 @@ void Program::SampleBoxBufferScroll(double x, double y, double xoffset, double y
 	
 	//std::cout << colorId << std::endl;
 	Element* scrolledElement = this->GetElement(colorId);
-	if (scrolledElement == nullptr) {
+	Element* scrollableElement = this->FindFirstScrollableParent(scrolledElement);
+
+	if (scrollableElement == nullptr) {
 		std::cout << "ERROR::Program::SampleBoxBufferScroll: scrolledElement == nullptr" << std::endl;
 		return;
 	}
-	if (!scrolledElement->scrollableY  && !scrolledElement->scrollableX ) {
+	if (!scrollableElement->scrollableY  && !scrolledElement->scrollableX ) {
 		std::cout << "ERROR::Program::SampleBoxBufferScroll: Element not scrollable" << std::endl;
 		return;
 	}
-	std::cout << scrolledElement->name << std::endl;
-	scrolledElement->scrolledDistance.x += xoffset;
-	scrolledElement->scrolledDistance.y += yoffset;
-	std::cout << "scrolledDistance: " << scrolledElement->scrolledDistance.x << ", " << scrolledElement->scrolledDistance.y << std::endl;
+	std::cout << scrollableElement->name << std::endl;
+	scrollableElement->scrolledDistance.x += xoffset;
+	scrollableElement->scrolledDistance.y += yoffset;
+	std::cout << "scrolledDistance: " << scrollableElement->scrolledDistance.x << ", " << scrollableElement->scrolledDistance.y << std::endl;
 	this->Doc.SetAllElementsCornerCoords();
+	this->Doc.SetAllElementsParentsContentBorders();
+	this->Doc.SetAllElementsRealContentBorders();
 }
 
 

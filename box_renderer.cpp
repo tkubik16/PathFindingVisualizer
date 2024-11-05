@@ -21,12 +21,12 @@ void BoxRenderer::SetScreenHeight(int height) {
     this->screenHeight = height;
 }
 
-void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, float rotate, glm::vec3 color)
+void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight, float radius, glm::vec2 screenSize, glm::vec2 scrolledDistance, float rotate, glm::vec3 color)
 {
     // prepare transformations
     this->boxShader.Use();
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
+    model = glm::translate(model, glm::vec3(position + scrolledDistance, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
 
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // move origin of rotation to center of quad
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
@@ -44,9 +44,12 @@ void BoxRenderer::DrawBox(Texture2D& texture, glm::vec2 position, glm::vec2 size
     this->boxShader.SetVector2f("bottomRight", bottomRight);
     this->boxShader.SetVector2f("screenSize", screenSize);
     this->boxShader.SetFloat("radius", radius);
+    /*
+    glm::mat4 view;
 
-
-    
+    view = glm::translate(view, glm::vec3(scrolledDistance, 0.0f));
+    this->boxShader.SetMatrix4("view", view);
+    */
     
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
@@ -61,7 +64,7 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
     // prepare transformations
     this->boxOverflowHiddenShader.Use();
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
+    model = glm::translate(model, glm::vec3(position + scrolledDistance, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
 
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // move origin of rotation to center of quad
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
@@ -83,12 +86,12 @@ void BoxRenderer::DrawBoxOverflowHidden(Texture2D& texture, glm::vec2 position, 
     this->boxOverflowHiddenShader.SetVector2f("bottomRight", bottomRight);
     this->boxOverflowHiddenShader.SetVector2f("screenSize", screenSize);
     this->boxOverflowHiddenShader.SetFloat("radius", radius);
-
+    /*
     glm::mat4 view;
 
     view = glm::translate(view, glm::vec3(scrolledDistance, 0.0f));
     this->boxOverflowHiddenShader.SetMatrix4("view", view);
-
+    */
     
 
     //std::cout << radius << std::endl;

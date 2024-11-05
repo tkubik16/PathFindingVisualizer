@@ -37,6 +37,7 @@ public:
 	void SampleBoxBuffer(double x, double y);
 	void SampleBoxBufferRightClick(double x, double y);
 	void SampleBoxBufferScroll(double x, double y, double xoffset, double yoffset);
+	Element* FindFirstScrollableParent(Element* element);
 	Element* GetElement(std::string colorId);
 	
 

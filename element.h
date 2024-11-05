@@ -251,6 +251,17 @@ public:
 	glm::vec2 scrolledDistance;
 	bool scrollableX;
 	bool scrollableY;
+
+	// scrollbar member variables
+	glm::vec2 yScrollbarPosition;
+	glm::vec2 xScrollbarPosition;
+	int yScrollbarHeight;
+	int yScrollbarWidth;
+	int xScrollbarHeight;
+	int xScrollbarWidth;
+	int scrollbarRadius;
+	bool scrollbarOutside;
+	int scrollbarThickness;
 	
 
 	Element();
@@ -296,7 +307,7 @@ public:
 	void AddChildToVector(Element* child);
 	void RenderBox(BoxRenderer* boxRenderer);
 	void RenderBorder(BorderRenderer* borderRenderer);
-	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer);
+	//void RenderContentBox(ContentBoxRenderer* contentBoxRenderer);
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe);
 	void PrintChildren();
 	glm::vec4 CalculateBorders();
@@ -377,6 +388,7 @@ public:
 
 	// scrolling methods
 	glm::vec2 GetScrolledDistance();
+	void SetScrollbarToParent();
 
 	//get methods for corner coords but takes into account scrolled distance
 	glm::vec2 GetTopLeft();
