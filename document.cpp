@@ -112,6 +112,7 @@ void Document::RenderDocument(Renderers* renderers) {
 		curr->RenderBox(renderers->boxRenderer);
 		//curr->RenderBorder(renderers->borderRenderer);
 		curr->RenderContentBox(renderers->contentBoxRenderer, true);
+		curr->RenderScrollbars(renderers->scrollbarRenderer);
 		elQueue.pop();
 
 		Element* currChild = curr->headChild;

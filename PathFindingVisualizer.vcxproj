@@ -160,6 +160,7 @@
     <ClCompile Include="renderers.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="scrollable_view.cpp" />
+    <ClCompile Include="scrollbar_renderer.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="style.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="program.h" />
     <ClInclude Include="renderers.h" />
     <ClInclude Include="scrollable_view.h" />
+    <ClInclude Include="scrollbar_renderer.h" />
     <ClInclude Include="style.h" />
     <ClInclude Include="style_sheet.h" />
     <ClInclude Include="texture_renderer.h" />
@@ -199,6 +201,10 @@
     <None Include="content.vert" />
     <None Include="contentBoxOverflowHidden.frag" />
     <None Include="contentBoxOverflowHidden.vert" />
+    <None Include="scrollbar.frag" />
+    <None Include="scrollbar.vert" />
+    <None Include="scrollbarOverflowHidden.frag" />
+    <None Include="scrollbarOverflowHidden.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

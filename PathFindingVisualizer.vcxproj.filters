@@ -72,6 +72,9 @@
     <ClCompile Include="scrollable_view.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scrollbar_renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="box_model.h">
@@ -125,6 +128,9 @@
     <ClInclude Include="scrollable_view.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="scrollbar_renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="box.vert">
@@ -161,6 +167,18 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="borderOverflowHidden.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="scrollbar.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="scrollbar.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="scrollbarOverflowHidden.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="scrollbarOverflowHidden.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

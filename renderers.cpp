@@ -11,6 +11,7 @@ Renderers::~Renderers() {
 	delete this->contentBoxRenderer;
 	delete this->textureRenderer;
 	delete this->borderRenderer;
+	delete this->scrollbarRenderer;
 }
 
 void Renderers::SetScreenSize(int width, int height) {
@@ -25,6 +26,9 @@ void Renderers::SetScreenSize(int width, int height) {
 
 	this->borderRenderer->SetScreenWidth(width);
 	this->borderRenderer->SetScreenHeight(height);
+
+	this->scrollbarRenderer->SetScreenWidth(width);
+	this->scrollbarRenderer->SetScreenHeight(height);
 }
 
 void Renderers::SetScreenWidth(int width) {

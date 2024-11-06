@@ -68,7 +68,8 @@ void Program::Init()
 	ResourceManager::LoadShader("contentBoxOverflowHidden.vert", "contentBoxOverflowHidden.frag", nullptr, "contentBoxOverflowHidden");
 	ResourceManager::LoadShader("border.vert", "border.frag", nullptr, "bordershader");
 	ResourceManager::LoadShader("borderOverflowHidden.vert", "borderOverflowHidden.frag", nullptr, "borderOverflowHidden");
-	//ResourceManager::LoadShader("borderOverflowHidden.vert", "borderOverflowHidden.frag", nullptr, "borderOverflowHidden");
+	ResourceManager::LoadShader("scrollbar.vert", "scrollbar.frag", nullptr, "scrollbarshader");
+	ResourceManager::LoadShader("scrollbarOverflowHidden.vert", "scrollbarOverflowHidden.frag", nullptr, "scrollbarOverflowHidden");
 	// configure shaders
 	ResourceManager::GetShader("boxshader").Use().SetInteger("image", 0);
 	ResourceManager::GetShader("boxshader").SetMatrix4("projection", this->projection);
@@ -94,6 +95,14 @@ void Program::Init()
 	ResourceManager::GetShader("borderOverflowHidden").SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("borderOverflowHidden").SetMatrix4("view", this->view);
 
+	ResourceManager::GetShader("scrollbarshader").Use().SetInteger("image", 0);
+	ResourceManager::GetShader("scrollbarshader").SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("scrollbarshader").SetMatrix4("view", this->view);
+
+	ResourceManager::GetShader("scrollbarOverflowHidden").Use().SetInteger("image", 0);
+	ResourceManager::GetShader("scrollbarOverflowHidden").SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("scrollbarOverflowHidden").SetMatrix4("view", this->view);
+
 	/*
 	glm::vec2 screenSize(this->screenWidth, this->screenHeight);
 	ResourceManager::GetShader("boxshader").Use().SetVector2f("screenSize", screenSize);
@@ -112,6 +121,7 @@ void Program::Init()
 	this->renderers->borderRenderer = new BorderRenderer(ResourceManager::GetShader("bordershader"), ResourceManager::GetShader("borderOverflowHidden"));
 	this->renderers->contentBoxRenderer = new ContentBoxRenderer(ResourceManager::GetShader("contentshader"), ResourceManager::GetShader("contentBoxOverflowHidden"));
 	this->renderers->textureRenderer = new TextureRenderer(ResourceManager::GetShader("contentshader"));
+	this->renderers->scrollbarRenderer = new ScrollbarRenderer(ResourceManager::GetShader("scrollbarshader"), ResourceManager::GetShader("scrollbarOverflowHidden"));
 	this->renderers->SetScreenSize(this->screenWidth, this->screenHeight);
 	//std::cout << "RenderersScreenSize: " << this->renderers->screenWidth << " " << this->renderers->screenHeight << std::endl;
 
@@ -186,9 +196,9 @@ void Program::Init()
 	*/
 
 	container3 = this->Doc.AddElement("container3");
-	container3->SetBoxWidthMode(PERCENTAGE);
+	//container3->SetBoxWidthMode(PERCENTAGE);
 	//container3->SetBoxHeightMode(PERCENTAGE);
-	container3->boxModel.SetSize(70, 200 );
+	container3->boxModel.SetSize(700, 200 );
 	container3->boxModel.SetPaddingAll(30);
 	container3->SetRadius(25);
 	container3->SetBorderRadius();
@@ -196,6 +206,7 @@ void Program::Init()
 	container3->alignContent = START;
 	container3->scrollableY = true;
 	//container3->overflow = VISIBLE;
+	//container3->scrollbarOutsideContent = false;
 
 	scrollableView = this->Doc.AddElement("container4");
 	scrollableView->SetBoxWidthMode(PERCENTAGE);
@@ -204,8 +215,8 @@ void Program::Init()
 	scrollableView->boxModel.SetPaddingAll(30);
 	scrollableView->SetRadius(25);
 	scrollableView->SetBorderRadius();
-	scrollableView->scrollableX = true;
-	scrollableView->scrollableY = true;
+	scrollableView->scrollableX = false;
+	scrollableView->scrollableY = false;
 
 	c1Box1 = this->Doc.AddElement("c1Box1");
 	c1Box1->boxModel.SetSize(100, 100);
@@ -274,10 +285,11 @@ void Program::Init()
 	this->Doc.root->AddChild(scrollableView);
 	this->Doc.root->alignment = VERTICAL;
 	this->Doc.root->alignContent = START;
-	this->Doc.root->alignItems = END_ITEMS;
+	this->Doc.root->alignItems = START_ITEMS;
 	this->Doc.root->overflow = HIDDEN;
 	this->Doc.root->scrolledDistance.y += 0;
-	this->Doc.root->scrollableY = true;
+	//this->Doc.root->scrollableY = true;
+	this->Doc.root->scrollbarRadius = 5;
 
 	//container1->AddChild(c1Box1);
 	container1->AddChild(c1Box2);
@@ -358,6 +370,8 @@ void Program::UpdateScreenSize(int width, int height) {
 	ResourceManager::GetShader("contentBoxOverflowHidden").Use().SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("bordershader").Use().SetMatrix4("projection", this->projection);
 	ResourceManager::GetShader("borderOverflowHidden").Use().SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("scrollbarshader").Use().SetMatrix4("projection", this->projection);
+	ResourceManager::GetShader("scrollbarOverflowHidden").Use().SetMatrix4("projection", this->projection);
 
 
 	/*
@@ -451,6 +465,7 @@ void Program::SampleBoxBufferRightClick(double x, double y) {
 		//std::cout << "scrolledDistY: " << clickedElement->GetScrolledDistance().y << std::endl;
 		//clickedElement->PrintInfo();
 		//clickedElement->PrintRealBorders();
+		/*
 		std::cout << "parentStart: " << clickedElement->contentPosition.x << ", " << clickedElement->contentPosition.y << std::endl;
 		std::cout << "parentEnd: " << clickedElement->contentPosition.x + clickedElement->contentSize.x << ", " << clickedElement->contentPosition.y + clickedElement->contentSize.y << std::endl;
 		std::cout << "childrenStart: " << clickedElement->childrenStartX << ", " << clickedElement->childrenStartY << std::endl;
@@ -460,7 +475,14 @@ void Program::SampleBoxBufferRightClick(double x, double y) {
 		std::cout << "yScrollbarPercent: " << clickedElement->yScrollbarPercent << std::endl;
 		std::cout << "yScrollbarHeight: " << clickedElement->yScrollbarHeight << std::endl;
 		std::cout << "contentHeight: " << clickedElement->GetContentHeight() << std::endl;
-
+		*/
+		std::cout << "contentPosition: " << clickedElement->contentPosition.x << ", " << clickedElement->contentPosition.y << std::endl;
+		std::cout << "yScrollbarPosition: " << clickedElement->yScrollbarPosition.x << ", " << clickedElement->yScrollbarPosition.y << std::endl;
+		std::cout << "yScrollbarCorners: " << clickedElement->yScrollbarTopLeft.x << ", " << clickedElement->yScrollbarTopLeft.y << std::endl;
+		std::cout << "yScrollbarCorners: " << clickedElement->yScrollbarTopRight.x << ", " << clickedElement->yScrollbarTopRight.y << std::endl;
+		std::cout << "yScrollbarCorners: " << clickedElement->yScrollbarBottomLeft.x << ", " << clickedElement->yScrollbarBottomLeft.y << std::endl;
+		std::cout << "yScrollbarCorners: " << clickedElement->yScrollbarBottomRight.x << ", " << clickedElement->yScrollbarBottomRight.y << std::endl;
+		std::cout << "scrollbarRadius: " << clickedElement->GetScrollbarRadius() << std::endl;
 	}
 
 }
@@ -496,7 +518,7 @@ void Program::SampleBoxBufferScroll(double x, double y, double xoffset, double y
 		std::cout << "ERROR::Program::SampleBoxBufferScroll: Element not scrollable" << std::endl;
 		return;
 	}
-	std::cout << scrollableElement->name << std::endl;
+	//std::cout << scrollableElement->name << std::endl;
 	scrollableElement->scrolledDistance.x += xoffset;
 	scrollableElement->scrolledDistance.y += yoffset;
 	if (scrollableElement->scrolledDistance.y < scrollableElement->maxScrollDown) {
@@ -505,7 +527,7 @@ void Program::SampleBoxBufferScroll(double x, double y, double xoffset, double y
 	if (scrollableElement->scrolledDistance.y > scrollableElement->maxScrollUp) {
 		scrollableElement->scrolledDistance.y = scrollableElement->maxScrollUp;
 	}
-	std::cout << "scrolledDistance: " << scrollableElement->scrolledDistance.x << ", " << scrollableElement->scrolledDistance.y << std::endl;
+	//std::cout << "scrolledDistance: " << scrollableElement->scrolledDistance.x << ", " << scrollableElement->scrolledDistance.y << std::endl;
 	this->Doc.SetAllElementsCornerCoords();
 	this->Doc.SetAllElementsParentsContentBorders();
 	this->Doc.SetAllElementsRealContentBorders();

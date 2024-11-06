@@ -8,6 +8,7 @@
 #include "content_box_renderer.h"
 #include "texture_renderer.h"
 #include "border_renderer.h"
+#include "scrollbar_renderer.h"
 
 class Renderers 
 {
@@ -16,6 +17,7 @@ public:
 	ContentBoxRenderer* contentBoxRenderer;
 	TextureRenderer* textureRenderer;
 	BorderRenderer* borderRenderer;
+	ScrollbarRenderer* scrollbarRenderer;
 	// constructor and destructor
 	Renderers();
 	~Renderers();

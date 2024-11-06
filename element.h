@@ -12,6 +12,7 @@
 #include "box_renderer.h"
 #include "content_box_renderer.h"
 #include "border_renderer.h"
+#include "scrollbar_renderer.h"
 
 
 
@@ -257,8 +258,11 @@ public:
 	bool scrollableY;
 
 	// scrollbar member variables
+	bool scrollbarVisible;
 	glm::vec2 yScrollbarPosition;
 	glm::vec2 xScrollbarPosition;
+	int yScrolledDistance;
+	int xScrolledDistance;
 	float yScrollbarPercent;
 	float xScrollbarPercent;
 	int yScrollbarHeight;
@@ -266,12 +270,17 @@ public:
 	int xScrollbarHeight;
 	int xScrollbarWidth;
 	int scrollbarRadius;
-	bool scrollbarOutside;
+	bool scrollbarOutsideContent;
 	int scrollbarThickness;
 	int maxScrollUp;
 	int maxScrollDown;
 	int maxScrollLeft;
 	int maxScrollRight;
+	// y scrollbarCorners
+	glm::vec2 yScrollbarTopLeft;
+	glm::vec2 yScrollbarTopRight;
+	glm::vec2 yScrollbarBottomLeft;
+	glm::vec2 yScrollbarBottomRight;
 	
 
 	Element();
@@ -319,6 +328,7 @@ public:
 	void RenderBorder(BorderRenderer* borderRenderer);
 	//void RenderContentBox(ContentBoxRenderer* contentBoxRenderer);
 	void RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wireframe);
+	void RenderScrollbars(ScrollbarRenderer* scrollbarRenderer);
 	void PrintChildren();
 	glm::vec4 CalculateBorders();
 	void FindRealContentBorders();
@@ -400,6 +410,8 @@ public:
 	void SetChildrensStartAndEndPositions();
 	glm::vec2 GetScrolledDistance();
 	void SetScrollbarToParent();
+	float GetScrollbarRadius();
+	void CalculateYScrollbarCorners();
 
 	//get methods for corner coords but takes into account scrolled distance
 	glm::vec2 GetTopLeft();

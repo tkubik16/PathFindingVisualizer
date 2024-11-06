@@ -43,7 +43,7 @@ Element::Element(std::string name) :
 	yScrollbarWidth(0),
 	xScrollbarHeight(0),
 	xScrollbarWidth(0),
-	scrollbarOutside(true),
+	scrollbarOutsideContent(true),
 	scrollbarThickness(10),
 	yScrollbarPosition(0, 0),
 	xScrollbarPosition(0, 0)
@@ -230,9 +230,9 @@ void Element::PrintInfo() {
 	if (this->overflow == HIDDEN)
 		std::cout << "HIDDEN" << std::endl;
 	else if (this->overflow == VISIBLE)
-		std::cout << "HIDDEN" << std::endl;
+		std::cout << "VISIBLE" << std::endl;
 	else
-		std::cout << "ERROR: enum " << this->overflow << " for overflwo does not exist" << std::endl;
+		std::cout << "ERROR: enum " << this->overflow << " for overflow does not exist" << std::endl;
 
 	std::cout << "Alignment: " << std::endl;
 	if (this->alignment == VERTICAL)
@@ -2065,6 +2065,44 @@ void Element::RenderContentBox(ContentBoxRenderer* contentBoxRenderer, bool wire
 	}
 }
 
+void Element::RenderScrollbars(ScrollbarRenderer* scrollbarRenderer)
+{
+	if (this->scrollableY == false && this->scrollableX == false) return;
+
+	if (this->parent == nullptr) {
+		if (this->name == "root") {
+			//std::cout << this->GetScrolledDistance().y << std::endl;
+			//this->PrintInfo();
+			//std::cout << this->name << std::endl;
+		}
+		scrollbarRenderer->DrawScrollbar(ResourceManager::GetTexture("no_tex"), this->yScrollbarPosition, glm::vec2(this->yScrollbarWidth, this->yScrollbarHeight), this->yScrollbarTopLeft, this->yScrollbarTopRight, this->yScrollbarBottomLeft, this->yScrollbarBottomRight, this->GetScrollbarRadius(), glm::vec2(this->screenWidth, this->screenHeight), glm::vec2(0.0, 0.0), this->rotation, this->idColor);
+
+	}
+	else if (!this->hideableViaOverflow) {
+		scrollbarRenderer->DrawScrollbar(ResourceManager::GetTexture("no_tex"), this->yScrollbarPosition, glm::vec2(this->yScrollbarWidth, this->yScrollbarHeight), this->yScrollbarTopLeft, this->yScrollbarTopRight, this->yScrollbarBottomLeft, this->yScrollbarBottomRight, this->GetScrollbarRadius(), glm::vec2(this->screenWidth, this->screenHeight), glm::vec2(0.0, 0.0), this->rotation, this->idColor);
+
+	}
+	else if (this->parent->overflow == HIDDEN) {
+		//std::cout << this->name << std::endl;
+		scrollbarRenderer->DrawScrollbarOverflowHidden(ResourceManager::GetTexture("no_tex"), this->yScrollbarPosition, glm::vec2(this->yScrollbarWidth, this->yScrollbarHeight), this->parent->contentPosition, this->parent->contentSize, (float)this->parent->overflowRadius, glm::vec4(this->parent->overflowTopLeft, this->parent->overflowTopRight), glm::vec4(this->parent->overflowBottomLeft, this->parent->overflowBottomRight), this->theRealContentBorders, this->yScrollbarTopLeft, this->yScrollbarTopRight, this->yScrollbarBottomLeft, this->yScrollbarBottomRight, this->GetScrollbarRadius(), glm::vec2(this->screenWidth, this->screenHeight), glm::vec2(0.0,0.0), this->rotation, this->idColor);
+		//scrollbarRenderer->DrawScrollbar(ResourceManager::GetTexture("no_tex"), this->yScrollbarPosition, glm::vec2(this->yScrollbarWidth, this->yScrollbarHeight), this->yScrollbarTopLeft, this->yScrollbarTopRight, this->yScrollbarBottomLeft, this->yScrollbarBottomRight, this->GetScrollbarRadius(), glm::vec2(this->screenWidth, this->screenHeight), glm::vec2(0.0, 0.0), this->rotation, this->idColor);
+		/*
+		std::cout << this->name << std::endl;
+		std::cout << "yScrollbarPosition: " << this->yScrollbarPosition.x << ", " << this->yScrollbarPosition.y << std::endl;
+		std::cout << "yScrollbar width and height: " << this->yScrollbarWidth << ", " << this->yScrollbarHeight << std::endl;
+		std::cout << "borders: " << std::endl;
+		std::cout << this->parent->overflowTopLeft.x << ", " << this->parent->overflowTopLeft.y << std::endl;
+		std::cout << this->parent->overflowTopRight.x << ", " << this->parent->overflowTopRight.y << std::endl;
+		std::cout << this->parent->overflowBottomLeft.x << ", " << this->parent->overflowBottomLeft.y << std::endl;
+		std::cout << this->parent->overflowBottomRight.x << ", " << this->parent->overflowBottomRight.y << std::endl;
+		*/
+	}
+	else {
+		scrollbarRenderer->DrawScrollbar(ResourceManager::GetTexture("no_tex"), this->yScrollbarPosition, glm::vec2(this->yScrollbarWidth, this->yScrollbarHeight), this->yScrollbarTopLeft, this->yScrollbarTopRight, this->yScrollbarBottomLeft, this->yScrollbarBottomRight, this->GetScrollbarRadius(), glm::vec2(this->screenWidth, this->screenHeight), glm::vec2(0.0, 0.0), this->rotation, this->idColor);
+
+	}
+}
+
 void Element::CalculateChildrenWidthWithMargins() {
 	if (this->headChild == nullptr) {
 		this->childrenWidth = 0;
@@ -2362,6 +2400,22 @@ float Element::GetRadius() {
 	return (float)maxRadius;
 }
 
+float Element::GetScrollbarRadius() {
+	int width = this->yScrollbarWidth;
+	int height = this->yScrollbarHeight;
+
+	int smallSide = (width < height) ? width : height;
+
+	int maxRadius = this->scrollbarRadius * xscale;
+	if ((this->scrollbarRadius * xscale) > smallSide / 2) {
+		maxRadius = smallSide / 2;
+	}
+	//std::cout << maxRadius << std::endl;
+	//return (float)((maxRadius / this->screenWidth) * 2 - 1);
+	//std::cout << this->name << " " << maxRadius << std::endl;
+	return (float)maxRadius;
+}
+
 void Element::SetBorderRadius()
 {
 	//std::cout << this->boxSize.x << " " << this->boxSize.y << std::endl;
@@ -2619,6 +2673,83 @@ void Element::SetScrollbarToParent()
 	//std::cout << "parentHeight: " << parentHeight << std::endl;
 	//std::cout << "yScrollbarPercent: " << this->yScrollbarPercent << std::endl;
 	// TODO: for horizontal scrollbar
+
+	if (this->scrollbarOutsideContent == true) {
+		this->yScrollbarPosition.x = this->contentPosition.x + this->GetContentWidth();
+		this->yScrollbarPosition.y = this->contentPosition.y;
+
+		this->xScrollbarPosition.x = this->contentPosition.x;
+		this->xScrollbarPosition.y = this->contentPosition.y + this->GetContentHeight();
+	}
+	else {
+		this->yScrollbarPosition.x = this->contentPosition.x + this->GetContentWidth() - this->scrollbarThickness * xscale;
+		this->yScrollbarPosition.y = this->contentPosition.y;
+
+		this->xScrollbarPosition.x = this->contentPosition.x;
+		this->xScrollbarPosition.y = this->contentPosition.y + this->GetContentHeight();
+	}
+
+	
+
+}
+
+void Element::CalculateYScrollbarCorners()
+{
+	int width = this->yScrollbarWidth;
+	int height = this->yScrollbarHeight;
+
+	int smallSide = (width < height) ? width : height;
+
+	int maxRadius = this->scrollbarRadius * xscale;
+	if ((this->scrollbarRadius * xscale) > smallSide / 2) {
+		maxRadius = smallSide / 2;
+	}
+	// set top left coord currently not screen coords
+	this->yScrollbarTopLeft.x = this->yScrollbarPosition.x + maxRadius;
+	this->yScrollbarTopLeft.y = this->yScrollbarPosition.y + maxRadius;
+
+	// set top right
+	this->yScrollbarTopRight.x = this->yScrollbarPosition.x + width - maxRadius;
+	this->yScrollbarTopRight.y = this->yScrollbarPosition.y + maxRadius;
+
+	// set bottomLeft
+	this->yScrollbarBottomLeft.x = this->yScrollbarPosition.x + maxRadius;
+	this->yScrollbarBottomLeft.y = this->yScrollbarPosition.y + height - maxRadius;
+
+	// set bottomRight
+	this->yScrollbarBottomRight.x = this->yScrollbarPosition.x + width - maxRadius;
+	this->yScrollbarBottomRight.y = this->yScrollbarPosition.y + height - maxRadius;
+
+	// TODO: add code to shift corners when scrollbar scrolled
+	
+
+	// shift based on scrolledDistance
+
+	glm::vec2 totalScrolledDistance = this->GetScrolledDistance();
+	//std::cout << "totalScrolledDistance: " << totalScrolledDistance.x << ", " << totalScrolledDistance.y << std::endl;
+	this->yScrollbarTopLeft.x += totalScrolledDistance.x;
+	this->yScrollbarTopRight.x += totalScrolledDistance.x;
+	this->yScrollbarBottomLeft.x += totalScrolledDistance.x;
+	this->yScrollbarBottomRight.x += totalScrolledDistance.x;
+
+	this->yScrollbarTopLeft.y += totalScrolledDistance.y;
+	this->yScrollbarTopRight.y += totalScrolledDistance.y;
+	this->yScrollbarBottomLeft.y += totalScrolledDistance.y;
+	this->yScrollbarBottomRight.y += totalScrolledDistance.y;
+
+	// convert to screen coords
+	this->yScrollbarTopLeft.x = (this->yScrollbarTopLeft.x / this->screenWidth) * 2 - 1;
+	this->yScrollbarTopLeft.y = ((this->screenHeight - this->yScrollbarTopLeft.y) / this->screenHeight) * 2 - 1;
+
+
+	this->yScrollbarTopRight.x = (this->yScrollbarTopRight.x / this->screenWidth) * 2 - 1;
+	this->yScrollbarTopRight.y = ((this->screenHeight - this->yScrollbarTopRight.y) / this->screenHeight) * 2 - 1;
+
+	this->yScrollbarBottomLeft.x = (this->yScrollbarBottomLeft.x / this->screenWidth) * 2 - 1;
+	this->yScrollbarBottomLeft.y = ((this->screenHeight - this->yScrollbarBottomLeft.y) / this->screenHeight) * 2 - 1;
+
+	this->yScrollbarBottomRight.x = (this->yScrollbarBottomRight.x / this->screenWidth) * 2 - 1;
+	this->yScrollbarBottomRight.y = ((this->screenHeight - this->yScrollbarBottomRight.y) / this->screenHeight) * 2 - 1;
 }
 
 void Element::SetChildrensStartAndEndPositions()
@@ -2643,4 +2774,5 @@ void Element::SetChildrensStartAndEndPositions()
 		this->maxScrollDown = 0;
 	}
 	this->SetScrollbarToParent();
+	this->CalculateYScrollbarCorners();
 }
