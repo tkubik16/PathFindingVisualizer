@@ -288,7 +288,7 @@ void Program::Init()
 	this->Doc.root->alignItems = START_ITEMS;
 	this->Doc.root->overflow = HIDDEN;
 	this->Doc.root->scrolledDistance.y += 0;
-	//this->Doc.root->scrollableY = true;
+	this->Doc.root->scrollableY = true;
 	this->Doc.root->scrollbarRadius = 5;
 
 	//container1->AddChild(c1Box1);
